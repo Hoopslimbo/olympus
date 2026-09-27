@@ -70,23 +70,61 @@
 
   /* Top bar */
   #topbar { display: flex; align-items: center; justify-content: space-between; }
-  #topLeft { display: flex; align-items: center; gap: 12px; }
-  #profile {
-    display: flex; align-items: center; gap: 14px;
-    background: rgba(10, 18, 40, .55);
-    border: 1px solid rgba(90, 130, 255, .25);
-    border-radius: 999px; padding: 8px 22px 8px 8px;
-    backdrop-filter: blur(12px);
-  }
-  #avatar {
-    width: 46px; height: 46px; border-radius: 50%;
+  #topLeft { display: flex; align-items: center; gap: 12px; position: relative; }
+  /* Profile pic button — opens the profile switcher */
+  #avatarBtn {
+    width: 54px; height: 54px; border-radius: 50%; flex: 0 0 auto;
     background: linear-gradient(135deg, #2f6bff, #0a1f66);
     display: flex; align-items: center; justify-content: center;
-    font-weight: 700; font-size: 18px; color: #cfe0ff;
+    font-weight: 700; font-size: 19px; color: #cfe0ff;
     box-shadow: 0 0 18px rgba(47,107,255,.5);
+    border: 1px solid rgba(90, 130, 255, .35);
+    cursor: pointer;
+    transition: transform .15s ease, box-shadow .2s ease;
   }
-  #profileName { font-size: 16px; font-weight: 600; letter-spacing: .04em; }
-  #profileSub { font-size: 11px; color: #5f7fc4; letter-spacing: .18em; }
+  #avatarBtn:hover { transform: scale(1.06); }
+  /* Player focus glow follows to the avatar while switching profiles */
+  body.profile-open #avatarBtn {
+    box-shadow: 0 0 0 3px rgba(47,107,255,.35), 0 0 28px rgba(47,107,255,.65);
+  }
+  body.profile-open .tile.focused {
+    transform: none;
+    border: 1px solid rgba(100, 140, 255, .22);
+    box-shadow: none;
+  }
+  /* Who's playing? switcher */
+  #profileMenu {
+    position: absolute; top: calc(100% + 12px); left: 0; z-index: 32;
+    min-width: 250px;
+    background: rgba(8, 14, 30, .96);
+    border: 1px solid rgba(90, 130, 255, .25);
+    border-radius: 16px; backdrop-filter: blur(18px);
+    padding: 14px; display: flex; flex-direction: column; gap: 6px;
+    opacity: 0; transform: translateY(-8px); pointer-events: none;
+    transition: opacity .25s ease, transform .25s ease;
+  }
+  #profileMenu.open { opacity: 1; transform: translateY(0); pointer-events: auto; }
+  #profileMenu h3 { font-size: 11px; letter-spacing: .3em; color: #5f7fc4; padding: 4px 10px 8px; }
+  .profileItem {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 12px; border-radius: 12px; cursor: pointer;
+    border: 1px solid transparent;
+    font-size: 15px; color: #dbe6ff;
+    transition: background .2s, border-color .2s;
+  }
+  .profileItem .pAv {
+    width: 38px; height: 38px; border-radius: 50%; flex: 0 0 auto;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 14px; color: #cfe0ff;
+    background: linear-gradient(135deg, #2f6bff, #0a1f66);
+  }
+  .profileItem.add .pAv { background: rgba(47,107,255,.15); border: 1px dashed rgba(127,176,255,.5); font-size: 20px; }
+  .profileItem:hover, .profileItem.focused {
+    background: rgba(47, 107, 255, .16);
+    border-color: #7fb0ff;
+    box-shadow: 0 0 0 3px rgba(47,107,255,.35), 0 8px 28px rgba(47,107,255,.35);
+  }
+  .profileItem .check { margin-left: auto; color: #7fb0ff; font-size: 16px; }
   #topIcons { display: flex; gap: 12px; align-items: center; }
   #clock { font-size: 15px; color: #8fa8dd; letter-spacing: .12em; margin-right: 8px; font-variant-numeric: tabular-nums; }
   .iconBtn {
@@ -123,10 +161,16 @@
     transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease;
     cursor: pointer;
   }
+  /* Player focus glow — follows the player wherever they navigate */
   .tile.focused {
     transform: scale(1.07);
     border: 2px solid #7fb0ff;
     box-shadow: 0 0 0 3px rgba(47,107,255,.35), 0 14px 44px rgba(47,107,255,.4);
+  }
+  body.menu-open .tile.focused {
+    transform: none;
+    border: 1px solid rgba(100, 140, 255, .22);
+    box-shadow: none;
   }
   .tile.library {
     display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
@@ -179,7 +223,8 @@
   @keyframes menuBtnIn { to { opacity: 1; transform: translateX(0); } }
   .menuBtn:hover, .menuBtn.focused {
     background: rgba(47, 107, 255, .16);
-    border-color: rgba(120, 160, 255, .4);
+    border-color: #7fb0ff;
+    box-shadow: 0 0 0 3px rgba(47,107,255,.35), 0 8px 28px rgba(47,107,255,.35);
   }
   .menuBtn .mi { font-size: 22px; width: 30px; text-align: center; }
 
@@ -197,6 +242,30 @@
   #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
   #skipTip { position: fixed; bottom: 14px; right: 20px; z-index: 60; font-size: 11px; letter-spacing: .2em; color: #3d5488; }
+
+  /* Menu tab — left-edge tab showing the controller's top face button */
+  #menuTab {
+    position: fixed; left: 0; top: 50%; transform: translateY(-50%); z-index: 29;
+    background: rgba(8, 14, 30, .9);
+    border: 1px solid rgba(90, 130, 255, .25); border-left: none;
+    border-radius: 0 14px 14px 0;
+    padding: 14px 10px 14px 8px;
+    cursor: pointer; backdrop-filter: blur(12px);
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    opacity: 0; animation: tabIn .8s ease 1s forwards;
+    transition: transform .35s ease, opacity .35s ease;
+  }
+  @keyframes tabIn { to { opacity: 1; } }
+  #menuTabBtn {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: rgba(47,107,255,.18);
+    border: 1px solid rgba(127,176,255,.5);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 15px; color: #9fc5ff;
+  }
+  #menuTab small { font-size: 9px; letter-spacing: .24em; color: #5f7fc4; writing-mode: vertical-rl; }
+  #menuTab:hover #menuTabBtn { box-shadow: 0 0 14px rgba(47,107,255,.6); }
+  body.menu-open #menuTab { transform: translateY(-50%) translateX(-110%); opacity: 0; pointer-events: none; }
 
   @media (max-width: 760px) {
     #hintbar { flex-wrap: wrap; gap: 16px; }
@@ -216,12 +285,9 @@
 <div id="home">
   <div id="topbar">
     <div id="topLeft">
-      <div id="profile" class="rise" style="--d:.15s">
-        <div id="avatar">P1</div>
-        <div>
-          <div id="profileName">Player One</div>
-          <div id="profileSub">GUEST</div>
-        </div>
+      <div id="avatarBtn" class="rise" style="--d:.15s" title="Switch profile">P1</div>
+      <div id="profileMenu">
+        <h3>WHO'S PLAYING?</h3>
       </div>
       <div class="iconBtn rise" id="padBtn" style="--d:.22s" title="Controllers"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="11" rx="5.5"/><path d="M7 10.5v3M5.5 12h3"/><circle cx="15.5" cy="11" r="1.1" fill="currentColor" stroke="none"/><circle cx="18" cy="13.5" r="1.1" fill="currentColor" stroke="none"/></svg></div>
     </div>
@@ -244,6 +310,7 @@
 
 </div>
 
+<div id="menuTab" title="Open menu"><span id="menuTabBtn">Y</span><small>MENU</small></div>
 <div id="menuOverlay"></div>
 <nav id="sideMenu">
   <h2>OLYMPUS</h2>
@@ -312,6 +379,97 @@
     tiles[focus].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
   }
 
+  /* Profile switcher — top-left pic opens "who's playing?" */
+  const avatarBtn = document.getElementById('avatarBtn');
+  const profileMenu = document.getElementById('profileMenu');
+  const profileItems = [];
+  const profiles = [
+    { name: 'Player One', init: 'P1' },
+    { name: 'Player Two', init: 'P2' },
+  ];
+  const NUM_WORDS = ['One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight'];
+  let currentProfile = 0, profileMenuOpen = false, profileFocus = 0;
+
+  function buildProfileItems() {
+    profileMenu.querySelectorAll('.profileItem').forEach(el => el.remove());
+    profileItems.length = 0;
+    profiles.forEach((p, i) => {
+      const d = document.createElement('div');
+      d.className = 'profileItem';
+      d.innerHTML = '<div class="pAv">' + p.init + '</div><span>' + p.name + '</span><span class="check">✓</span>';
+      d.addEventListener('click', e => { e.stopPropagation(); chooseProfile(i); });
+      d.addEventListener('mouseenter', () => { profileFocus = i; paintProfiles(); });
+      profileMenu.appendChild(d); profileItems.push(d);
+    });
+    const add = document.createElement('div');
+    add.className = 'profileItem add';
+    add.innerHTML = '<div class="pAv">+</div><span>Add profile</span>';
+    add.addEventListener('click', e => { e.stopPropagation(); chooseProfile(profiles.length); });
+    add.addEventListener('mouseenter', () => { profileFocus = profiles.length; paintProfiles(); });
+    profileMenu.appendChild(add); profileItems.push(add);
+  }
+  function setProfileMenu(open) {
+    profileMenuOpen = open;
+    document.body.classList.toggle('profile-open', open);
+    profileMenu.classList.toggle('open', open);
+    if (open) {
+      if (menuOpen) setMenu(false);
+      profileFocus = currentProfile; paintProfiles();
+    }
+  }
+  function paintProfiles() {
+    profileItems.forEach((el, k) => {
+      el.classList.toggle('focused', k === profileFocus);
+      const chk = el.querySelector('.check');
+      if (chk) chk.style.visibility = (k === currentProfile) ? 'visible' : 'hidden';
+    });
+  }
+  function chooseProfile(i) {
+    if (i < profiles.length) {
+      currentProfile = i;
+    } else {
+      const n = profiles.length + 1;
+      profiles.push({ name: 'Player ' + (NUM_WORDS[n - 1] || n), init: 'P' + n });
+      buildProfileItems();
+      currentProfile = profiles.length - 1;
+    }
+    avatarBtn.textContent = profiles[currentProfile].init;
+    setProfileMenu(false);
+  }
+  buildProfileItems();
+  avatarBtn.addEventListener('click', e => { e.stopPropagation(); setProfileMenu(!profileMenuOpen); });
+  document.addEventListener('click', e => {
+    if (profileMenuOpen && !profileMenu.contains(e.target) && e.target !== avatarBtn) setProfileMenu(false);
+  });
+
+  /* Menu tab — shows the top face button for the connected controller */
+  const menuTab = document.getElementById('menuTab');
+  const menuTabBtn = document.getElementById('menuTabBtn');
+  /* Controller preset — the active preset decides which button opens the menu.
+     (Full remapping UI comes later; this is the default binding: top face button.) */
+  const controllerPreset = { menuButton: 3 };
+  const FACE_LABELS = {
+    xbox: ['A', 'B', 'X', 'Y'],
+    switch: ['B', 'A', 'Y', 'X'],
+    ps: ['✕', '○', '□', '△']
+  };
+  function controllerKind() {
+    const pads = navigator.getGamepads ? navigator.getGamepads() : [];
+    const gp = Array.from(pads).find(p => p && p.connected);
+    if (!gp) return 'xbox';
+    const id = (gp.id || '').toLowerCase();
+    if (id.includes('nintendo') || id.includes('switch') || id.includes('pro controller') || id.includes('joy-con') || id.includes('joycon')) return 'switch';
+    if (id.includes('playstation') || id.includes('dualsense') || id.includes('dualshock') || id.includes('sony')) return 'ps';
+    return 'xbox';
+  }
+  function faceLabel(btn) {
+    const labels = FACE_LABELS[controllerKind()];
+    return labels[btn] || '?';
+  }
+  function paintMenuTab() { menuTabBtn.textContent = faceLabel(controllerPreset.menuButton); }
+  menuTab.addEventListener('click', e => { e.stopPropagation(); setMenu(true); });
+  paintMenuTab();
+
   /* Side menu */
   const sideMenu = document.getElementById('sideMenu');
   const overlay = document.getElementById('menuOverlay');
@@ -319,9 +477,10 @@
   let menuOpen = false, menuFocus = 0;
   function setMenu(open) {
     menuOpen = open;
+    document.body.classList.toggle('menu-open', open);
     sideMenu.classList.toggle('open', open);
     overlay.classList.toggle('show', open);
-    if (open) { menuFocus = 0; paintMenu(); }
+    if (open) { menuFocus = 0; paintMenu(); if (profileMenuOpen) setProfileMenu(false); }
   }
   function paintMenu() {
     menuBtns.forEach((b, k) => b.classList.toggle('focused', k === menuFocus));
@@ -333,7 +492,19 @@
   });
 
   addEventListener('keydown', e => {
-    if (e.key === 'y' || e.key === 'Y') { setMenu(!menuOpen); return; }
+    if (e.key === 'y' || e.key === 'Y') {
+      if (profileMenuOpen) setProfileMenu(false);
+      setMenu(!menuOpen);
+      return;
+    }
+    if (profileMenuOpen) {
+      const n = profileItems.length;
+      if (e.key === 'ArrowDown') { profileFocus = Math.min(n - 1, profileFocus + 1); paintProfiles(); }
+      else if (e.key === 'ArrowUp') { profileFocus = Math.max(0, profileFocus - 1); paintProfiles(); }
+      else if (e.key === 'Enter') chooseProfile(profileFocus);
+      else if (e.key === 'Escape' || e.key === 'b' || e.key === 'B') setProfileMenu(false);
+      return;
+    }
     if (menuOpen) {
       if (e.key === 'ArrowDown') { menuFocus = Math.min(menuBtns.length - 1, menuFocus + 1); paintMenu(); }
       else if (e.key === 'ArrowUp') { menuFocus = Math.max(0, menuFocus - 1); paintMenu(); }
@@ -356,8 +527,8 @@
       document.getElementById('topIcons').appendChild(el);
     } else if (!on && el) el.remove();
   }
-  addEventListener('gamepadconnected', () => showPadStatus(true));
-  addEventListener('gamepaddisconnected', () => showPadStatus(false));
+  addEventListener('gamepadconnected', () => { showPadStatus(true); paintMenuTab(); });
+  addEventListener('gamepaddisconnected', () => { showPadStatus(false); paintMenuTab(); });
   function pollPad() {
     const pads = navigator.getGamepads ? navigator.getGamepads() : [];
     const gp = Array.from(pads).find(p => p && p.connected);
@@ -366,12 +537,30 @@
     const axX = gp ? (gp.axes[0] || 0) : 0;
     const axY = gp ? (gp.axes[1] || 0) : 0;
 
-    // Y (top face button) toggles menu, B closes it
-    const yB = pressed(3), bB = pressed(1);
-    if (yB && !padState.yHeld) setMenu(!menuOpen);
-    padState.yHeld = yB;
-    if (bB && !padState.bHeld && menuOpen) setMenu(false);
-    padState.bHeld = bB;
+    // Menu button (from the controller preset) toggles menu, B closes it, A selects in profile menu
+    const yB = pressed(controllerPreset.menuButton), bB = pressed(1), aB = pressed(0);
+    const yEdge = yB && !padState.yHeld, bEdge = bB && !padState.bHeld, aEdge = aB && !padState.aHeld;
+    padState.yHeld = yB; padState.bHeld = bB; padState.aHeld = aB;
+
+    if (profileMenuOpen) {
+      let vdir = 0;
+      if (axY > 0.5 || pressed(13)) vdir = 1;
+      else if (axY < -0.5 || pressed(12)) vdir = -1;
+      if (vdir !== 0) {
+        if (padState.pdir !== vdir || now >= padState.pnext) {
+          profileFocus = Math.max(0, Math.min(profileItems.length - 1, profileFocus + vdir));
+          paintProfiles();
+          padState.pnext = now + (padState.pdir === vdir ? 170 : 300);
+          padState.pdir = vdir;
+        }
+      } else { padState.pdir = 0; padState.pnext = 0; }
+      if (aEdge) chooseProfile(profileFocus);
+      if (bEdge) setProfileMenu(false);
+      if (yEdge) { setProfileMenu(false); setMenu(true); }
+    } else {
+      if (yEdge) setMenu(!menuOpen);
+      if (bEdge && menuOpen) setMenu(false);
+    }
 
     if (menuOpen) {
       let vdir = 0;
