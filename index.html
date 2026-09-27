@@ -139,9 +139,29 @@
   .iconBtn:active { transform: scale(.93); }
 
   /* Games row */
-  #gamesZone { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 26px; }
+  #gamesZone { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 18px; min-height: 0; }
   #gamesHead h1 { font-size: clamp(24px, 3vw, 36px); font-weight: 700; letter-spacing: .06em; }
   #gamesHead p { margin-top: 6px; font-size: 13px; color: #5f7fc4; letter-spacing: .22em; }
+
+  /* Recently-played preview — big art + description above the row (flipped vs PS-style) */
+  #preview {
+    position: relative; border-radius: 20px; overflow: hidden; flex: 0 1 auto;
+    height: clamp(170px, 30vh, 320px);
+    border: 1px solid rgba(100, 140, 255, .22);
+    background:
+      radial-gradient(120% 90% at 85% 20%, hsla(var(--h1, 222), 85%, 55%, .55), transparent 60%),
+      radial-gradient(100% 100% at 70% 90%, hsla(var(--h2, 280), 90%, 45%, .4), transparent 55%),
+      linear-gradient(135deg, hsl(var(--h1, 222), 60%, 16%), hsl(var(--h2, 280), 70%, 8%));
+  }
+  #preview.swap { animation: previewSwap .35s ease; }
+  @keyframes previewSwap { from { opacity: .35; transform: scale(.985); } to { opacity: 1; transform: scale(1); } }
+  #previewScrim {
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg, rgba(0,0,0,.8) 0%, rgba(0,0,0,.35) 45%, transparent 75%);
+  }
+  #previewText { position: absolute; left: 0; bottom: 0; padding: 24px 30px; max-width: 62%; }
+  #previewTitle { font-size: clamp(22px, 2.6vw, 34px); font-weight: 800; letter-spacing: .04em; text-shadow: 0 2px 18px rgba(0,0,0,.7); }
+  #previewDesc { margin-top: 8px; font-size: 13px; color: #b9cdf7; letter-spacing: .06em; line-height: 1.5; }
 
   #rowWrap { position: relative; }
   #tileRow {
@@ -300,8 +320,15 @@
 
   <div id="gamesZone">
     <div id="gamesHead" class="rise" style="--d:.5s">
-      <h1>My Games</h1>
-      <p>SCROLL FOR MORE</p>
+      <h1>Recently Played</h1>
+      <p>PICK UP WHERE YOU LEFT OFF</p>
+    </div>
+    <div id="preview" class="rise" style="--d:.58s">
+      <div id="previewScrim"></div>
+      <div id="previewText">
+        <div id="previewTitle"></div>
+        <div id="previewDesc"></div>
+      </div>
     </div>
     <div id="rowWrap" class="rise" style="--d:.65s">
       <div id="tileRow" tabindex="0"></div>
@@ -362,21 +389,60 @@
   }
   build(); addEventListener('resize', build); requestAnimationFrame(draw);
 
-  /* Tiles: 10 blank */
-  const row = document.getElementById('tileRow');
-  const tiles = [];
-  for (let i = 0; i < 10; i++) {
-    const d = document.createElement('div');
-    d.className = 'tile blank';
-    d.dataset.i = i;
-    row.appendChild(d); tiles.push(d);
+  /* Recently-played games (placeholder data).
+     First-party games get a custom icon different from the hero art;
+     third-party games reuse the same art for both (hero falls back to icon). */
+  const games = [
+    { name: 'Shatterfall', desc: 'Hunt fragments and restore a world breaking apart.', firstParty: true, icon: [18, 42], hero: [222, 280] },
+    { name: 'Neon Drift', desc: 'Anti-grav racing through a city that never sleeps.', icon: [190, 320] },
+    { name: 'Voidstrike', desc: 'Squad shooter on the edge of collapsing space.', icon: [0, 265] },
+    { name: 'Blockhaven', desc: 'Build, craft, and defend your settlement.', icon: [95, 45] },
+    { name: 'Starfall Odyssey', desc: 'Chart unmapped skies in a living universe.', icon: [250, 190] },
+    { name: 'Iron Reckoning', desc: 'Heavy combat. Heavier choices.', icon: [15, 45] },
+    { name: 'Tidecaller', desc: "Master the ocean's ancient currents.", icon: [200, 160] },
+    { name: 'Ashfall Protocol', desc: 'Infiltrate the zone. Leave no trace.', icon: [25, 0] },
+    { name: 'Lumen', desc: 'A quiet puzzle journey made of light.', icon: [45, 180] },
+    { name: 'Warpath Royale', desc: 'Sixty drop in. One walks out.', icon: [350, 220] },
+  ];
+  function artBG(h1, h2) {
+    return 'radial-gradient(120% 90% at 85% 20%, hsla(' + h1 + ', 85%, 55%, .55), transparent 60%), ' +
+      'radial-gradient(100% 100% at 70% 90%, hsla(' + h2 + ', 90%, 45%, .4), transparent 55%), ' +
+      'linear-gradient(135deg, hsl(' + h1 + ', 60%, 16%), hsl(' + h2 + ', 70%, 8%))';
   }
 
+  /* Tiles: 10 recently-played, each showing its icon art */
+  const row = document.getElementById('tileRow');
+  const tiles = [];
+  games.forEach((g, i) => {
+    const d = document.createElement('div');
+    d.className = 'tile';
+    d.dataset.i = i;
+    d.title = g.name;
+    d.style.background = artBG(g.icon[0], g.icon[1]);
+    row.appendChild(d); tiles.push(d);
+  });
+
   let focus = 0;
-  function setFocus(i) {
+  function setFocus(i, scroll = true) {
     focus = Math.max(0, Math.min(tiles.length - 1, i));
     tiles.forEach((t, k) => t.classList.toggle('focused', k === focus));
-    tiles[focus].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    paintPreview(focus);
+    if (scroll) tiles[focus].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+  }
+
+  const preview = document.getElementById('preview');
+  const previewTitle = document.getElementById('previewTitle');
+  const previewDesc = document.getElementById('previewDesc');
+  function paintPreview(i) {
+    const g = games[i];
+    const hero = g.hero || g.icon;
+    preview.style.setProperty('--h1', hero[0]);
+    preview.style.setProperty('--h2', hero[1]);
+    previewTitle.textContent = g.name;
+    previewDesc.textContent = g.desc;
+    preview.classList.remove('swap');
+    void preview.offsetWidth;
+    preview.classList.add('swap');
   }
 
   /* Profile switcher — top-left pic opens "who's playing?" */
@@ -514,7 +580,10 @@
     if (e.key === 'ArrowRight') setFocus(focus + 1);
     else if (e.key === 'ArrowLeft') setFocus(focus - 1);
   });
-  tiles.forEach((t, i) => t.addEventListener('click', () => setFocus(i)));
+  tiles.forEach((t, i) => {
+    t.addEventListener('click', () => setFocus(i));
+    t.addEventListener('mouseenter', () => setFocus(i, false));
+  });
 
   /* Gamepad: left joystick + d-pad move across tiles */
   const padState = { dir: 0, nextMove: 0 };
