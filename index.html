@@ -70,6 +70,7 @@
 
   /* Top bar */
   #topbar { display: flex; align-items: center; justify-content: space-between; }
+  #topLeft { display: flex; align-items: center; gap: 12px; }
   #profile {
     display: flex; align-items: center; gap: 14px;
     background: rgba(10, 18, 40, .55);
@@ -95,7 +96,9 @@
     backdrop-filter: blur(12px);
     display: flex; align-items: center; justify-content: center;
     font-size: 20px; color: #9fc5ff;
+    transition: transform .15s ease;
   }
+  .iconBtn:active { transform: scale(.93); }
 
   /* Games row */
   #gamesZone { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 26px; }
@@ -144,6 +147,42 @@
     white-space: nowrap;
   }
 
+  /* Side menu */
+  #menuOverlay {
+    position: fixed; inset: 0; z-index: 30;
+    background: rgba(0, 0, 0, .5);
+    opacity: 0; pointer-events: none; transition: opacity .35s ease;
+  }
+  #menuOverlay.show { opacity: 1; pointer-events: auto; }
+  #sideMenu {
+    position: fixed; top: 0; left: 0; bottom: 0; z-index: 31;
+    width: clamp(260px, 26vw, 340px);
+    background: rgba(8, 14, 30, .94);
+    border-right: 1px solid rgba(90, 130, 255, .25);
+    backdrop-filter: blur(18px);
+    transform: translateX(-105%);
+    transition: transform .45s cubic-bezier(.2,.8,.2,1);
+    display: flex; flex-direction: column;
+    padding: 32px 22px; gap: 8px;
+  }
+  #sideMenu.open { transform: translateX(0); }
+  #sideMenu h2 { font-size: 13px; letter-spacing: .34em; color: #5f7fc4; margin-bottom: 16px; padding-left: 14px; }
+  .menuBtn {
+    display: flex; align-items: center; gap: 16px;
+    padding: 15px 16px; border-radius: 14px;
+    font-size: 16px; letter-spacing: .05em; color: #dbe6ff;
+    cursor: pointer; border: 1px solid transparent;
+    transition: background .2s, border-color .2s;
+    opacity: 0; transform: translateX(-18px);
+  }
+  #sideMenu.open .menuBtn { animation: menuBtnIn .45s cubic-bezier(.2,.8,.2,1) forwards; animation-delay: var(--d); }
+  @keyframes menuBtnIn { to { opacity: 1; transform: translateX(0); } }
+  .menuBtn:hover, .menuBtn.focused {
+    background: rgba(47, 107, 255, .16);
+    border-color: rgba(120, 160, 255, .4);
+  }
+  .menuBtn .mi { font-size: 22px; width: 30px; text-align: center; }
+
   /* Toast */
   #toast {
     position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px);
@@ -176,12 +215,15 @@
 </div>
 <div id="home">
   <div id="topbar">
-    <div id="profile" class="rise" style="--d:.15s">
-      <div id="avatar">P1</div>
-      <div>
-        <div id="profileName">Player One</div>
-        <div id="profileSub">GUEST</div>
+    <div id="topLeft">
+      <div id="profile" class="rise" style="--d:.15s">
+        <div id="avatar">P1</div>
+        <div>
+          <div id="profileName">Player One</div>
+          <div id="profileSub">GUEST</div>
+        </div>
       </div>
+      <div class="iconBtn rise" id="padBtn" style="--d:.22s" title="Controllers">🎮</div>
     </div>
     <div id="topIcons" class="rise" style="--d:.3s">
       <div id="clock">--:--</div>
@@ -201,6 +243,18 @@
   </div>
 
 </div>
+
+<div id="menuOverlay"></div>
+<nav id="sideMenu">
+  <h2>OLYMPUS</h2>
+  <div class="menuBtn" style="--d:.05s"><span class="mi">🎮</span>Game Library</div>
+  <div class="menuBtn" style="--d:.1s"><span class="mi">🛒</span>Shop</div>
+  <div class="menuBtn" style="--d:.15s"><span class="mi">◉</span>Ondra AI</div>
+  <div class="menuBtn" style="--d:.2s"><span class="mi">👥</span>Friends</div>
+  <div class="menuBtn" style="--d:.25s"><span class="mi">💬</span>Messages</div>
+  <div class="menuBtn" style="--d:.3s"><span class="mi">👤</span>Profile</div>
+  <div class="menuBtn" style="--d:.35s"><span class="mi">⚙</span>Settings</div>
+</nav>
 
 <div id="skipTip">MOCKUP — CLICK TO SKIP BOOT</div>
 
@@ -258,7 +312,34 @@
     tiles[focus].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
   }
 
+  /* Side menu */
+  const sideMenu = document.getElementById('sideMenu');
+  const overlay = document.getElementById('menuOverlay');
+  const menuBtns = Array.from(document.querySelectorAll('.menuBtn'));
+  let menuOpen = false, menuFocus = 0;
+  function setMenu(open) {
+    menuOpen = open;
+    sideMenu.classList.toggle('open', open);
+    overlay.classList.toggle('show', open);
+    if (open) { menuFocus = 0; paintMenu(); }
+  }
+  function paintMenu() {
+    menuBtns.forEach((b, k) => b.classList.toggle('focused', k === menuFocus));
+  }
+  overlay.addEventListener('click', () => setMenu(false));
+  menuBtns.forEach((b, i) => {
+    b.addEventListener('click', () => { menuFocus = i; paintMenu(); });
+    b.addEventListener('mouseenter', () => { menuFocus = i; paintMenu(); });
+  });
+
   addEventListener('keydown', e => {
+    if (e.key === 'y' || e.key === 'Y') { setMenu(!menuOpen); return; }
+    if (menuOpen) {
+      if (e.key === 'ArrowDown') { menuFocus = Math.min(menuBtns.length - 1, menuFocus + 1); paintMenu(); }
+      else if (e.key === 'ArrowUp') { menuFocus = Math.max(0, menuFocus - 1); paintMenu(); }
+      else if (e.key === 'Escape' || e.key === 'b' || e.key === 'B') setMenu(false);
+      return;
+    }
     if (e.key === 'ArrowRight') setFocus(focus + 1);
     else if (e.key === 'ArrowLeft') setFocus(focus - 1);
   });
@@ -281,21 +362,41 @@
     const pads = navigator.getGamepads ? navigator.getGamepads() : [];
     const gp = Array.from(pads).find(p => p && p.connected);
     const now = performance.now();
-    let dir = 0;
-    if (gp) {
-      const ax = gp.axes[0] || 0;
-      const dLeft = gp.buttons[14] && gp.buttons[14].pressed;
-      const dRight = gp.buttons[15] && gp.buttons[15].pressed;
-      if (ax > 0.5 || dRight) dir = 1;
-      else if (ax < -0.5 || dLeft) dir = -1;
+    const pressed = i => gp && gp.buttons[i] && gp.buttons[i].pressed;
+    const axX = gp ? (gp.axes[0] || 0) : 0;
+    const axY = gp ? (gp.axes[1] || 0) : 0;
+
+    // Y (top face button) toggles menu, B closes it
+    const yB = pressed(3), bB = pressed(1);
+    if (yB && !padState.yHeld) setMenu(!menuOpen);
+    padState.yHeld = yB;
+    if (bB && !padState.bHeld && menuOpen) setMenu(false);
+    padState.bHeld = bB;
+
+    if (menuOpen) {
+      let vdir = 0;
+      if (axY > 0.5 || pressed(13)) vdir = 1;
+      else if (axY < -0.5 || pressed(12)) vdir = -1;
+      if (vdir !== 0) {
+        if (padState.vdir !== vdir || now >= padState.vnext) {
+          menuFocus = Math.max(0, Math.min(menuBtns.length - 1, menuFocus + vdir));
+          paintMenu();
+          padState.vnext = now + (padState.vdir === vdir ? 170 : 300);
+          padState.vdir = vdir;
+        }
+      } else { padState.vdir = 0; padState.vnext = 0; }
+    } else {
+      let dir = 0;
+      if (axX > 0.5 || pressed(15)) dir = 1;
+      else if (axX < -0.5 || pressed(14)) dir = -1;
+      if (dir !== 0) {
+        if (padState.dir !== dir || now >= padState.nextMove) {
+          setFocus(focus + dir);
+          padState.nextMove = now + (padState.dir === dir ? 170 : 300);
+          padState.dir = dir;
+        }
+      } else { padState.dir = 0; padState.nextMove = 0; }
     }
-    if (dir !== 0) {
-      if (padState.dir !== dir || now >= padState.nextMove) {
-        setFocus(focus + dir);
-        padState.nextMove = now + (padState.dir === dir ? 170 : 300);
-        padState.dir = dir;
-      }
-    } else { padState.dir = 0; padState.nextMove = 0; }
     requestAnimationFrame(pollPad);
   }
   requestAnimationFrame(pollPad);
