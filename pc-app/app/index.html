@@ -951,7 +951,7 @@
     </div>
     <div class="secTitle">ABOUT</div>
     <div class="card setRow">
-      <div><div class="t">Olympus</div><div class="s" id="verSub">Version 0.3.3 · PC app</div></div>
+      <div><div class="t">Olympus</div><div class="s" id="verSub">Version 0.3.4 · PC app</div></div>
       <div class="spacer"></div>
       <button class="btn" id="updateBtn">Check for updates</button>
     </div>
@@ -1119,7 +1119,7 @@ function initials(tag) {
 function picHtml(pic, tag, cls) {
   return '<div class="' + (cls || 'pAv') + '">' + (pic ? '<img src="' + pic + '" alt="">' : escapeHtml(initials(tag))) + '</div>';
 }
-const OLY_VERSION = '0.3.3';
+const OLY_VERSION = '0.3.4';
 /* Welcome email: sent once when a new Olympus account is created.
    Uses EmailJS (free tier, sends from your Gmail — no domain needed).
    Fill these in (or set localStorage 'oly_welcome_email' to a JSON object
