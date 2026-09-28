@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain, session } = require('electron');
 const path = require('path');
 
 function createWindow() {
@@ -18,7 +18,24 @@ function createWindow() {
   win.loadFile(path.join(__dirname, 'app', 'index.html'));
 }
 
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+  // Allow mic/camera/screen-capture prompts from the console page
+  // (voice parties + screen sharing).
+  session.defaultSession.setPermissionRequestHandler((webContents, permission, callback) => {
+    if (permission === 'media' || permission === 'display-capture' || permission === 'audioCapture') {
+      callback(true);
+    } else {
+      callback(false);
+    }
+  });
+  createWindow();
+});
+
+// Renderer asks to quit via the Exit button in the Olympus menu.
+ipcMain.on('olympus-quit', () => {
+  app.quit();
+});
+
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
 });
