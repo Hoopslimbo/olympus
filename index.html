@@ -83,6 +83,12 @@
     transition: transform .15s ease, box-shadow .2s ease;
   }
   #avatarBtn:hover { transform: scale(1.06); }
+  #avatarBtn svg { width: 30px; height: 30px; }
+  /* Focus glow follows keyboard/controller to whatever control is selected */
+  #avatarBtn.focused, #padBtn.focused {
+    box-shadow: 0 0 0 3px rgba(47,107,255,.35), 0 0 28px rgba(47,107,255,.65);
+    transform: scale(1.06);
+  }
   /* Player focus glow follows to the avatar while switching profiles */
   body.profile-open #avatarBtn {
     box-shadow: 0 0 0 3px rgba(47,107,255,.35), 0 0 28px rgba(47,107,255,.65);
@@ -292,10 +298,10 @@
   /* ---------- Accounts ---------- */
   #accountScreen {
     position: fixed; inset: 0; z-index: 45;
-    background: rgba(2, 5, 14, .82);
-    backdrop-filter: blur(14px);
+    background: radial-gradient(1200px 700px at 50% -10%, #16213c 0%, #0a0f24 55%, #05070f 100%);
     display: none; align-items: center; justify-content: center;
   }
+  body.in-account #home, body.in-account #menuTab { visibility: hidden; }
   #accountScreen.open { display: flex; }
   .acctCard {
     width: min(430px, 92vw);
@@ -384,8 +390,8 @@
 <div id="home">
   <div id="topbar">
     <div id="topLeft">
-      <div id="avatarBtn" class="rise" style="--d:.15s" title="Switch profile">?</div>
-      <div id="gamerTag" class="rise" style="--d:.18s">No account</div>
+      <div id="avatarBtn" class="rise" style="--d:.15s" title="Switch profile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="8.2" r="3.4"/><path d="M5 20.2c1.3-3.4 3.9-5.1 7-5.1s5.7 1.7 7 5.1"/></svg></div>
+      <div id="gamerTag" class="rise" style="--d:.18s">Signed out</div>
       <div id="profileMenu">
         <h3>WHO'S PLAYING?</h3>
       </div>
@@ -546,13 +552,29 @@
     row.appendChild(d); tiles.push(d);
   });
 
-  let focus = 0;
+  /* Focus glow follows keyboard/controller/mouse to whatever control is
+     selected — game tiles AND the top-bar buttons, not just the games. */
+  let focus = 0, zone = 'tiles', topFocus = 0;
+  const topCtrls = [document.getElementById('avatarBtn'), document.getElementById('padBtn')];
+  function paintFocus() {
+    tiles.forEach((t, k) => t.classList.toggle('focused', zone === 'tiles' && k === focus));
+    topCtrls.forEach((c, k) => c && c.classList.toggle('focused', zone === 'top' && k === topFocus));
+    if (zone === 'tiles') paintHero(focus);
+  }
   function setFocus(i, scroll = true) {
     focus = Math.max(0, Math.min(tiles.length - 1, i));
-    tiles.forEach((t, k) => t.classList.toggle('focused', k === focus));
-    paintHero(focus);
-    if (scroll) tiles[focus].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    zone = 'tiles';
+    paintFocus();
+    if (scroll && tiles[focus]) tiles[focus].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
   }
+  function setTopFocus(i) {
+    topFocus = Math.max(0, Math.min(topCtrls.length - 1, i));
+    zone = 'top';
+    paintFocus();
+  }
+  topCtrls.forEach((c, i) => {
+    if (c) c.addEventListener('mouseenter', () => setTopFocus(i));
+  });
 
   const heroBG = document.getElementById('heroBG');
   const gameMeta = document.getElementById('gameMeta');
@@ -695,6 +717,7 @@
 
   function openAccount(notice) {
     accountOpen = true;
+    document.body.classList.add('in-account');
     document.getElementById('acctNotice').textContent = notice || '';
     document.getElementById('createError').textContent = '';
     document.getElementById('signinError').textContent = '';
@@ -705,6 +728,8 @@
   }
   function closeAccount() {
     accountOpen = false;
+    document.body.classList.remove('in-account');
+    zone = 'tiles'; paintFocus();
     accountScreen.classList.remove('open');
     draftPic = null;
     acctFile.value = '';
@@ -778,7 +803,9 @@
     btn.disabled = false; btn.textContent = 'Sign in';
   });
 
-  /* Top-left badge: pic (or gamertag initials) + gamertag */
+  /* Top-left badge: pic (or gamertag initials) + gamertag.
+     Signed out = plain person icon (circle head, no features) + "Signed out". */
+  const PERSON_SVG = '<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="8.2" r="3.4"/><path d="M5 20.2c1.3-3.4 3.9-5.1 7-5.1s5.7 1.7 7 5.1"/></svg>';
   const avatarBtn = document.getElementById('avatarBtn');
   const gamerTagEl = document.getElementById('gamerTag');
   function paintAccountBadge() {
@@ -787,8 +814,8 @@
       avatarBtn.innerHTML = a.pic ? '<img src="' + a.pic + '" alt="">' : escapeHtml(initials(a.gamertag));
       gamerTagEl.textContent = a.gamertag;
     } else {
-      avatarBtn.textContent = '?';
-      gamerTagEl.textContent = 'No account';
+      avatarBtn.innerHTML = PERSON_SVG;
+      gamerTagEl.textContent = 'Signed out';
     }
   }
 
@@ -939,8 +966,11 @@
       else if (e.key === 'Escape' || e.key === 'b' || e.key === 'B') setMenu(false);
       return;
     }
-    if (e.key === 'ArrowRight') setFocus(focus + 1);
-    else if (e.key === 'ArrowLeft') setFocus(focus - 1);
+    if (e.key === 'ArrowRight') { if (zone === 'top') setTopFocus(topFocus + 1); else setFocus(focus + 1); }
+    else if (e.key === 'ArrowLeft') { if (zone === 'top') setTopFocus(topFocus - 1); else setFocus(focus - 1); }
+    else if (e.key === 'ArrowUp') { if (zone === 'tiles') setTopFocus(topFocus); }
+    else if (e.key === 'ArrowDown') { if (zone === 'top') setFocus(focus); }
+    else if (e.key === 'Enter' && zone === 'top' && topCtrls[topFocus]) topCtrls[topFocus].click();
   });
   tiles.forEach((t, i) => {
     t.addEventListener('click', () => setFocus(i));
@@ -961,6 +991,7 @@
   addEventListener('gamepadconnected', () => { showPadStatus(true); paintMenuTab(); });
   addEventListener('gamepaddisconnected', () => { showPadStatus(false); paintMenuTab(); });
   function pollPad() {
+    if (accountOpen) { requestAnimationFrame(pollPad); return; }
     const pads = navigator.getGamepads ? navigator.getGamepads() : [];
     const gp = Array.from(pads).find(p => p && p.connected);
     const now = performance.now();
@@ -1016,6 +1047,14 @@
           padState.dir = dir;
         }
       } else { padState.dir = 0; padState.nextMove = 0; }
+      /* Stick up/down moves the glow between the game row and the top bar */
+      const vv = (axY > 0.5 || pressed(13)) ? 1 : (axY < -0.5 || pressed(12)) ? -1 : 0;
+      if (vv !== 0 && padState.vv !== vv) {
+        if (vv === -1 && zone === 'tiles') setTopFocus(topFocus);
+        else if (vv === 1 && zone === 'top') setFocus(focus);
+      }
+      padState.vv = vv;
+      if (aEdge && zone === 'top' && topCtrls[topFocus]) topCtrls[topFocus].click();
     }
     requestAnimationFrame(pollPad);
   }
