@@ -293,6 +293,9 @@
   }
   #menuTab small { font-size: 9px; letter-spacing: .24em; color: #5f7fc4; writing-mode: vertical-rl; }
   #menuTab:hover #menuTabBtn { box-shadow: 0 0 14px rgba(47,107,255,.6); }
+  #menuTab.focused #menuTabBtn {
+    box-shadow: 0 0 0 3px rgba(47,107,255,.4), 0 0 24px rgba(47,107,255,.7);
+  }
   body.menu-open #menuTab { transform: translateY(-50%) translateX(-110%); opacity: 0; pointer-events: none; }
 
   /* ---------- Accounts ---------- */
@@ -553,12 +556,14 @@
   });
 
   /* Focus glow follows keyboard/controller/mouse to whatever control is
-     selected — game tiles AND the top-bar buttons, not just the games. */
+     selected — game tiles, the top-bar buttons, and the MENU tab. */
   let focus = 0, zone = 'tiles', topFocus = 0;
   const topCtrls = [document.getElementById('avatarBtn'), document.getElementById('padBtn')];
+  const menuTabCtl = document.getElementById('menuTab');
   function paintFocus() {
     tiles.forEach((t, k) => t.classList.toggle('focused', zone === 'tiles' && k === focus));
     topCtrls.forEach((c, k) => c && c.classList.toggle('focused', zone === 'top' && k === topFocus));
+    if (menuTabCtl) menuTabCtl.classList.toggle('focused', zone === 'menu');
     if (zone === 'tiles') paintHero(focus);
   }
   function setFocus(i, scroll = true) {
@@ -572,9 +577,14 @@
     zone = 'top';
     paintFocus();
   }
+  function setMenuFocus() {
+    zone = 'menu';
+    paintFocus();
+  }
   topCtrls.forEach((c, i) => {
     if (c) c.addEventListener('mouseenter', () => setTopFocus(i));
   });
+  if (menuTabCtl) menuTabCtl.addEventListener('mouseenter', setMenuFocus);
 
   const heroBG = document.getElementById('heroBG');
   const gameMeta = document.getElementById('gameMeta');
@@ -966,11 +976,14 @@
       else if (e.key === 'Escape' || e.key === 'b' || e.key === 'B') setMenu(false);
       return;
     }
-    if (e.key === 'ArrowRight') { if (zone === 'top') setTopFocus(topFocus + 1); else setFocus(focus + 1); }
-    else if (e.key === 'ArrowLeft') { if (zone === 'top') setTopFocus(topFocus - 1); else setFocus(focus - 1); }
-    else if (e.key === 'ArrowUp') { if (zone === 'tiles') setTopFocus(topFocus); }
-    else if (e.key === 'ArrowDown') { if (zone === 'top') setFocus(focus); }
-    else if (e.key === 'Enter' && zone === 'top' && topCtrls[topFocus]) topCtrls[topFocus].click();
+    if (e.key === 'ArrowRight') { if (zone === 'top') setTopFocus(topFocus + 1); else if (zone === 'tiles') setFocus(focus + 1); }
+    else if (e.key === 'ArrowLeft') { if (zone === 'top') setTopFocus(topFocus - 1); else if (zone === 'tiles') setFocus(focus - 1); }
+    else if (e.key === 'ArrowUp') { if (zone === 'tiles') setTopFocus(topFocus); else if (zone === 'menu') setFocus(focus); }
+    else if (e.key === 'ArrowDown') { if (zone === 'top') setFocus(focus); else if (zone === 'tiles') setMenuFocus(); }
+    else if (e.key === 'Enter') {
+      if (zone === 'top' && topCtrls[topFocus]) topCtrls[topFocus].click();
+      else if (zone === 'menu' && menuTabCtl) menuTabCtl.click();
+    }
   });
   tiles.forEach((t, i) => {
     t.addEventListener('click', () => setFocus(i));
@@ -1051,10 +1064,13 @@
       const vv = (axY > 0.5 || pressed(13)) ? 1 : (axY < -0.5 || pressed(12)) ? -1 : 0;
       if (vv !== 0 && padState.vv !== vv) {
         if (vv === -1 && zone === 'tiles') setTopFocus(topFocus);
+        else if (vv === -1 && zone === 'menu') setFocus(focus);
         else if (vv === 1 && zone === 'top') setFocus(focus);
+        else if (vv === 1 && zone === 'tiles') setMenuFocus();
       }
       padState.vv = vv;
       if (aEdge && zone === 'top' && topCtrls[topFocus]) topCtrls[topFocus].click();
+      else if (aEdge && zone === 'menu' && menuTabCtl) menuTabCtl.click();
     }
     requestAnimationFrame(pollPad);
   }
