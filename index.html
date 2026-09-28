@@ -45,9 +45,9 @@
     transition: opacity .9s ease, visibility 0s .9s;
   }
   #home.show { opacity: 1; visibility: visible; transition: opacity .9s ease; }
-  .rise { opacity: 0; transform: translateY(26px); }
-  #home.show .rise { animation: riseIn .8s cubic-bezier(.2,.8,.2,1) forwards; animation-delay: var(--d, 0s); }
-  @keyframes riseIn { to { opacity: 1; transform: translateY(0); } }
+  .rise { opacity: 1; transform: translateY(0); }
+  #home.show .rise { animation: riseIn .8s cubic-bezier(.2,.8,.2,1) backwards; animation-delay: var(--d, 0s); }
+  @keyframes riseIn { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: translateY(0); } }
 
   #topbar { display: flex; align-items: center; justify-content: space-between; }
   #topLeft { display: flex; align-items: center; gap: 12px; position: relative; }
@@ -72,9 +72,8 @@
   #clock { font-size: 15px; color: var(--dim); letter-spacing: .12em; margin-right: 8px; font-variant-numeric: tabular-nums; }
   .iconBtn {
     width: 46px; height: 46px; border-radius: 14px;
-    background: rgba(10, 18, 40, .55);
+    background: rgba(13, 22, 48, .95);
     border: 1px solid var(--line);
-    backdrop-filter: blur(12px);
     display: flex; align-items: center; justify-content: center;
     font-size: 20px; color: #9fc5ff; cursor: pointer;
     transition: transform .15s ease; position: relative;
@@ -158,9 +157,8 @@
   #sideMenu {
     position: fixed; top: 0; left: 0; bottom: 0; z-index: 91;
     width: clamp(260px, 26vw, 340px);
-    background: var(--card);
+    background: linear-gradient(180deg, #0b1128, #070c1e);
     border-right: 1px solid var(--line);
-    backdrop-filter: blur(18px);
     transform: translateX(-105%);
     transition: transform .45s cubic-bezier(.2,.8,.2,1);
     display: flex; flex-direction: column;
@@ -174,10 +172,10 @@
     font-size: 16px; letter-spacing: .05em; color: var(--txt);
     cursor: pointer; border: 1px solid transparent;
     transition: background .2s, border-color .2s;
-    opacity: 0; transform: translateX(-18px); position: relative;
+    opacity: 1; transform: translateX(0); position: relative;
   }
-  #sideMenu.open .menuBtn { animation: menuBtnIn .45s cubic-bezier(.2,.8,.2,1) forwards; animation-delay: var(--d); }
-  @keyframes menuBtnIn { to { opacity: 1; transform: translateX(0); } }
+  #sideMenu.open .menuBtn { animation: menuBtnIn .45s cubic-bezier(.2,.8,.2,1) backwards; animation-delay: var(--d); }
+  @keyframes menuBtnIn { from { opacity: 0; transform: translateX(-18px); } to { opacity: 1; transform: translateX(0); } }
   .menuBtn:hover, .menuBtn.focused {
     background: var(--accent-soft);
     border-color: #7fb0ff;
@@ -191,7 +189,8 @@
     display: flex; align-items: center; justify-content: center;
   }
   .menuBtn .count.hidden { display: none; }
-  #menuExit { margin-top: auto; color: #ffb3c0; }
+  #menuSwitchAcct { margin-top: auto; }
+  #menuExit { color: #ffb3c0; }
   #menuExit:hover, #menuExit.focused {
     background: rgba(255,84,112,.12); border-color: rgba(255,84,112,.5);
     box-shadow: 0 0 0 3px rgba(255,84,112,.25), 0 8px 28px rgba(255,84,112,.25);
@@ -204,12 +203,12 @@
     border: 1px solid var(--line); border-left: none;
     border-radius: 0 14px 14px 0;
     padding: 14px 10px 14px 8px;
-    cursor: pointer; backdrop-filter: blur(12px);
+    cursor: pointer;
     display: flex; flex-direction: column; align-items: center; gap: 8px;
-    opacity: 0; animation: tabIn .8s ease 1s forwards;
+    opacity: 1; animation: tabIn .8s ease 1s backwards;
     transition: transform .35s ease, opacity .35s ease;
   }
-  @keyframes tabIn { to { opacity: 1; } }
+  @keyframes tabIn { from { opacity: 0; } to { opacity: 1; } }
   #menuTabBtn {
     width: 34px; height: 34px; border-radius: 50%;
     background: var(--accent-soft);
@@ -252,10 +251,9 @@
   .screenBody::-webkit-scrollbar-thumb { background: rgba(var(--accent-rgb),.35); border-radius: 4px; }
 
   .card {
-    background: rgba(10, 18, 40, .55);
+    background: linear-gradient(180deg, rgba(17,28,58,.97), rgba(10,16,36,.97));
     border: 1px solid var(--line);
     border-radius: 18px; padding: 20px;
-    backdrop-filter: blur(12px);
   }
   .rowCard {
     display: flex; align-items: center; gap: 16px;
@@ -276,22 +274,94 @@
   .rowMain .t { font-size: 16px; font-weight: 600; color: #fff; }
   .rowMain .s { font-size: 13px; color: var(--dim); margin-top: 3px; }
   .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
     padding: 10px 20px; border-radius: 999px; cursor: pointer;
-    background: var(--accent-soft); border: 1px solid var(--accent-line);
-    color: #cfe0ff; font-size: 14px; letter-spacing: .04em;
-    transition: background .2s, transform .12s;
-    white-space: nowrap;
+    background: linear-gradient(180deg, rgba(var(--accent-rgb),.30), rgba(var(--accent-rgb),.14));
+    border: 1px solid rgba(var(--accent-rgb),.5);
+    color: #dbe7ff; font-size: 14px; font-weight: 600; letter-spacing: .04em;
+    transition: transform .12s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease;
+    white-space: nowrap; user-select: none; -webkit-user-select: none;
   }
-  .btn:hover { background: rgba(var(--accent-rgb),.32); }
-  .btn:active { transform: scale(.95); }
+  .btn:hover {
+    background: linear-gradient(180deg, rgba(var(--accent-rgb),.45), rgba(var(--accent-rgb),.25));
+    border-color: rgba(var(--accent-rgb),.8);
+    box-shadow: 0 0 18px rgba(var(--accent-rgb),.4);
+    transform: translateY(-1px);
+  }
+  .btn:active { transform: scale(.96); }
+  .btn:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(var(--accent-rgb),.55), 0 0 24px var(--accent-glow); }
   .btn.primary {
     background: linear-gradient(135deg, var(--accent), #1a3fa0);
-    border-color: var(--accent-line); color: #fff; font-weight: 700;
-    box-shadow: 0 6px 24px rgba(var(--accent-rgb),.35);
+    border-color: rgba(140,180,255,.7); color: #fff; font-weight: 700;
+    box-shadow: 0 6px 24px rgba(var(--accent-rgb),.4);
   }
-  .btn.danger { background: rgba(255,84,112,.12); border-color: rgba(255,84,112,.5); color: #ffb3c0; }
-  .btn:disabled { opacity: .45; cursor: default; }
-  .btnRow { display: flex; gap: 10px; }
+  .btn.primary:hover { box-shadow: 0 8px 32px rgba(var(--accent-rgb),.6), 0 0 20px var(--accent-glow); transform: translateY(-1px); }
+  .btn.danger {
+    background: linear-gradient(180deg, rgba(255,84,112,.16), rgba(255,84,112,.07));
+    border-color: rgba(255,84,112,.5); color: #ffb3c0;
+  }
+  .btn.danger:hover { background: rgba(255,84,112,.28); box-shadow: 0 0 18px rgba(255,84,112,.4); transform: translateY(-1px); }
+  .btn:disabled { opacity: .45; cursor: default; transform: none; box-shadow: none; }
+  .btnRow { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+
+  /* SVG icon helper */
+  .ico, [data-ic] { display: inline-flex; width: 1.15em; height: 1.15em; flex: 0 0 auto; vertical-align: -.18em; }
+  .ico svg, [data-ic] svg { width: 100%; height: 100%; }
+  .mi [data-ic] { width: 24px; height: 24px; }
+
+  /* The light effect — one glow ring for everything clickable */
+  .navFocus {
+    box-shadow: 0 0 0 3px rgba(var(--accent-rgb),.6), 0 0 28px var(--accent-glow) !important;
+    transform: scale(1.03);
+  }
+  .tile.navFocus, .galItem.navFocus, .shopCard.navFocus, .libTile.navFocus { transform: scale(1.06); }
+  .menuBtn.navFocus { background: rgba(var(--accent-rgb),.22); }
+  #menuExit.navFocus { box-shadow: 0 0 0 3px rgba(255,84,112,.6), 0 0 28px rgba(255,84,112,.45) !important; }
+
+  /* Modern icon buttons */
+  .iconBtn:hover { border-color: rgba(var(--accent-rgb),.6); box-shadow: 0 0 16px rgba(var(--accent-rgb),.35); transform: translateY(-1px); }
+  .iconBtn:active { transform: scale(.94); }
+  .backBtn svg { width: 22px; height: 22px; }
+
+  /* Clickable profile stat */
+  .statLink { cursor: pointer; transition: transform .15s ease, box-shadow .2s ease, border-color .2s ease; }
+  .statLink:hover { transform: translateY(-2px); border-color: rgba(var(--accent-rgb),.55); box-shadow: 0 0 18px rgba(var(--accent-rgb),.3); }
+
+  /* Presence dots */
+  .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; flex: 0 0 auto; }
+  .dot.on { background: #35d07f; box-shadow: 0 0 8px #35d07f; }
+  .dot.away { background: #ffd166; box-shadow: 0 0 8px #ffd166; }
+
+  /* Avatars — no seams, always circular */
+  #avatarBtn img, .pAv img, #profPic img, #playerPic img {
+    display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 50%;
+  }
+  #avatarBtn, .pAv, #profPic, #playerPic { background: #0a0f24; }
+
+  /* Remap overlay */
+  #remapWrap {
+    position: fixed; inset: 0; z-index: 9700; display: none;
+    align-items: center; justify-content: center; background: rgba(0,0,0,.65);
+  }
+  #remapWrap.open { display: flex; }
+  #remapBox {
+    width: min(480px, 92vw); max-height: 84vh; overflow-y: auto;
+    background: linear-gradient(180deg, #101a3a, #0a1028);
+    border: 1px solid rgba(var(--accent-rgb),.4); border-radius: 20px;
+    padding: 24px; box-shadow: 0 20px 60px rgba(0,0,0,.6), 0 0 30px rgba(var(--accent-rgb),.15);
+  }
+  #remapBox h3 { font-size: 18px; font-weight: 800; letter-spacing: .05em; margin-bottom: 4px; }
+  #remapBox .sub { color: var(--dim); font-size: 13px; margin-bottom: 16px; }
+  .remapRow {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 14px; border-radius: 12px; cursor: pointer;
+    border: 1px solid transparent; transition: background .15s, border-color .15s, box-shadow .15s;
+  }
+  .remapRow:hover { background: rgba(var(--accent-rgb),.12); border-color: rgba(var(--accent-rgb),.35); }
+  .remapRow .rk { font-weight: 700; font-size: 14px; }
+  .remapRow .rv { color: var(--dim); font-size: 13px; }
+  .remapRow.capturing { border-color: var(--accent); box-shadow: 0 0 16px var(--accent-glow); background: rgba(var(--accent-rgb),.15); }
+  .remapRow.capturing .rv { color: #fff; font-weight: 700; }
   .txtInput, .searchBox input {
     width: 100%; padding: 13px 16px; border-radius: 13px;
     background: rgba(16,26,54,.7); border: 1px solid rgba(90,130,255,.28);
@@ -341,21 +411,63 @@
 
   /* Shop */
   #shopHero {
-    border-radius: 24px; padding: 60px 40px; margin-bottom: 26px;
+    border-radius: 24px; padding: 44px 40px; margin-bottom: 26px;
     background:
-      radial-gradient(100% 120% at 80% 10%, hsla(var(--accent-h), 85%, 55%, .35), transparent 60%),
-      linear-gradient(135deg, #0d1530, #070b1c);
-    border: 1px solid var(--line);
-    text-align: center;
+      radial-gradient(90% 130% at 85% 0%, hsla(var(--accent-h), 85%, 55%, .4), transparent 55%),
+      linear-gradient(120deg, #0e1633, #070b1c 70%);
+    border: 1px solid rgba(var(--accent-rgb),.3);
+    box-shadow: 0 12px 44px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.06);
+    display: flex; align-items: center; gap: 28px; text-align: left;
   }
-  #shopHero h2 { font-size: clamp(28px, 4vw, 46px); font-weight: 800; letter-spacing: .04em; }
-  #shopHero p { margin-top: 12px; color: var(--dim); font-size: 15px; letter-spacing: .06em; }
-  #shopGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 18px; }
-  .shopCard { overflow: hidden; padding: 0; }
-  .shopCard .art { height: 150px; background: linear-gradient(135deg, hsl(var(--accent-h),60%,22%), hsl(var(--accent-h),70%,10%)); display: flex; align-items: center; justify-content: center; font-size: 52px; }
-  .shopCard .info { padding: 18px; }
-  .shopCard .info .t { font-size: 17px; font-weight: 700; }
-  .shopCard .info .s { font-size: 13px; color: var(--dim); margin-top: 6px; line-height: 1.5; }
+  #shopHero .kick { font-size: 11px; font-weight: 800; letter-spacing: .32em; color: var(--accent); margin-bottom: 10px; }
+  #shopHero h2 { font-size: clamp(26px, 3.6vw, 42px); font-weight: 800; letter-spacing: .03em; line-height: 1.1; }
+  #shopHero p { margin-top: 10px; color: var(--dim); font-size: 15px; letter-spacing: .04em; }
+  #shopHero .heroIco {
+    flex: 0 0 auto; width: 92px; height: 92px; border-radius: 24px;
+    background: linear-gradient(135deg, var(--accent), #1a3fa0);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 10px 34px rgba(var(--accent-rgb),.45);
+  }
+  #shopHero .heroIco svg { width: 52px; height: 52px; color: #fff; }
+  #shopGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
+  .shopCard {
+    overflow: hidden; padding: 0; cursor: default;
+    border-radius: 20px; border: 1px solid rgba(var(--accent-rgb),.18);
+    background: linear-gradient(180deg, rgba(17,28,58,.97), rgba(10,16,36,.97));
+    transition: transform .18s ease, box-shadow .25s ease, border-color .2s ease;
+  }
+  .shopCard:hover { transform: translateY(-4px); border-color: rgba(var(--accent-rgb),.5); box-shadow: 0 14px 40px rgba(0,0,0,.5), 0 0 24px rgba(var(--accent-rgb),.18); }
+  .shopCard .art {
+    height: 150px; display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+  .shopCard .art svg { width: 64px; height: 64px; color: rgba(255,255,255,.92); filter: drop-shadow(0 6px 16px rgba(0,0,0,.5)); }
+  .shopCard .art::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(180deg, transparent 55%, rgba(5,8,20,.55));
+    pointer-events: none;
+  }
+  .shopCard .info { padding: 18px 18px 16px; }
+  .shopCard .info .t { font-size: 17px; font-weight: 800; letter-spacing: .02em; }
+  .shopCard .info .s { font-size: 13px; color: var(--dim); margin-top: 6px; line-height: 1.5; min-height: 38px; }
+  .shopCard .foot { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; }
+  .priceTag {
+    font-size: 12px; font-weight: 800; letter-spacing: .14em; color: #8fd6a4;
+    background: rgba(53,208,127,.1); border: 1px solid rgba(53,208,127,.35);
+    padding: 5px 12px; border-radius: 999px;
+  }
+  .wishBtn {
+    position: absolute; top: 10px; right: 10px; z-index: 2;
+    width: 38px; height: 38px; border-radius: 50%;
+    background: rgba(5,8,20,.55); border: 1px solid rgba(255,255,255,.18);
+    color: #cdd8f5; cursor: pointer; padding: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: transform .15s ease, box-shadow .2s ease, color .2s, border-color .2s;
+  }
+  .wishBtn svg { width: 19px; height: 19px; }
+  .wishBtn:hover { transform: scale(1.12); border-color: rgba(255,93,122,.7); box-shadow: 0 0 14px rgba(255,93,122,.35); }
+  .wishBtn.on { color: #ff5d7a; border-color: rgba(255,93,122,.7); }
+  .wishBtn.on svg path { fill: currentColor; }
 
   /* Library */
   #libGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
@@ -401,7 +513,7 @@
   #partyBar {
     position: fixed; bottom: 24px; right: 24px; z-index: 70;
     background: var(--card); border: 1px solid var(--line); border-radius: 18px;
-    padding: 14px 18px; backdrop-filter: blur(16px);
+    padding: 14px 18px;
     display: none; align-items: center; gap: 14px;
     box-shadow: 0 12px 44px rgba(0,0,0,.5), 0 0 30px rgba(var(--accent-rgb),.15);
   }
@@ -515,7 +627,7 @@
     position: absolute; top: calc(100% + 12px); left: 0; z-index: 95;
     min-width: 250px; background: var(--card);
     border: 1px solid var(--line);
-    border-radius: 16px; backdrop-filter: blur(18px);
+    border-radius: 16px;
     padding: 14px; display: flex; flex-direction: column; gap: 6px;
     opacity: 0; transform: translateY(-8px); pointer-events: none;
     transition: opacity .25s ease, transform .25s ease;
@@ -578,7 +690,8 @@
   /* Notification log */
   .notifItem{padding:10px 4px;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px}
   .notifItem .nt{color:var(--faint);font-size:11px;margin-top:2px}
-#sleepOverlay .moon{font-size:72px;animation:floaty 4s ease-in-out infinite}
+#sleepOverlay .moon{animation:floaty 4s ease-in-out infinite}
+#sleepOverlay .moon svg{width:76px;height:76px;color:#9fc5ff}
 @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
 #sleepOverlay .sleepTxt{font-size:20px;color:var(--dim)}
 </style>
@@ -626,33 +739,34 @@
 <div id="menuOverlay"></div>
 <nav id="sideMenu">
   <h2>OLYMPUS</h2>
-  <div class="menuBtn" data-go="library" style="--d:.05s"><span class="mi">🎮</span>Game Library</div>
-  <div class="menuBtn" data-go="shop" style="--d:.1s"><span class="mi">🛒</span>Shop</div>
-  <div class="menuBtn" data-go="gallery" style="--d:.17s"><span class="mi">🖼️</span>Gallery</div>
+  <div class="menuBtn" data-go="library" style="--d:.05s"><span class="mi"><span data-ic="grid"></span></span>Game Library</div>
+  <div class="menuBtn" data-go="shop" style="--d:.1s"><span class="mi"><span data-ic="cart"></span></span>Shop</div>
+  <div class="menuBtn" data-go="gallery" style="--d:.17s"><span class="mi"><span data-ic="image"></span></span>Gallery</div>
   <div class="menuBtn" data-go="controllers" style="--d:.15s"><span class="mi"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="11" rx="5.5"/><path d="M7 10.5v3M5.5 12h3"/><circle cx="15.5" cy="11" r="1.1" fill="currentColor" stroke="none"/><circle cx="18" cy="13.5" r="1.1" fill="currentColor" stroke="none"/></svg></span>Controllers</div>
-  <div class="menuBtn" data-go="search" style="--d:.2s"><span class="mi">🔍</span>Search</div>
-  <div class="menuBtn" data-go="friends" style="--d:.25s"><span class="mi">👥</span>Friends<span class="count hidden" id="friendReqCount"></span></div>
-  <div class="menuBtn" data-go="profile" style="--d:.3s"><span class="mi">👤</span>Profile</div>
-  <div class="menuBtn" data-go="settings" style="--d:.35s"><span class="mi">⚙</span>Settings</div>
-  <div class="menuBtn" id="menuExit" style="--d:.4s"><span class="mi">⏻</span>Exit Olympus</div>
+  <div class="menuBtn" data-go="search" style="--d:.2s"><span class="mi"><span data-ic="search"></span></span>Search</div>
+  <div class="menuBtn" data-go="friends" style="--d:.25s"><span class="mi"><span data-ic="users"></span></span>Friends<span class="count hidden" id="friendReqCount"></span></div>
+  <div class="menuBtn" data-go="profile" style="--d:.3s"><span class="mi"><span data-ic="user"></span></span>Profile</div>
+  <div class="menuBtn" data-go="settings" style="--d:.35s"><span class="mi"><span data-ic="gear"></span></span>Settings</div>
+  <div class="menuBtn" id="menuSwitchAcct" style="--d:.38s"><span class="mi"><span data-ic="swap"></span></span>Switch account</div>
+  <div class="menuBtn" id="menuExit" style="--d:.42s"><span class="mi"><span data-ic="power"></span></span>Exit Olympus</div>
 </nav>
 
 <!-- Screens -->
 <section class="screen" id="screen-library">
-  <div class="screenHead"><div class="backBtn" data-back>‹</div><div><h1>Game Library</h1><div class="sub">YOUR GAMES</div></div></div>
+  <div class="screenHead"><div class="backBtn" data-back><span data-ic="chevL"></span></div><div><h1>Game Library</h1><div class="sub">YOUR GAMES</div></div></div>
   <div class="screenBody"><div id="libGrid"></div></div>
 </section>
 
 <section class="screen" id="screen-shop">
-  <div class="screenHead"><div class="backBtn" data-back>‹</div><div><h1>Shop</h1><div class="sub">DISCOVER GAMES</div></div></div>
+  <div class="screenHead"><div class="backBtn" data-back><span data-ic="chevL"></span></div><div><h1>Shop</h1><div class="sub">DISCOVER GAMES</div></div></div>
   <div class="screenBody">
-    <div id="shopHero"><h2>The Shop is getting stocked</h2><p>New games will land here. Check back soon.</p></div>
+    <div id="shopHero"><div class="heroIco"><span data-ic="cart"></span></div><div><div class="kick">OLYMPUS STORE</div><h2>The Shop is getting stocked</h2><p>New games will land here. Check back soon.</p></div></div>
     <div id="shopGrid"></div>
   </div>
 </section>
 
 <section class="screen" id="screen-search">
-  <div class="screenHead"><div class="backBtn" data-back>‹</div><div><h1>Search</h1><div class="sub">GAMES AND PLAYERS</div></div></div>
+  <div class="screenHead"><div class="backBtn" data-back><span data-ic="chevL"></span></div><div><h1>Search</h1><div class="sub">GAMES AND PLAYERS</div></div></div>
   <div class="screenBody">
     <div class="searchBox"><input id="searchInput" type="text" placeholder="Search games or players..." maxlength="40"></div>
     <div class="segTabs"><div class="segTab active" data-stab="games">Games</div><div class="segTab" data-stab="players">Players</div></div>
@@ -661,7 +775,7 @@
 </section>
 
 <section class="screen" id="screen-friends">
-  <div class="screenHead"><div class="backBtn" data-back>‹</div><div><h1>Friends</h1><div class="sub">YOUR CREW</div></div><div class="spacer"></div><button class="btn primary" id="callBtn">📞 Call</button></div>
+  <div class="screenHead"><div class="backBtn" data-back><span data-ic="chevL"></span></div><div><h1>Friends</h1><div class="sub">YOUR CREW</div></div><div class="spacer"></div><button class="btn primary" id="callBtn"><span data-ic="phone"></span>Call</button></div>
   <div class="screenBody">
     <div id="reqZone"></div>
     <div class="secTitle">FRIENDS</div>
@@ -670,12 +784,12 @@
 </section>
 
 <section class="screen" id="screen-messages">
-  <div class="screenHead"><div class="backBtn" data-back>‹</div><div><h1>Messages</h1><div class="sub">CHATS</div></div><div class="spacer"></div><button class="btn" id="newChatBtn">+ New chat</button></div>
+  <div class="screenHead"><div class="backBtn" data-back><span data-ic="chevL"></span></div><div><h1>Messages</h1><div class="sub">CHATS</div></div><div class="spacer"></div><button class="btn" id="newChatBtn"><span data-ic="plus"></span>New chat</button></div>
   <div class="screenBody"><div id="chatList"></div></div>
 </section>
 
 <section class="screen" id="screen-chat">
-  <div class="screenHead"><div class="backBtn" data-back>‹</div><div><h1 id="chatTitle">Chat</h1><div class="sub" id="chatSub"></div></div><div class="spacer"></div><button class="btn" id="chatEditBtn" style="display:none">✏️ Name</button></div>
+  <div class="screenHead"><div class="backBtn" data-back><span data-ic="chevL"></span></div><div><h1 id="chatTitle">Chat</h1><div class="sub" id="chatSub"></div></div><div class="spacer"></div><button class="btn" id="chatEditBtn" style="display:none"><span data-ic="pencil"></span>Name</button></div>
   <div class="screenBody" id="chatView">
     <div id="chatScroll"></div>
     <div id="composer"><input class="txtInput" id="chatInput" type="text" placeholder="Message..." maxlength="2000"><button class="btn primary" id="chatSend">Send</button></div>
@@ -683,7 +797,7 @@
 </section>
 
 <section class="screen" id="screen-profile">
-  <div class="screenHead"><div class="backBtn" data-back>‹</div><div><h1>Profile</h1><div class="sub">YOUR CARD</div></div></div>
+  <div class="screenHead"><div class="backBtn" data-back><span data-ic="chevL"></span></div><div><h1>Profile</h1><div class="sub">YOUR CARD</div></div></div>
   <div class="screenBody">
     <div id="profHead">
       <div id="profPic">?</div>
@@ -704,7 +818,7 @@
 </section>
 
 <section class="screen" id="screen-player">
-  <div class="screenHead"><div class="backBtn" data-back>‹</div><div><h1 id="playerTag">Player</h1><div class="sub">PLAYER CARD</div></div><div class="spacer"></div><div class="btnRow" id="playerActions"></div></div>
+  <div class="screenHead"><div class="backBtn" data-back><span data-ic="chevL"></span></div><div><h1 id="playerTag">Player</h1><div class="sub">PLAYER CARD</div></div><div class="spacer"></div><div class="btnRow" id="playerActions"></div></div>
   <div class="screenBody">
     <div id="playerHead" style="display:flex;align-items:center;gap:22px;margin-bottom:26px">
       <div class="pAv" id="playerPic" style="width:110px;height:110px;font-size:38px">?</div>
@@ -721,7 +835,7 @@
 </section>
 
 <section class="screen" id="screen-controllers">
-  <div class="screenHead"><div class="backBtn" data-back>‹</div><div><h1>Controllers</h1><div class="sub" id="padCount">NO CONTROLLERS</div></div></div>
+  <div class="screenHead"><div class="backBtn" data-back><span data-ic="chevL"></span></div><div><h1>Controllers</h1><div class="sub" id="padCount">NO CONTROLLERS</div></div></div>
   <div class="screenBody">
     <div id="padGrid"></div>
     <div class="emptyNote" id="padEmpty">No controllers connected.<br>Connect one and press any button.</div>
@@ -729,12 +843,12 @@
 </section>
 
 <section class="screen" id="screen-gallery">
-  <div class="screenHead"><div class="backBtn" data-back>‹</div><div><h1>Gallery</h1><div class="sub">SCREENSHOTS & CLIPS</div></div><div class="spacer"></div><div class="s" style="color:var(--dim);font-size:12px">LB + RB: screenshot · hold LB + RB: save last minute</div></div>
+  <div class="screenHead"><div class="backBtn" data-back><span data-ic="chevL"></span></div><div><h1>Gallery</h1><div class="sub">SCREENSHOTS & CLIPS</div></div><div class="spacer"></div><div class="s" style="color:var(--dim);font-size:12px">LB + RB: screenshot · hold LB + RB: save last minute</div></div>
   <div class="screenBody"><div id="galGrid"></div></div>
 </section>
 <div id="viewer"><div id="viewerBox"><div id="viewerMedia"></div><div id="viewerBar"><span id="viewerName"></span><span class="spacer"></span><button class="btn danger" id="viewerDel">Delete</button><button class="btn primary" id="viewerClose">Close</button></div></div></div>
 <section class="screen" id="screen-settings">
-  <div class="screenHead"><div class="backBtn" data-back>‹</div><div><h1>Settings</h1><div class="sub">MAKE IT YOURS</div></div></div>
+  <div class="screenHead"><div class="backBtn" data-back><span data-ic="chevL"></span></div><div><h1>Settings</h1><div class="sub">MAKE IT YOURS</div></div></div>
   <div class="screenBody">
     <div class="secTitle">APPEARANCE</div>
     <div class="card setRow">
@@ -779,7 +893,7 @@
     </div>
     <div class="secTitle">ABOUT</div>
     <div class="card setRow">
-      <div><div class="t">Olympus</div><div class="s" id="verSub">Version 0.2.0 · PC app</div></div>
+      <div><div class="t">Olympus</div><div class="s" id="verSub">Version 0.3.0 · PC app</div></div>
       <div class="spacer"></div>
       <button class="btn" id="updateBtn">Check for updates</button>
     </div>
@@ -787,7 +901,7 @@
 </section>
 
 <section class="screen" id="screen-party">
-  <div class="screenHead"><div class="backBtn" data-back>‹</div><div><h1>Party</h1><div class="sub" id="partySub">VOICE CHAT</div></div><div class="spacer"></div><div class="btnRow"><button class="btn" id="muteBtn">🎙 Mute</button><button class="btn" id="deafenBtn">🔇 Deafen</button><button class="btn" id="pttBtn">🎙 PTT: Off</button><button class="btn" id="shareBtn">🖥 Share screen</button><button class="btn danger" id="leavePartyBtn">Leave</button></div></div>
+  <div class="screenHead"><div class="backBtn" data-back><span data-ic="chevL"></span></div><div><h1>Party</h1><div class="sub" id="partySub">VOICE CHAT</div></div><div class="spacer"></div><div class="btnRow"><button class="btn" id="muteBtn"><span data-ic="mic"></span>Mute</button><button class="btn" id="deafenBtn"><span data-ic="volX"></span>Deafen</button><button class="btn" id="pttBtn"><span data-ic="mic"></span>PTT: Off</button><button class="btn" id="shareBtn"><span data-ic="monitor"></span>Share screen</button><button class="btn danger" id="leavePartyBtn">Leave</button></div></div>
   <div class="screenBody">
     <div class="card" style="margin-bottom:16px;display:flex;align-items:center;gap:16px">
       <div><div class="t" style="font-size:16px;font-weight:600">Party privacy</div><div class="s" style="font-size:13px;color:var(--dim);margin-top:3px">Invite-only or open for friends to join</div></div>
@@ -805,7 +919,7 @@
 <div id="partyBar">
   <div class="mem" id="partyBarMem"></div>
   <div style="font-size:13px;color:var(--dim);letter-spacing:.08em">PARTY</div>
-  <button class="btn" id="partyBarShare" title="Share your screen">🖥 Share</button>
+  <button class="btn" id="partyBarShare" title="Share your screen"><span data-ic="monitor"></span>Share</button>
   <button class="btn" id="partyBarOpen">Open</button>
 </div>
 
@@ -835,7 +949,7 @@
       </div>
       <div class="tagRow">
         <input type="text" id="acctTag" placeholder="Gamertag" maxlength="16">
-        <button id="acctDice" type="button" title="Random gamertag">🎲</button>
+        <button id="acctDice" type="button" title="Random gamertag"><span data-ic="dice"></span></button>
       </div>
       <div class="acctError" id="createError"></div>
       <button class="acctBtn" id="acctCreateBtn" type="button">Create account</button>
@@ -851,15 +965,24 @@
 </div>
 
 <div id="toast"></div>
-  <div id="achBanner"><div class="achIcon">🏆</div><div class="achBody"><div class="achKicker">ACHIEVEMENT UNLOCKED</div><div class="achTitle" id="achTitle"></div><div class="achDesc" id="achDesc"></div></div></div>
+  <div id="achBanner"><div class="achIcon"><span data-ic="trophy"></span></div><div class="achBody"><div class="achKicker">ACHIEVEMENT UNLOCKED</div><div class="achTitle" id="achTitle"></div><div class="achDesc" id="achDesc"></div></div></div>
   <div id="inviteCard" class="hidden">
-    <div class="invTitle">🎙 Party invite</div>
+    <div class="invTitle"><span data-ic="mic"></span> Party invite</div>
     <div class="invText" id="inviteText"></div>
     <div class="invBtns"><button class="btn" id="inviteDecline">Decline</button><button class="btn primary" id="inviteJoin">Join</button></div>
   </div>
 <div id="modalWrap"><div id="modal"><h3 id="modalTitle"></h3><p id="modalText"></p><div class="btnRow" id="modalBtns"></div></div></div>
 
-<div id="sleepOverlay"><div class="moon">🌙</div><div class="sleepTxt">Sleeping…</div><button class="btn primary" id="wakeBtn">I'm back</button></div>
+<div id="remapWrap"><div id="remapBox">
+  <h3>Remap controller</h3>
+  <div class="sub" id="remapSub">Tap a row, then press the button you want it to be.</div>
+  <div id="remapRows"></div>
+  <div class="btnRow" style="margin-top:18px;justify-content:flex-end">
+    <button class="btn" id="remapReset">Reset defaults</button>
+    <button class="btn primary" id="remapDone">Done</button>
+  </div>
+</div></div>
+<div id="sleepOverlay"><div class="moon"><span data-ic="moon"></span></div><div class="sleepTxt">Sleeping…</div><button class="btn primary" id="wakeBtn">I'm back</button></div>
 <script>
 
 /* ================= Olympus console ================= */
@@ -869,6 +992,53 @@ const $$ = s => Array.from(document.querySelectorAll(s));
 function escapeHtml(s) {
   return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
+/* ---------- SVG icon set (replaces all emoji) ---------- */
+function _svg(p){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+p+'</svg>'; }
+const I = {
+  mic: _svg('<path d="M12 2a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3z"/><path d="M19 10a7 7 0 0 1-14 0"/><path d="M12 17v4"/>'),
+  micOff: _svg('<path d="M12 2a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3z"/><path d="M19 10a7 7 0 0 1-14 0"/><path d="M12 17v4"/><path d="M3 3l18 18"/>'),
+  vol: _svg('<path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.4 5.6a9 9 0 0 1 0 12.8"/>'),
+  volLow: _svg('<path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/>'),
+  volX: _svg('<path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>'),
+  monitor: _svg('<rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/>'),
+  gamepad: _svg('<rect x="2" y="7" width="20" height="11" rx="5.5"/><path d="M7 10.5v3"/><path d="M5.5 12h3"/><circle cx="15.8" cy="11" r="1.1" fill="currentColor" stroke="none"/><circle cx="18.2" cy="13.4" r="1.1" fill="currentColor" stroke="none"/>'),
+  grid: _svg('<rect x="3" y="3" width="7.5" height="7.5" rx="1.8"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.8"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.8"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.8"/>'),
+  play: _svg('<path d="M8 5v14l11-7z" fill="currentColor" stroke="none"/>'),
+  trophy: _svg('<path d="M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 6H4a3 3 0 0 0 3 5"/><path d="M17 6h3a3 3 0 0 1-3 5"/>'),
+  rocket: _svg('<path d="M5 15c-1.5 1.5-2 5-2 5s3.5-.5 5-2"/><path d="M9.5 10.5L5.8 6.8c1-4 4-6.8 8.6-7.6 3.5-.7 6.6.2 6.6.2s.9 3.1.2 6.6c-.8 4.6-3.6 7.6-7.6 8.6l-3.7-3.7z"/><circle cx="15" cy="9" r="1.6"/>'),
+  dice: _svg('<rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8.5" cy="8.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="15.5" cy="8.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="8.5" cy="15.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="15.5" cy="15.5" r="1.2" fill="currentColor" stroke="none"/>'),
+  chat: _svg('<path d="M21 12a8 8 0 0 1-8 8H4l2-3a8 8 0 1 1 15-5z"/>'),
+  fire: _svg('<path d="M12 2s5 4.5 5 9a5 5 0 0 1-10 0c0-2 1-3.5 1-3.5S9 9 10 9c0-3 2-7 2-7z"/>'),
+  star: _svg('<path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.2 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8L12 2z"/>'),
+  target: _svg('<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/>'),
+  spark: _svg('<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3z"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9L19 15z"/>'),
+  alien: _svg('<path d="M7 8V4h10v4"/><rect x="4" y="8" width="16" height="9" rx="4"/><circle cx="9" cy="12.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="15" cy="12.5" r="1.2" fill="currentColor" stroke="none"/><path d="M9 21v-2"/><path d="M15 21v-2"/>'),
+  cart: _svg('<path d="M3 4h2l2.4 12.2a1 1 0 0 0 1 .8h8.9a1 1 0 0 0 1-.8L21 8H6"/><circle cx="9.5" cy="20" r="1.4"/><circle cx="17.5" cy="20" r="1.4"/>'),
+  image: _svg('<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="10" r="1.5"/><path d="M21 15l-5-5-9 9"/>'),
+  search: _svg('<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>'),
+  users: _svg('<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8"/><path d="M17.5 14.4a6.5 6.5 0 0 1 4 5.6"/>'),
+  user: _svg('<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>'),
+  gear: _svg('<circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1.04 1.56V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1.04-1.56 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.56-1.04H3a2 2 0 1 1 0-4h.09A1.7 1.7 0 0 0 4.65 8.9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34h.01A1.7 1.7 0 0 0 10.06 3V3a2 2 0 1 1 4 0v.09c0 .68.4 1.3 1.04 1.56.6.26 1.3.11 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87v.01c.26.6.88 1.03 1.56 1.04H21a2 2 0 1 1 0 4h-.09c-.68 0-1.3.4-1.51 1.04z"/>'),
+  phone: _svg('<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.13.96.36 1.9.7 2.8a2 2 0 0 1-.45 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.45c.9.34 1.84.57 2.8.7a2 2 0 0 1 1.7 2z"/>'),
+  pencil: _svg('<path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>'),
+  moon: _svg('<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>'),
+  crown: _svg('<path d="M3 8l4 4 5-6 5 6 4-4-1.5 10h-15L3 8z"/>'),
+  ban: _svg('<circle cx="12" cy="12" r="9"/><path d="M5.5 5.5l13 13"/>'),
+  trash: _svg('<path d="M3 6h18"/><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/>'),
+  check: _svg('<path d="M4 12.5l5 5L20 6.5"/>'),
+  x: _svg('<path d="M6 6l12 12"/><path d="M18 6L6 18"/>'),
+  stop: _svg('<rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor" stroke="none"/>'),
+  heart: _svg('<path d="M12 20.5S3 14.5 3 8.8A4.8 4.8 0 0 1 12 6a4.8 4.8 0 0 1 9 2.8c0 5.7-9 11.7-9 11.7z"/>'),
+  chevL: _svg('<path d="M14.5 5L8 12l6.5 7"/>'),
+  chevR: _svg('<path d="M9.5 5l6.5 7-6.5 7"/>'),
+  power: _svg('<path d="M12 3v8"/><path d="M6.3 6.3a8 8 0 1 0 11.4 0"/>'),
+  swap: _svg('<path d="M17 3l4 4-4 4"/><path d="M21 7H8a5 5 0 0 0-5 5v1"/><path d="M7 21l-4-4 4-4"/><path d="M3 17h13a5 5 0 0 0 5-5v-1"/>'),
+  logout: _svg('<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/>'),
+  plus: _svg('<path d="M12 5v14"/><path d="M5 12h14"/>'),
+};
+function ic(n){ return '<span class="ico">'+(I[n]||'')+'</span>'; }
+document.querySelectorAll('[data-ic]').forEach(el => { el.innerHTML = I[el.getAttribute('data-ic')] || ''; });
+
 function initials(tag) {
   const t = String(tag || '').replace(/[^A-Za-z0-9]/g, '');
   return (t.slice(0, 2) || '?').toUpperCase();
@@ -876,7 +1046,7 @@ function initials(tag) {
 function picHtml(pic, tag, cls) {
   return '<div class="' + (cls || 'pAv') + '">' + (pic ? '<img src="' + pic + '" alt="">' : escapeHtml(initials(tag))) + '</div>';
 }
-const OLY_VERSION = '0.2.0';
+const OLY_VERSION = '0.3.0';
 let toastTimer = null;
 const toastLog = [];
 function toast(msg) {
@@ -1244,21 +1414,21 @@ function buildProfileItems() {
   if (a) {
     const d = document.createElement('div');
     d.className = 'profileItem';
-    d.innerHTML = picHtml(a.pic, a.gamertag) + '<span>' + escapeHtml(a.gamertag) + '</span><span class="check">✓</span>';
+    d.innerHTML = picHtml(a.pic, a.gamertag) + '<span>' + escapeHtml(a.gamertag) + '</span><span class="check">' + ic('check') + '</span>';
     d.addEventListener('click', e => { e.stopPropagation(); setProfileMenu(false); });
     d.addEventListener('mouseenter', () => { profileFocus = 0; paintProfiles(); });
     profileMenu.appendChild(d); profileItems.push(d);
   }
   const add = document.createElement('div');
   add.className = 'profileItem add';
-  add.innerHTML = '<div class="pAv">+</div><span>' + (a ? 'Switch account' : 'Add account') + '</span>';
+  add.innerHTML = '<div class="pAv">' + ic('plus') + '</div><span>' + (a ? 'Switch account' : 'Add account') + '</span>';
   add.addEventListener('click', e => { e.stopPropagation(); setProfileMenu(false); openAccount(''); });
   add.addEventListener('mouseenter', () => { profileFocus = profileItems.length; paintProfiles(); });
   profileMenu.appendChild(add); profileItems.push(add);
   if (a) {
     const so = document.createElement('div');
     so.className = 'profileItem';
-    so.innerHTML = '<div class="pAv">↩</div><span>Sign out</span>';
+    so.innerHTML = '<div class="pAv">' + ic('logout') + '</div><span>Sign out</span>';
     so.addEventListener('click', async e => {
       e.stopPropagation();
       await signOut();
@@ -1297,7 +1467,10 @@ function paintProfiles() {
     if (chk) chk.style.visibility = (a && k === 0) ? 'visible' : 'hidden';
   });
 }
-avatarBtn.addEventListener('click', e => { e.stopPropagation(); setProfileMenu(!profileMenuOpen); });
+avatarBtn.addEventListener('click', e => {
+  e.stopPropagation();
+  if (requireAccount('your Profile')) openScreen('profile');
+});
 document.addEventListener('click', e => {
   if (profileMenuOpen && !profileMenu.contains(e.target) && e.target !== avatarBtn && !avatarBtn.contains(e.target)) setProfileMenu(false);
 });
@@ -1312,6 +1485,8 @@ function openScreen(name, data) {
   $$('.screen').forEach(s => s.classList.remove('open'));
   el.classList.add('open');
   document.body.classList.add('screen-open');
+  menuBeforeScreen = menuOpen;
+  navEl = null;
   if (menuOpen) setMenu(false);
   if (profileMenuOpen) setProfileMenu(false);
   const fn = ScreenRender[name];
@@ -1326,6 +1501,7 @@ function goBack() {
   if ($('#viewer') && $('#viewer').classList.contains('open')) { closeViewer(); return; }
   if (accountOpen) { closeAccount(); return; }
   if ($('#modalWrap').classList.contains('open')) { closeModal(); return; }
+  if ($('#remapWrap').classList.contains('open')) { closeRemap(); return; }
   if (profileMenuOpen) { setProfileMenu(false); return; }
   if (menuOpen) { setMenu(false); return; }
   if (screenStack.length > 1) {
@@ -1337,6 +1513,7 @@ function goBack() {
     if (fn) fn();
   } else if (screenStack.length === 1) {
     closeAllScreens();
+    if (menuBeforeScreen) { menuBeforeScreen = false; setMenu(true); }
   }
 }
 $$('[data-back]').forEach(b => b.addEventListener('click', goBack));
@@ -1382,7 +1559,7 @@ function buildTiles() {
       const pct = Math.round(100 * (g.ach.done || 0) / g.ach.total);
       const badge = document.createElement('div');
       badge.className = 'achBadge';
-      badge.textContent = '🏆 ' + pct + '%';
+      badge.innerHTML = ic('trophy') + ' ' + pct + '%';
       d.appendChild(badge);
     }
     const label = document.createElement('div');
@@ -1509,6 +1686,7 @@ const sideMenu = $('#sideMenu');
 const overlay = $('#menuOverlay');
 const menuBtns = Array.from(document.querySelectorAll('.menuBtn'));
 let menuOpen = false, menuFocus = 0;
+let menuBeforeScreen = false;
 function setMenu(open) {
   menuOpen = open;
   document.body.classList.toggle('menu-open', open);
@@ -1524,6 +1702,7 @@ menuBtns.forEach((b, i) => {
 });
 function activateMenuBtn(b) {
   if (b.id === 'menuExit') { tryExit(); return; }
+  if (b.id === 'menuSwitchAcct') { setMenu(false); openAccount(''); return; }
   const go = b.dataset.go;
   if (go === 'friends' || go === 'profile') { if (!requireAccount(go === 'friends' ? 'Friends' : 'your Profile')) return; }
   if (go) openScreen(go);
@@ -1578,7 +1757,7 @@ function showPadStatus() {
       el.id = 'padStatus';
       $('#topIcons').appendChild(el);
     }
-    el.textContent = '🎮 ' + n + ' CONTROLLER' + (n > 1 ? 'S' : '');
+    el.innerHTML = ic('gamepad') + ' ' + n + ' CONTROLLER' + (n > 1 ? 'S' : '');
   } else if (el) el.remove();
 }
 const BTN_NAMES = ['A', 'B', 'X', 'Y', 'LB', 'RB', 'LT', 'RT', 'Back', 'Start', 'L3', 'R3', 'Up', 'Down', 'Left', 'Right', 'Home'];
@@ -1594,9 +1773,10 @@ ScreenRender.controllers = function () {
     card.innerHTML =
       '<div class="padName">' + escapeHtml(gp.id.slice(0, 42)) + '</div>' +
       '<div class="slot">PLAYER ' + (i + 1) + '</div>' +
-      '<div class="btnRow"><button class="btn" data-rumble>Rumble</button><button class="btn" data-test>Test controls</button></div>' +
+      '<div class="btnRow"><button class="btn" data-rumble>Rumble</button><button class="btn" data-test>Test controls</button><button class="btn" data-remap>Remap</button></div>' +
       '<div class="padTest" style="display:none"></div>';
     card.querySelector('[data-rumble]').addEventListener('click', () => rumblePad(gp, 1, 1, 600));
+    card.querySelector('[data-remap]').addEventListener('click', () => openRemap(gp.id));
     const testBtn = card.querySelector('[data-test]');
     const testZone = card.querySelector('.padTest');
     testBtn.addEventListener('click', () => {
@@ -1670,6 +1850,11 @@ addEventListener('keydown', e => {
   }
   if (screenStack.length) {
     if (e.key === 'Escape' || e.key === 'b' || e.key === 'B') goBack();
+    else if (e.key === 'ArrowUp') moveNav(0, -1);
+    else if (e.key === 'ArrowDown') moveNav(0, 1);
+    else if (e.key === 'ArrowLeft') moveNav(-1, 0);
+    else if (e.key === 'ArrowRight') moveNav(1, 0);
+    else if (e.key === 'Enter' && navEl && document.contains(navEl)) navEl.click();
     return;
   }
   if (e.key === 'ArrowRight') { if (zone === 'top') setTopFocus(topFocus + 1); else if (zone === 'tiles') setFocus(focus + 1); }
@@ -1756,7 +1941,7 @@ ScreenRender.gallery = async function () {
     d.className = 'galItem';
     const url = String(it.url).replace(/"/g, '&quot;');
     d.innerHTML = it.kind === 'video'
-      ? '<video src="' + url + '" preload="metadata" muted playsinline></video><span class="clipTag">▶ CLIP</span>'
+      ? '<video src="' + url + '" preload="metadata" muted playsinline></video><span class="clipTag">' + ic('play') + ' CLIP</span>'
       : '<img src="' + url + '" loading="lazy" alt="">';
     d.addEventListener('click', () => openViewer(it));
     grid.appendChild(d);
@@ -1791,25 +1976,148 @@ $('#viewerDel').addEventListener('click', () => {
     } }
   ]);
 });
+/* ---------- Controller remapping ---------- */
+function getRemap(padId){ try{ const m = JSON.parse(localStorage.getItem('oly_remap_'+padId)||'{}'); return (m && typeof m==='object') ? m : {}; }catch(e){ return {}; } }
+function saveRemap(padId, m){ try{ localStorage.setItem('oly_remap_'+padId, JSON.stringify(m)); }catch(e){} }
+let _rmId = null, _rmMap = {};
+function physIdx(gp, logical){
+  if (!gp) return -1;
+  if (gp.id !== _rmId) { _rmId = gp.id; _rmMap = getRemap(gp.id); }
+  const p = _rmMap[logical];
+  return (p == null || isNaN(+p)) ? logical : (+p);
+}
+let remapCapture = null, remapPadId = null;
+function openRemap(padId){
+  remapPadId = padId;
+  $('#remapSub').textContent = 'Tap a row, then press the button you want it to be.';
+  paintRemapRows();
+  $('#remapWrap').classList.add('open');
+}
+function closeRemap(){ remapCapture = null; $('#remapWrap').classList.remove('open'); }
+function physName(logical){
+  const m = getRemap(remapPadId);
+  return (m[logical] == null) ? 'Default' : 'Button ' + m[logical];
+}
+function paintRemapRows(){
+  const box = $('#remapRows');
+  box.innerHTML = '';
+  BTN_NAMES.forEach((name, logical) => {
+    const r = document.createElement('div');
+    r.className = 'remapRow';
+    r.innerHTML = '<span class="rk">' + escapeHtml(name) + '</span><span class="rv">' + escapeHtml(physName(logical)) + '</span>';
+    r.addEventListener('click', () => {
+      box.querySelectorAll('.remapRow').forEach(x => x.classList.remove('capturing'));
+      r.classList.add('capturing');
+      r.querySelector('.rv').textContent = 'Press a button…';
+      remapCapture = { logical: logical, row: r, t: Date.now() };
+    });
+    box.appendChild(r);
+  });
+}
+$('#remapDone').addEventListener('click', closeRemap);
+$('#remapReset').addEventListener('click', () => {
+  try { localStorage.removeItem('oly_remap_' + remapPadId); } catch(e){}
+  _rmId = null; remapCapture = null; paintRemapRows();
+});
+
+/* ---------- Universal spatial navigation (controller / keyboard / mouse) ---------- */
+const NAV_SEL = 'button:not([disabled]), .menuBtn, .tile, .galItem, .shopCard, .libTile, .rowCard, .profileItem, .iconBtn, .backBtn, .statLink, .remapRow, input.txtInput, .searchBox input, input[type="color"]';
+let navEl = null;
+function navScopeEl(){
+  if ($('#remapWrap').classList.contains('open')) return $('#remapBox');
+  if ($('#modalWrap').classList.contains('open')) return $('#modal');
+  if ($('#viewer').classList.contains('open')) return $('#viewer');
+  return document.querySelector('.screen.open');
+}
+function navItems(){
+  const sc = navScopeEl();
+  if (!sc) return [];
+  return Array.from(sc.querySelectorAll(NAV_SEL)).filter(el => {
+    const r = el.getBoundingClientRect();
+    return r.width > 2 && r.height > 2 && el.offsetParent !== null;
+  });
+}
+function setNav(el){
+  if (navEl === el) return;
+  if (navEl) navEl.classList.remove('navFocus');
+  navEl = el;
+  if (el) {
+    el.classList.add('navFocus');
+    try { el.scrollIntoView({ block: 'nearest', inline: 'nearest' }); } catch(e){}
+  }
+}
+function moveNav(dx, dy){
+  const items = navItems();
+  if (!items.length) return;
+  if (!navEl || !document.contains(navEl) || items.indexOf(navEl) < 0) { setNav(items[0]); return; }
+  const r = navEl.getBoundingClientRect();
+  const cx = r.left + r.width/2, cy = r.top + r.height/2;
+  let best = null, bs = Infinity;
+  for (const el of items){
+    if (el === navEl) continue;
+    const q = el.getBoundingClientRect();
+    const ex = q.left + q.width/2, ey = q.top + q.height/2;
+    const vx = ex - cx, vy = ey - cy;
+    if (vx*dx + vy*dy <= 4) continue;
+    const dist = Math.hypot(vx, vy);
+    const perp = Math.abs(vx*dy - vy*dx);
+    const score = dist + perp*2.4;
+    if (score < bs) { bs = score; best = el; }
+  }
+  if (best) setNav(best);
+}
+document.addEventListener('mouseover', e => {
+  const sc = navScopeEl();
+  if (!sc) return;
+  const t = e.target && e.target.closest ? e.target.closest(NAV_SEL) : null;
+  if (t && sc.contains(t) && t !== navEl) setNav(t);
+});
+
 function pollPad() {
   if (accountOpen) { requestAnimationFrame(pollPad); return; }
-  pollPadTests();
   const pads = navigator.getGamepads ? navigator.getGamepads() : [];
-  const gp = Array.from(pads).find(p => p && p.connected);
+  let gp = null;
+  for (const p of pads) { if (p && p.connected) { gp = p; break; } }
+  if (!gp) {
+    for (const k in padState) padState[k] = (typeof padState[k] === 'number') ? 0 : false;
+    requestAnimationFrame(pollPad); return;
+  }
+  pollPadTests();
   const now = performance.now();
-  const pressed = i => gp && gp.buttons[i] && gp.buttons[i].pressed;
-  const axX = gp ? (gp.axes[0] || 0) : 0;
-  const axY = gp ? (gp.axes[1] || 0) : 0;
+  const pressed = l => { const p = physIdx(gp, l); const b = gp.buttons[p]; return !!(b && b.pressed); };
+  const axX = gp.axes[0] || 0;
+  const axY = gp.axes[1] || 0;
   const yB = pressed(controllerPreset.menuButton), bB = pressed(1), aB = pressed(0);
-  if (yB || bB || aB || Math.abs(axX) > 0.25 || Math.abs(axY) > 0.25) pokeActive();
+  const homeB = pressed(16), startB = pressed(9), selB = pressed(8);
+  if (yB || bB || aB || homeB || startB || selB || Math.abs(axX) > 0.25 || Math.abs(axY) > 0.25) pokeActive();
   const yEdge = yB && !padState.yHeld, bEdge = bB && !padState.bHeld, aEdge = aB && !padState.aHeld;
+  const homeEdge = homeB && !padState.homeHeld, startEdge = startB && !padState.startHeld, selEdge = selB && !padState.selHeld;
   padState.yHeld = yB; padState.bHeld = bB; padState.aHeld = aB;
+  padState.homeHeld = homeB; padState.startHeld = startB; padState.selHeld = selB;
+
+  // Remap capture: any physical button press assigns the selected row.
+  if (remapCapture) {
+    if (Date.now() - remapCapture.t > 350) {
+      for (let bi = 0; bi < gp.buttons.length; bi++) {
+        if (gp.buttons[bi] && gp.buttons[bi].pressed) {
+          const m = getRemap(gp.id); m[remapCapture.logical] = bi; saveRemap(gp.id, m); _rmId = null;
+          remapCapture.row.classList.remove('capturing');
+          remapCapture = null;
+          paintRemapRows();
+          break;
+        }
+      }
+    }
+    requestAnimationFrame(pollPad); return;
+  }
+
   // Screenshot buttons: tap = screenshot, hold ~1s = save the last minute as a clip.
   // LB+RB on standard pads; the Switch built-in capture button shows up as an
   // extra button past the standard 17 on Switch-family pads.
   const lbB = pressed(4), rbB = pressed(5);
   let extraShot = false;
-  if (gp && /nintendo|switch|pro controller|joy-con/i.test(gp.id || '')) {
+  if (gp._olyIsSwitch == null) gp._olyIsSwitch = /nintendo|switch|pro controller|joy-con/i.test(gp.id || '');
+  if (gp._olyIsSwitch) {
     for (let bi = 17; bi < gp.buttons.length; bi++) {
       if (gp.buttons[bi] && gp.buttons[bi].pressed) { extraShot = true; break; }
     }
@@ -1835,6 +2143,15 @@ function pollPad() {
 
   if (bEdge) { goBack(); requestAnimationFrame(pollPad); return; }
 
+  // Home button: on the main home menu it asks to leave Olympus; anywhere else it goes home.
+  if (homeEdge) {
+    if (!screenStack.length && !menuOpen && !profileMenuOpen) tryExit();
+    else { closeAllScreens(); setMenu(false); if (profileMenuOpen) setProfileMenu(false); }
+    requestAnimationFrame(pollPad); return;
+  }
+  // Start / Select open the tabs menu.
+  if ((startEdge || selEdge) && !menuOpen) { setMenu(true); requestAnimationFrame(pollPad); return; }
+
   if (profileMenuOpen) {
     let vdir = 0;
     if (axY > 0.5 || pressed(13)) vdir = 1;
@@ -1851,6 +2168,16 @@ function pollPad() {
     if (yEdge) { setProfileMenu(false); setMenu(true); }
   } else if (screenStack.length) {
     if (yEdge) setMenu(!menuOpen);
+    // Spatial navigation inside screens.
+    let ndx = 0, ndy = 0;
+    if (axX > 0.5 || pressed(15)) ndx = 1; else if (axX < -0.5 || pressed(14)) ndx = -1;
+    if (axY > 0.5 || pressed(13)) ndy = 1; else if (axY < -0.5 || pressed(12)) ndy = -1;
+    if ((ndx || ndy) && (padState.ndx !== ndx || padState.ndy !== ndy || now >= padState.nnext)) {
+      const first = (padState.ndx !== ndx || padState.ndy !== ndy);
+      moveNav(ndx, ndy);
+      padState.ndx = ndx; padState.ndy = ndy; padState.nnext = now + (first ? 350 : 180);
+    } else if (!ndx && !ndy) { padState.ndx = 0; padState.ndy = 0; padState.nnext = 0; }
+    if (aEdge && navEl && document.contains(navEl)) navEl.click();
   } else {
     if (yEdge) setMenu(!menuOpen);
     if (menuOpen) {
@@ -1892,7 +2219,6 @@ function pollPad() {
   }
   requestAnimationFrame(pollPad);
 }
-requestAnimationFrame(pollPad);
 row.addEventListener('wheel', e => {
   if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) { e.preventDefault(); row.scrollLeft += e.deltaY; }
 }, { passive: false });
@@ -2132,7 +2458,7 @@ ScreenRender.friends = function () {
     const row = document.createElement('div');
     row.className = 'rowCard';
     row.innerHTML = picHtml(f.pic, f.gamertag) +
-      '<div class="rowMain"><div class="t">' + (onlineMeta[f.id] ? '<span style="color:' + (onlineMeta[f.id].away ? '#eab308' : '#22c55e') + '">●</span> ' : '') + escapeHtml(f.gamertag) + '</div><div class="s">' + (onlineMeta[f.id] && onlineMeta[f.id].game ? '▶ ' + escapeHtml(onlineMeta[f.id].game) : (onlineMeta[f.id] && onlineMeta[f.id].away ? 'Away' : 'Friend')) + '</div></div>';
+      '<div class="rowMain"><div class="t">' + (onlineMeta[f.id] ? '<span class="dot ' + (onlineMeta[f.id].away ? 'away' : 'on') + '"></span>' : '') + escapeHtml(f.gamertag) + '</div><div class="s">' + (onlineMeta[f.id] && onlineMeta[f.id].game ? ic('chevR') + ' ' + escapeHtml(onlineMeta[f.id].game) : (onlineMeta[f.id] && onlineMeta[f.id].away ? 'Away' : 'Friend')) + '</div></div>';
     const btns = document.createElement('div');
     btns.className = 'btnRow';
     if (openParties[f.id] && !isPartyBanned(openParties[f.id].partyId)) {
@@ -2148,7 +2474,7 @@ ScreenRender.friends = function () {
       btns.appendChild(inv);
     }
     const msg = document.createElement('button');
-    msg.className = 'btn'; msg.textContent = '💬';
+    msg.className = 'btn'; msg.innerHTML = ic('chat');
     msg.title = 'Message ' + f.gamertag;
     msg.addEventListener('click', () => openDM(f.id));
     btns.appendChild(msg);
@@ -2207,7 +2533,7 @@ function runSearch() {
     hits.forEach(x => {
       const row = document.createElement('div');
       row.className = 'rowCard';
-      row.innerHTML = '<div class="pAv" style="border-radius:14px;' + (x.g.icon ? 'background:' + artBG(x.g.icon[0], x.g.icon[1]) : '') + '">🎮</div>' +
+      row.innerHTML = '<div class="pAv" style="border-radius:14px;' + (x.g.icon ? 'background:' + artBG(x.g.icon[0], x.g.icon[1]) : '') + '">' + ic('gamepad') + '</div>' +
         '<div class="rowMain"><div class="t">' + escapeHtml(x.g.name) + '</div><div class="s">' + escapeHtml(x.g.desc || '') + '</div></div>' +
         '<button class="btn primary">Open</button>';
       row.querySelector('button').addEventListener('click', () => { closeAllScreens(); setFocus(Math.max(0, rowOrder.indexOf(x.i))); launchGame(x.i); });
@@ -2267,8 +2593,8 @@ ScreenRender.player = async function (data) {
     (function () {
       let st = isFriend(p.id) ? 'Friend' : 'Player';
       const om = onlineMeta[p.id];
-      if (om) st += om.away ? ' · 🟡 Away' : ' · 🟢 Online';
-      if (om && om.game) st += ' · ▶ ' + om.game;
+      if (om) st += om.away ? ' <span class="dot away"></span>Away' : ' <span class="dot on"></span>Online';
+      if (om && om.game) st += ' ' + ic('chevR') + ' ' + escapeHtml(om.game);
       $('#playerSub').textContent = st;
     })();
     $('#playerBio').textContent = p.bio || '';
@@ -2305,7 +2631,7 @@ ScreenRender.player = async function (data) {
     if (ad && !isPartyBanned(ad.partyId)) {
       const n = (ad.members == null) ? '?' : ad.members;
       const canJoin = (ad.members == null || ad.members < 5);
-      pbox.innerHTML = '<div class="secTitle">PARTY</div><div class="card"><div class="t">🎉 In a voice party</div>' +
+      pbox.innerHTML = '<div class="secTitle">PARTY</div><div class="card"><div class="t">' + ic('spark') + ' In a voice party</div>' +
         '<div class="s">' + escapeHtml(p.gamertag) + '\'s party · ' + n + '/5</div>' +
         (canJoin ? '<div style="margin-top:10px"><button class="btn primary" id="joinTheirParty">Join party</button></div>'
                  : '<div class="s" style="margin-top:6px">Party is full</div>') + '</div>';
@@ -2314,15 +2640,16 @@ ScreenRender.player = async function (data) {
     } else pbox.innerHTML = '';
   } catch (e) { toast('Couldn\'t load player.'); }
 };
-function statCard(v, l) {
-  return '<div class="card stat"><div class="v">' + v + '</div><div class="l">' + l + '</div></div>';
+function statCard(v, l, go) {
+  return '<div class="card stat' + (go ? ' statLink' : '') + '"' + (go ? ' data-statgo="' + go + '"' : '') + '><div class="v">' + v + '</div><div class="l">' + l + '</div></div>';
 }
 
 /* ---------- Messages / chats ---------- */
 let chatCache = []; // {id, members:[{id,gamertag,pic}], last:{body,at,by}, unread}
 let chatChannels = {};
+function chatIconHTML(c){ return (c.icon && I[c.icon]) ? ic(c.icon)+' ' : (c.icon ? escapeHtml(c.icon)+' ' : ''); }
 function chatName(c) {
-  if (c.name) return (c.icon ? c.icon + ' ' : '') + c.name;
+  if (c.name) return c.name;
   const me = currentAccount();
   const others = c.members.filter(m => m.id !== (me && me.id));
   if (!others.length) return 'Just you';
@@ -2393,7 +2720,7 @@ ScreenRender.messages = function () {
     const av = others[0] || c.members[0];
     row.innerHTML = picHtml(av && av.pic, av && av.gamertag) +
       '<div class="rowMain"><div class="t">' + escapeHtml(chatName(c)) + '</div><div class="s">' +
-      escapeHtml(c.last ? (c.last.deleted ? '🗑 Message deleted' : c.last.body.slice(0, 60)) : 'Say hi!') + '</div></div>' +
+      escapeHtml(c.last ? (c.last.deleted ? ic('trash') + ' Message deleted' : c.last.body.slice(0, 60)) : 'Say hi!') + '</div></div>' +
       (c.unread ? '<span class="badge unread"></span>' : '');
     row.addEventListener('click', () => openScreen('chat', { chatId: c.id }));
     list.appendChild(row);
@@ -2456,7 +2783,7 @@ ScreenRender.chat = async function (data) {
   activeChatId = (data && data.chatId) || activeChatId;
   const c = chatCache.find(x => x.id === activeChatId);
   if (!c) { toast('Chat not found.'); goBack(); return; }
-  $('#chatTitle').textContent = chatName(c);
+  $('#chatTitle').innerHTML = chatIconHTML(c) + escapeHtml(chatName(c));
   $('#chatSub').textContent = c.members.length + (c.members.length === 1 ? ' PERSON' : ' PEOPLE');
   $('#chatEditBtn').style.display = c.members.length > 2 ? '' : 'none';
   markRead(activeChatId);
@@ -2477,14 +2804,14 @@ async function loadChatMessages(chatId) {
       const b = document.createElement('div');
       b.className = 'bubble ' + (mine ? 'me' : 'them') + (m.deleted ? ' deleted' : '');
       if (m.deleted) {
-        b.innerHTML = '<i>🗑 Message deleted</i>';
+        b.innerHTML = '<i>' + ic('trash') + ' Message deleted</i>';
       } else {
         b.innerHTML = (mine ? '' : '<div class="who">' + escapeHtml(sender ? sender.gamertag : '?') + '</div>') + escapeHtml(m.body);
         if (mine) {
           const del = document.createElement('button');
           del.className = 'msgDel';
           del.title = 'Delete for everyone';
-          del.textContent = '🗑';
+          del.innerHTML = ic('trash');
           del.addEventListener('click', ev => { ev.stopPropagation(); deleteMessage(chatId, m.id); });
           b.appendChild(del);
         }
@@ -2553,7 +2880,7 @@ async function sendChatMessage() {
 $('#chatEditBtn').addEventListener('click', () => {
   const c = chatCache.find(x => x.id === activeChatId);
   if (!c || c.members.length <= 2) return;
-  const EMOJIS = ['🎮','🏆','🚀','💬','🔥','⭐','🎯','🎲','✨','👾'];
+  const EMOJIS = ['gamepad','trophy','rocket','chat','fire','star','target','dice','spark','alien'];
   modal('Group chat', 'Give this group a name and an icon.', [{ label: 'Cancel' }, { label: 'Save', primary: true, onClick: async () => {
     const name = $('#grpName').value.trim().slice(0, 30);
     const icon = $('#grpIcon').value;
@@ -2561,7 +2888,7 @@ $('#chatEditBtn').addEventListener('click', () => {
     const { error } = await supa.from('chats').update({ name: name || null, icon: icon || null }).eq('id', c.id);
     if (error) { toast('Couldn\'t save.'); return; }
     c.name = name || null; c.icon = icon || null;
-    $('#chatTitle').textContent = chatName(c);
+    $('#chatTitle').innerHTML = chatIconHTML(c) + escapeHtml(chatName(c));
     loadChats();
     toast('Group updated.');
   }}]);
@@ -2579,8 +2906,7 @@ $('#chatEditBtn').addEventListener('click', () => {
     EMOJIS.forEach(e => {
       const b = document.createElement('button');
       b.className = 'btn' + (iconInput.value === e ? ' primary' : '');
-      b.style.fontSize = '20px';
-      b.textContent = e;
+      b.innerHTML = ic(e);
       b.addEventListener('click', () => { iconInput.value = (iconInput.value === e) ? '' : e; paintEmojis(); });
       erow.appendChild(b);
     });
@@ -2611,7 +2937,9 @@ ScreenRender.profile = function () {
   const totalSecs = Object.values(getHours()).reduce((x, y) => x + y, 0);
   $('#statGrid').innerHTML =
     statCard(owned, 'GAMES') + statCard(totalSecs ? fmtPlaytime(totalSecs) : '0', 'HOURS') +
-    statCard('0', 'ACHIEVEMENTS') + statCard(friendCache.friends.length, 'FRIENDS');
+    statCard('0', 'ACHIEVEMENTS') + statCard(friendCache.friends.length, 'FRIENDS', 'friends');
+  const _sf = $('#statGrid [data-statgo]');
+  if (_sf) _sf.addEventListener('click', () => openScreen(_sf.dataset.statgo));
   const rg = $('#recentGrid');
   const names = recentGameNames();
   if (!names.length) rg.innerHTML = '<div class="emptyNote">Nothing played yet.</div>';
@@ -2700,17 +3028,19 @@ ScreenRender.shop = function () {
   const grid = $('#shopGrid');
   grid.innerHTML = '';
   const soon = [
-    { id: 's0', e: '🎮', t: 'Coming soon', s: 'The first Olympus games are on the way.' },
-    { id: 's1', e: '🏆', t: 'Coming soon', s: 'More worlds to explore.' },
-    { id: 's2', e: '🚀', t: 'Coming soon', s: 'Stay tuned.' }
+    { id: 's0', icon: 'rocket', g: 'linear-gradient(135deg,#2f6bff,#0a1f66)', t: 'Coming soon', s: 'Big adventures are on the way. Check back soon.' },
+    { id: 's1', icon: 'trophy', g: 'linear-gradient(135deg,#b98a1e,#4a2f00)', t: 'Coming soon', s: 'Challenge packs are on the way. Check back soon.' },
+    { id: 's2', icon: 'gamepad', g: 'linear-gradient(135deg,#7a2fe0,#2a0a5e)', t: 'Coming soon', s: 'New worlds are on the way. Check back soon.' }
   ];
   const wl = getWishlist();
   const mkCard = x => {
     const d = document.createElement('div');
     d.className = 'card shopCard';
     const inWl = wl.indexOf(x.id) >= 0;
-    d.innerHTML = '<button class="wishBtn' + (inWl ? ' on' : '') + '" title="Wishlist">' + (inWl ? '♥' : '♡') + '</button>' +
-      '<div class="art">' + x.e + '</div><div class="info"><div class="t">' + x.t + '</div><div class="s">' + x.s + '</div></div>';
+    d.innerHTML = '<button class="wishBtn' + (inWl ? ' on' : '') + '" title="Wishlist">' + ic('heart') + '</button>' +
+      '<div class="art" style="background:' + x.g + '">' + ic(x.icon) + '</div>' +
+      '<div class="info"><div class="t">' + x.t + '</div><div class="s">' + x.s + '</div>' +
+      '<div class="foot"><span class="priceTag">FREE</span></div></div>';
     d.querySelector('.wishBtn').addEventListener('click', ev => {
       ev.stopPropagation();
       const w = getWishlist();
@@ -2761,7 +3091,7 @@ ScreenRender.library = function () {
       const pct = Math.round(100 * (x.g.ach.done || 0) / x.g.ach.total);
       const badge = document.createElement('div');
       badge.className = 'achBadge';
-      badge.textContent = '🏆 ' + pct + '%';
+      badge.innerHTML = ic('trophy') + ' ' + pct + '%';
       d.appendChild(badge);
     }
     d.addEventListener('click', () => { closeAllScreens(); setFocus(Math.max(0, rowOrder.indexOf(x.i))); launchGame(x.i); });
@@ -3035,7 +3365,7 @@ async function createParty(privacy) {
       }, 1000);
       party.ptt = false; party.pttTalking = false; party._pttKey = false; party._pttPad = false;
       try { party.ptt = localStorage.getItem('oly_ptt') === '1'; } catch (e) {}
-      $('#pttBtn').textContent = party.ptt ? '🎙 PTT: On' : '🎙 PTT: Off';
+      $('#pttBtn').innerHTML = ic('mic') + (party.ptt ? 'PTT: On' : 'PTT: Off');
       applyMicState();
       showPartyBar();
       openScreen('party');
@@ -3066,7 +3396,7 @@ async function joinParty(partyId, viaInvite) {
       setTimeout(() => { if (party && party.members.length <= 1) { toast('That party ended.'); leaveParty(); } }, 2500);
       party.ptt = false; party.pttTalking = false; party._pttKey = false; party._pttPad = false;
       try { party.ptt = localStorage.getItem('oly_ptt') === '1'; } catch (e) {}
-      $('#pttBtn').textContent = party.ptt ? '🎙 PTT: On' : '🎙 PTT: Off';
+      $('#pttBtn').innerHTML = ic('mic') + (party.ptt ? 'PTT: On' : 'PTT: Off');
       applyMicState();
       // enforce the 5-person max once presence has synced
       setTimeout(() => {
@@ -3380,8 +3710,8 @@ function paintSpeaking() {
 $('#partyBarOpen').addEventListener('click', () => openScreen('party'));
 $('#partyBarShare').addEventListener('click', toggleShare);
 function paintShareBtn() {
-  const label = (party && party.shareStream) ? '⏹ Stop' : '🖥 Share';
-  const sb = $('#shareBtn'); if (sb) sb.textContent = (party && party.shareStream) ? '⏹ Stop sharing' : '🖥 Share screen';
+  const label = (party && party.shareStream) ? ic('stop') + ' Stop' : ic('monitor') + ' Share';
+  const sb = $('#shareBtn'); if (sb) sb.innerHTML = (party && party.shareStream) ? ic('stop') + 'Stop sharing' : ic('monitor') + 'Share screen';
   const pb = $('#partyBarShare'); if (pb) pb.textContent = label;
 };
 function paintParty() {
@@ -3402,8 +3732,8 @@ function paintParty() {
     row.className = 'rowCard';
     row.innerHTML = picHtml(m.pic, m.gamertag) +
       '<div class="rowMain"><div class="t">' + escapeHtml(m.gamertag) + (isMe ? ' (you)' : '') + '</div><div class="s">' +
-      (m.host ? '👑 Host' : 'Member') + (m.sharing ? ' · 🖥 Sharing' : '') + (!connected ? ' · Connecting…' : '') +
-      (isMe && party.muted ? ' · 🔇 Muted' : '') + (isMe && party.deafened ? ' · 🔇 Deafened' : '') + (isMe && party.ptt ? ' · 🎙 PTT (hold T / LB)' : '') + (!isMe && m.ptt ? ' · 🎙 PTT' : '') + (muted ? (blocked ? ' · 🚫 Blocked' : ' · 🔇 Muted') : '') + '</div></div>';
+      (m.host ? ic('crown') + ' Host' : 'Member') + (m.sharing ? ' ' + ic('monitor') + ' Sharing' : '') + (!connected ? ' · Connecting…' : '') +
+      (isMe && party.muted ? ' ' + ic('micOff') + ' Muted' : '') + (isMe && party.deafened ? ' ' + ic('volX') + ' Deafened' : '') + (isMe && party.ptt ? ' ' + ic('mic') + ' PTT (hold T / LB)' : '') + (!isMe && m.ptt ? ' ' + ic('mic') + ' PTT' : '') + (muted ? (blocked ? ' ' + ic('ban') + ' Blocked' : ' ' + ic('micOff') + ' Muted') : '') + '</div></div>';
     if (speaking) { const av = row.querySelector('.pAv'); if (av) av.classList.add('speaking'); }
     if (!isMe) {
       const btns = document.createElement('div');
@@ -3419,7 +3749,7 @@ function paintParty() {
         btns.appendChild(kb);
       }
       const mb = document.createElement('button');
-      mb.className = 'btn'; mb.textContent = muted ? '🔇 Unmute' : '🔈 Mute';
+      mb.className = 'btn'; mb.innerHTML = muted ? ic('micOff') + 'Unmute' : ic('volLow') + 'Mute';
       mb.addEventListener('click', () => {
         if (isBlocked(m.id)) { toast('Blocked users stay muted. Unblock to unmute.'); return; }
         if (party.mutedPeers[m.id]) delete party.mutedPeers[m.id]; else party.mutedPeers[m.id] = true;
@@ -3430,7 +3760,7 @@ function paintParty() {
       const volWrap = document.createElement('div');
       volWrap.style.cssText = 'display:flex;align-items:center;gap:6px';
       const volIco = document.createElement('span');
-      volIco.textContent = '🔊'; volIco.style.fontSize = '14px';
+      volIco.innerHTML = ic('vol');
       const vol = document.createElement('input');
       vol.type = 'range'; vol.min = '0'; vol.max = '100';
       vol.value = String(Math.round(((party.volumes[m.id] != null) ? party.volumes[m.id] : 1) * 100));
@@ -3464,7 +3794,7 @@ $('#muteBtn').addEventListener('click', () => {
   party.muted = !party.muted;
   if (party.muted) party.speaking = false;
   party._pttKey = false; party._pttPad = false; party.pttTalking = false;
-  $('#muteBtn').textContent = party.muted ? '🔇 Unmute' : '🎙 Mute';
+  $('#muteBtn').innerHTML = party.muted ? ic('micOff') + 'Unmute' : ic('mic') + 'Mute';
   applyMicState();
 });
 function applyAudioMutes() {
@@ -3477,7 +3807,7 @@ function applyAudioMutes() {
 $('#deafenBtn').addEventListener('click', () => {
   if (!party) return;
   party.deafened = !party.deafened;
-  $('#deafenBtn').textContent = party.deafened ? '🔈 Undeafen' : '🔇 Deafen';
+  $('#deafenBtn').innerHTML = party.deafened ? ic('volLow') + 'Undeafen' : ic('volX') + 'Deafen';
   applyAudioMutes(); updatePresence(); paintParty();
 });
 function applyMicState() {
@@ -3492,7 +3822,7 @@ $('#pttBtn').addEventListener('click', () => {
   party.ptt = !party.ptt;
   party.pttTalking = false;
   try { localStorage.setItem('oly_ptt', party.ptt ? '1' : '0'); } catch (e) {}
-  $('#pttBtn').textContent = party.ptt ? '🎙 PTT: On' : '🎙 PTT: Off';
+  $('#pttBtn').innerHTML = ic('mic') + (party.ptt ? 'PTT: On' : 'PTT: Off');
   toast(party.ptt ? 'Push-to-talk on. Hold T or LB to talk.' : 'Open mic on.');
   applyMicState();
 });
@@ -3541,9 +3871,9 @@ async function leaveParty() {
   if (!party) return;
   stopSpeakingMonitor();
   if (party.timerInt) clearInterval(party.timerInt);
-  $('#muteBtn').textContent = '🎙 Mute';
-  $('#deafenBtn').textContent = '🔇 Deafen';
-  $('#pttBtn').textContent = '🎙 PTT: Off';
+  $('#muteBtn').innerHTML = ic('mic') + 'Mute';
+  $('#deafenBtn').innerHTML = ic('volX') + 'Deafen';
+  $('#pttBtn').innerHTML = ic('mic') + 'PTT: Off';
   try {
     if (party.adTimer) clearInterval(party.adTimer);
     Object.keys(party.peers).forEach(pid => { try { party.peers[pid].close(); } catch (e) {} });
