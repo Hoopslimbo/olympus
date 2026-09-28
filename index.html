@@ -909,7 +909,7 @@
     </div>
     <div class="secTitle">ABOUT</div>
     <div class="card setRow">
-      <div><div class="t">Olympus</div><div class="s" id="verSub">Version 0.3.2 · PC app</div></div>
+      <div><div class="t">Olympus</div><div class="s" id="verSub">Version 0.3.3 · PC app</div></div>
       <div class="spacer"></div>
       <button class="btn" id="updateBtn">Check for updates</button>
     </div>
@@ -1070,7 +1070,7 @@ function initials(tag) {
 function picHtml(pic, tag, cls) {
   return '<div class="' + (cls || 'pAv') + '">' + (pic ? '<img src="' + pic + '" alt="">' : escapeHtml(initials(tag))) + '</div>';
 }
-const OLY_VERSION = '0.3.2';
+const OLY_VERSION = '0.3.3';
 /* Welcome email: sent once when a new Olympus account is created.
    Uses EmailJS (free tier, sends from your Gmail — no domain needed).
    Fill these in (or set localStorage 'oly_welcome_email' to a JSON object
@@ -2067,7 +2067,18 @@ $('#viewerDel').addEventListener('click', () => {
   ]);
 });
 /* ---------- Controller remapping ---------- */
-function getRemap(padId){ try{ const m = JSON.parse(localStorage.getItem('oly_remap_'+padId)||'{}'); return (m && typeof m==='object') ? m : {}; }catch(e){ return {}; } }
+function cleanRemap(m){
+  // One physical button can only drive one action: the first mapping wins,
+  // later duplicates silently revert to Default. Repairs tangled saves.
+  const seen = {}, out = {};
+  Object.keys(m).map(Number).filter(n => !isNaN(n)).sort((a, b) => a - b).forEach(l => {
+    const p = +m[l];
+    if (isNaN(p) || seen[p]) return;
+    seen[p] = true; out[l] = p;
+  });
+  return out;
+}
+function getRemap(padId){ try{ const m = JSON.parse(localStorage.getItem('oly_remap_'+padId)||'{}'); return cleanRemap((m && typeof m==='object') ? m : {}); }catch(e){ return {}; } }
 function saveRemap(padId, m){ try{ localStorage.setItem('oly_remap_'+padId, JSON.stringify(m)); }catch(e){} }
 let _rmId = null, _rmMap = {};
 function physIdx(gp, logical){
@@ -2221,10 +2232,16 @@ function pollPad() {
     else if (anyDown) {
       for (let bi = 0; bi < gp.buttons.length; bi++) {
         if (gp.buttons[bi] && gp.buttons[bi].pressed) {
-          const m = getRemap(gp.id); m[remapCapture.logical] = bi; saveRemap(gp.id, m); _rmId = null;
+          const m = getRemap(gp.id);
+          // A physical button drives exactly one action: free it from any
+          // other row before assigning, so two actions can never share it.
+          let freed = -1;
+          Object.keys(m).forEach(k => { if (+k !== remapCapture.logical && +m[k] === bi) { freed = +k; delete m[k]; } });
+          m[remapCapture.logical] = bi; saveRemap(gp.id, m); _rmId = null;
           remapCapture.row.classList.remove('capturing');
           remapCapture = null;
           paintRemapRows();
+          if (freed >= 0) { try { toast(logicalName(freed) + ' is back to Default'); } catch (e) {} }
           break;
         }
       }
