@@ -465,6 +465,38 @@
   .wishBtn.on { color: #ff5d7a; border-color: rgba(255,93,122,.7); }
   .wishBtn.on svg path { fill: currentColor; }
 
+  /* Store game detail + downloads (Nintendo/Xbox-style) */
+  #gameHero { position:relative; border-radius:20px; overflow:hidden; border:1px solid rgba(var(--accent-rgb),.2); aspect-ratio:16/8; background:#0a1120; margin-bottom:18px; min-height:220px; }
+  #gameHero img { width:100%; height:100%; object-fit:cover; display:block; position:absolute; inset:0; }
+  #gameHero .shade { position:absolute; inset:0; background:linear-gradient(to top, rgba(3,6,14,.92) 0%, rgba(3,6,14,.25) 52%, transparent 78%); }
+  #gameHero .gname { position:absolute; left:22px; bottom:18px; font-size:24px; font-weight:800; letter-spacing:.03em; text-shadow:0 2px 12px rgba(0,0,0,.85); }
+  #gameHero .gprice { position:absolute; right:18px; bottom:18px; }
+  .gdesc { font-size:14px; color:var(--dim); line-height:1.65; margin-bottom:18px; max-width:680px; }
+  .gmeta { font-size:12px; color:var(--dim); letter-spacing:.1em; margin-bottom:18px; }
+  .gbtnRow { display:flex; gap:12px; flex-wrap:wrap; }
+  .gbtnRow .btn { min-width:180px; }
+  .heroSlide .hart.wp { background-size:cover !important; background-position:center !important; }
+  .heroSlide .hart.wp svg { display:none; }
+  .storeTile .tart img { width:100%; height:100%; object-fit:cover; position:absolute; inset:0; }
+  .dlTile { position:relative; overflow:hidden; }
+  .dlTile > img { width:100%; height:100%; object-fit:cover; position:absolute; inset:0; opacity:.4; }
+  .dlRingWrap { position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; width:100%; height:100%; }
+  .dlPct { font-size:19px; font-weight:800; color:#fff; text-shadow:0 2px 8px rgba(0,0,0,.7); }
+  .dlName { font-size:11px; color:var(--dim); letter-spacing:.06em; max-width:88%; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .dlPausedTag { font-size:10px; font-weight:800; letter-spacing:.14em; color:#fbbf24; }
+  #dlModalWrap { position:fixed; inset:0; z-index:250; display:none; align-items:center; justify-content:center; background:rgba(3,6,14,.72); backdrop-filter:blur(4px); }
+  #dlModalWrap.open { display:flex; }
+  #dlModal { width:min(360px,88vw); background:#0e1526; border:1px solid #1c2942; border-radius:18px; padding:26px 22px 22px; text-align:center; box-shadow:0 24px 70px rgba(0,0,0,.6); }
+  #dlModal .t { font-size:17px; font-weight:800; }
+  #dlModal .s { font-size:12px; color:#8b98b8; letter-spacing:.1em; margin-top:6px; }
+  #dlModal .big { font-size:54px; font-weight:800; margin:12px 0 10px; font-variant-numeric:tabular-nums; }
+  #dlModal .bar { height:10px; border-radius:6px; background:#16213a; overflow:hidden; margin-bottom:20px; }
+  #dlModal .bar i { display:block; height:100%; width:0; background:#22d3ee; border-radius:6px; transition:width .25s; }
+  #gameFrame { position:fixed; inset:0; z-index:300; display:none; background:#000; }
+  #gameFrame.open { display:block; }
+  #gameFrame iframe { width:100%; height:100%; border:0; }
+  #gameFrame .gclose { position:absolute; top:14px; right:14px; z-index:2; width:44px; height:44px; border-radius:50%; border:1px solid rgba(255,255,255,.3); background:rgba(5,8,20,.6); color:#fff; font-size:20px; cursor:pointer; }
+
   /* Library */
   #libGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
   .libTile {
@@ -781,6 +813,16 @@
   </div>
 </section>
 
+<section class="screen" id="screen-game">
+  <div class="screenHead"><div class="backBtn" data-back><span data-ic="chevL"></span></div><div><h1 id="gameScrTitle">Game</h1><div class="sub">STORE</div></div></div>
+  <div class="screenBody">
+    <div id="gameHero"></div>
+    <div class="gmeta" id="gameMeta2"></div>
+    <div class="gdesc" id="gameDesc2"></div>
+    <div class="gbtnRow" id="gameBtns"></div>
+  </div>
+</section>
+
 <section class="screen" id="screen-search">
   <div class="screenHead"><div class="backBtn" data-back><span data-ic="chevL"></span></div><div><h1>Search</h1><div class="sub">GAMES AND PLAYERS</div></div></div>
   <div class="screenBody">
@@ -996,6 +1038,13 @@
   <div class="mcInputRow"><input id="mcInput" class="txtInput" placeholder="Message…" maxlength="500" autocomplete="off"><button class="btn primary" id="mcSend">Send</button></div>
 </div>
 <div id="modalWrap"><div id="modal"><h3 id="modalTitle"></h3><p id="modalText"></p><div class="btnRow" id="modalBtns"></div></div></div>
+<div id="dlModalWrap"><div id="dlModal" role="dialog" aria-label="Download progress">
+  <div class="t" id="dlmName"></div><div class="s">DOWNLOADING</div>
+  <div class="big" id="dlmPct">0%</div>
+  <div class="bar"><i id="dlmBar"></i></div>
+  <button class="btn primary" id="dlmOk" style="width:100%">OK</button>
+</div></div>
+<div id="gameFrame"><button class="gclose" id="gameFrameClose" aria-label="Close game">&#10005;</button><iframe id="gameFrameView" title="Game" sandbox="allow-scripts allow-same-origin"></iframe></div>
 
 <div id="remapWrap"><div id="remapBox">
   <h3>Remap controller</h3>
@@ -1253,6 +1302,7 @@ let supa = null;
 try {
   if (window.supabase && window.supabase.createClient) supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 } catch (e) { supa = null; }
+loadStoreGames(); // prefetch the store catalog; safe when offline
 /* Offline-safe: the console still boots and runs locally if the cloud
    library can't load (no network). Cloud features just report offline. */
 function online() { return !!supa; }
@@ -1556,6 +1606,8 @@ function closeAllScreens() {
 }
 let backMenuShown = false; // Back opened the tab menu; the next Back keeps going back
 function goBack() {
+  if ($('#gameFrame').classList.contains('open')) { closeGameFrame(); return; }
+  if ($('#dlModalWrap').classList.contains('open')) { closeDlModal(); return; }
   if ($('#viewer') && $('#viewer').classList.contains('open')) { closeViewer(); return; }
   if (accountOpen) { closeAccount(); return; }
   if ($('#modalWrap').classList.contains('open')) { closeModal(); return; }
@@ -3185,32 +3237,43 @@ $('#editProfBtn').addEventListener('click', () => {
 /* ---------- Shop ---------- */
 function getWishlist() { try { return JSON.parse(localStorage.getItem('oly_wishlist') || '[]'); } catch (e) { return []; } }
 let storeHeroTimer = null, storeHeroIdx = 0;
-ScreenRender.shop = function () {
+ScreenRender.shop = async function () {
   if (storeHeroTimer) { clearInterval(storeHeroTimer); storeHeroTimer = null; }
   const heroBox = $('#shopHero');
   heroBox.innerHTML = '';
   const grid = $('#shopGrid');
   grid.innerHTML = '';
+  await loadStoreGames();
+  const wl = getWishlist();
   const soon = [
     { id: 's0', icon: 'rocket', g: 'linear-gradient(135deg,#2f6bff,#0a1f66)', t: 'Coming soon', s: 'Big adventures are on the way. Check back soon.' },
     { id: 's1', icon: 'trophy', g: 'linear-gradient(135deg,#b98a1e,#4a2f00)', t: 'Coming soon', s: 'Challenge packs are on the way. Check back soon.' },
     { id: 's2', icon: 'gamepad', g: 'linear-gradient(135deg,#7a2fe0,#2a0a5e)', t: 'Coming soon', s: 'New worlds are on the way. Check back soon.' }
   ];
-  const wl = getWishlist();
+  const feat = storeGames.filter(g => g.wallpaper_url).slice(0, 5);
+  const useReal = feat.length > 0;
   /* Featured hero carousel */
   const hero = document.createElement('div');
   hero.id = 'storeHero';
-  const slides = soon.map((x, i) => {
+  const slides = (useReal ? feat : soon).map((x, i) => {
     const s = document.createElement('button');
     s.className = 'heroSlide' + (i === 0 ? ' active' : '');
-    s.innerHTML = '<div class="hart" style="background:' + x.g + '">' + ic(x.icon) + '</div>' +
-      '<div class="hbody"><div class="kick">FEATURED \u00B7 OLYMPUS STORE</div><h2>' + x.t + '</h2><p>' + x.s + '</p>' +
-      '<div class="hfoot"><span class="priceTag">FREE</span><span class="soonPill">COMING SOON</span></div></div>';
-    s.addEventListener('click', () => toast('\u201C' + x.t + '\u201D is coming soon.'));
+    if (useReal) {
+      s.innerHTML = '<div class="hart wp" style="background-image:url(' + x.wallpaper_url + ')"></div>' +
+        '<div class="hbody"><div class="kick">FEATURED \u00B7 OLYMPUS STORE</div><h2>' + escapeHtml(x.name) + '</h2><p>' +
+        escapeHtml((x.description || '').slice(0, 140)) + '</p>' +
+        '<div class="hfoot"><span class="priceTag">' + priceLabel(x.price) + '</span></div></div>';
+      s.addEventListener('click', () => openScreen('game', x));
+    } else {
+      s.innerHTML = '<div class="hart" style="background:' + x.g + '">' + ic(x.icon) + '</div>' +
+        '<div class="hbody"><div class="kick">FEATURED \u00B7 OLYMPUS STORE</div><h2>' + x.t + '</h2><p>' + x.s + '</p>' +
+        '<div class="hfoot"><span class="priceTag">FREE</span><span class="soonPill">COMING SOON</span></div></div>';
+      s.addEventListener('click', () => toast('\u201C' + x.t + '\u201D is coming soon.'));
+    }
     hero.appendChild(s);
     return s;
   });
-  const dots = soon.map((x, i) => {
+  const dots = slides.map((x, i) => {
     const d = document.createElement('button');
     if (i === 0) d.classList.add('on');
     d.setAttribute('aria-label', 'Featured ' + (i + 1));
@@ -3242,20 +3305,26 @@ ScreenRender.shop = function () {
   heroBox.appendChild(hero);
   restart();
   /* Game rows */
-  const mkTile = x => {
+  const gidOf = g => 'sg_' + g.slug;
+  const mkTile = g => {
     const d = document.createElement('div');
     d.className = 'storeTile shopCard';
-    const inWl = wl.indexOf(x.id) >= 0;
+    const gid = gidOf(g);
+    const inWl = wl.indexOf(gid) >= 0;
+    const art = g.icon_url
+      ? '<div class="tart"><img src="' + g.icon_url + '" alt=""></div>'
+      : '<div class="tart" style="background:linear-gradient(135deg,#2f6bff,#0a1f66)">' + ic('gamepad') + '</div>';
     d.innerHTML = '<button class="wishBtn' + (inWl ? ' on' : '') + '" title="Wishlist">' + ic('heart') + '</button>' +
-      '<div class="tart" style="background:' + x.g + '">' + ic(x.icon) + '</div>' +
-      '<div class="tinfo"><div class="t">' + x.t + '</div><div class="s">' + x.s + '</div>' +
-      '<div class="tfoot"><span class="priceTag">FREE</span></div></div>';
-    d.addEventListener('click', () => toast('\u201C' + x.t + '\u201D is coming soon.'));
+      art +
+      '<div class="tinfo"><div class="t">' + escapeHtml(g.name) + '</div><div class="s">' +
+      escapeHtml((g.description || '').slice(0, 90)) + '</div>' +
+      '<div class="tfoot"><span class="priceTag">' + priceLabel(g.price) + '</span></div></div>';
+    d.addEventListener('click', () => openScreen('game', g));
     d.querySelector('.wishBtn').addEventListener('click', ev => {
       ev.stopPropagation();
       const w = getWishlist();
-      const i = w.indexOf(x.id);
-      if (i >= 0) w.splice(i, 1); else w.push(x.id);
+      const i = w.indexOf(gid);
+      if (i >= 0) w.splice(i, 1); else w.push(gid);
       try { localStorage.setItem('oly_wishlist', JSON.stringify(w)); } catch (e) {}
       ScreenRender.shop();
     });
@@ -3275,19 +3344,71 @@ ScreenRender.shop = function () {
     w.appendChild(r);
     return w;
   };
-  const wlItems = soon.filter(x => wl.indexOf(x.id) >= 0);
+  const wlItems = storeGames.filter(g => wl.indexOf(gidOf(g)) >= 0);
   if (wlItems.length) { grid.appendChild(sec('WISHLIST')); grid.appendChild(row(wlItems)); }
-  grid.appendChild(sec('COMING SOON'));
-  grid.appendChild(row(soon));
+  if (storeGames.length) {
+    grid.appendChild(sec('ALL GAMES'));
+    grid.appendChild(row(storeGames));
+  } else {
+    grid.appendChild(sec('COMING SOON'));
+    grid.appendChild(row(soon.map(x => ({ slug: x.id, name: x.t, description: x.s, price: 0, icon_url: null }))));
+  }
+};
+
+/* ---------- Store game detail (PlayStation-style) ---------- */
+ScreenRender.game = function (g) {
+  if (!g || !g.slug) { goBack(); return; }
+  $('#gameScrTitle').textContent = g.name;
+  $('#gameHero').innerHTML = (g.wallpaper_url ? '<img src="' + g.wallpaper_url + '" alt="">' : '') +
+    '<div class="shade"></div>' +
+    '<div class="gname">' + escapeHtml(g.name) + '</div>' +
+    '<div class="gprice"><span class="priceTag">' + priceLabel(g.price) + '</span></div>';
+  $('#gameMeta2').textContent = 'VERSION ' + escapeHtml(g.version || '1.0.0');
+  $('#gameDesc2').textContent = g.description || 'No description yet.';
+  const btns = $('#gameBtns');
+  btns.innerHTML = '';
+  const gid = 'sg_' + g.slug;
+  const main = document.createElement('button');
+  main.className = 'btn primary';
+  const dl = dlItems[g.slug];
+  if (isOwned(g)) {
+    main.textContent = 'Play';
+    main.addEventListener('click', () => launchStoreGame(g));
+  } else if (dl && dl.status !== 'done') {
+    main.textContent = 'Downloading' + (dl.total > 0 ? ' ' + Math.round(dl.progress) + '%' : '') + ' — view in Library';
+    main.addEventListener('click', () => openScreen('library'));
+  } else if (Number(g.price) > 0) {
+    main.textContent = 'Buy ' + priceLabel(g.price);
+    main.addEventListener('click', () => modal('Checkout', 'Payments aren\u2019t live yet \u2014 this game can\u2019t be purchased right now.', [{ label: 'OK', primary: true }]));
+  } else {
+    main.textContent = 'Download FREE';
+    main.addEventListener('click', () => { queueDownload(g); ScreenRender.game(g); });
+  }
+  btns.appendChild(main);
+  const w = document.createElement('button');
+  w.className = 'btn';
+  const inWl = getWishlist().indexOf(gid) >= 0;
+  w.textContent = inWl ? '\u2665 Wishlisted' : '\u2661 Wishlist';
+  w.addEventListener('click', () => {
+    const arr = getWishlist();
+    const i = arr.indexOf(gid);
+    if (i >= 0) arr.splice(i, 1); else arr.push(gid);
+    try { localStorage.setItem('oly_wishlist', JSON.stringify(arr)); } catch (e) {}
+    ScreenRender.game(g);
+  });
+  btns.appendChild(w);
 };
 
 /* ---------- Library ---------- */
-ScreenRender.library = function () {
+ScreenRender.library = async function () {
   const grid = $('#libGrid');
   grid.innerHTML = '';
-  paintDownloads(grid);
+  await loadStoreGames();
+  paintStoreDownloads(grid);
   const owned = games.map((g, i) => ({ g: g, i: i })).filter(x => x.g.name);
-  if (!owned.length) {
+  const ownedSlugs = getOwnedSlugs();
+  const storeOwned = storeGames.filter(g => ownedSlugs.indexOf(g.slug) >= 0);
+  if (!owned.length && !storeOwned.length) {
     grid.insertAdjacentHTML('beforeend', '<div class="emptyNote">Your library is empty.<br>Games you get will appear here.</div>');
     return;
   }
@@ -3312,6 +3433,16 @@ ScreenRender.library = function () {
       d.appendChild(badge);
     }
     d.addEventListener('click', () => { closeAllScreens(); setFocus(Math.max(0, rowOrder.indexOf(x.i))); launchGame(x.i); });
+    grid.appendChild(d);
+  });
+  storeOwned.forEach(g => {
+    const d = document.createElement('div');
+    d.className = 'libTile';
+    d.style.position = 'relative';
+    d.style.overflow = 'hidden';
+    d.innerHTML = (g.icon_url ? '<img src="' + g.icon_url + '" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">' : '') +
+      '<div style="position:absolute;left:8px;right:8px;bottom:10px;z-index:1;color:#fff;text-shadow:0 2px 8px #000;text-align:center;font-size:14px;font-weight:700;letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escapeHtml(g.name) + '</div>';
+    d.addEventListener('click', () => launchStoreGame(g));
     grid.appendChild(d);
   });
 };
@@ -3392,49 +3523,183 @@ function paintNotifLog() {
 $('#clearNotifBtn').addEventListener('click', () => { toastLog.length = 0; paintNotifLog(); });
 ScreenRender.settings = function () { paintSettingsAccount(); paintNotifLog(); };
 
-/* ---------- Download queue ---------- */
-function getDlQueue() { try { return JSON.parse(localStorage.getItem('oly_dlqueue') || '[]'); } catch (e) { return []; } }
-function saveDlQueue(q) { try { localStorage.setItem('oly_dlqueue', JSON.stringify(q)); } catch (e) {} }
-function queueDownload(name) {
-  if (!name) return;
-  const q = getDlQueue();
-  if (q.some(x => x.name === name && x.status !== 'done')) { toast('Already in your downloads.'); return; }
-  q.push({ name: name, status: navigator.onLine === false ? 'paused' : 'queued', at: Date.now() });
-  saveDlQueue(q);
-  toast('Added to downloads: ' + name);
+/* ---------- Store catalog + downloads (Nintendo/Xbox-style) ---------- */
+let storeGames = [];
+async function loadStoreGames() {
+  try {
+    if (!supa) return;
+    const { data, error } = await supa.from('games').select('*').order('name');
+    if (!error && data) storeGames = data;
+  } catch (e) {}
+}
+function priceLabel(p) { return Number(p) > 0 ? '$' + Number(p).toFixed(2) : 'FREE'; }
+function getOwnedSlugs() { try { return JSON.parse(localStorage.getItem('oly_owned_slugs') || '[]'); } catch (e) { return []; } }
+function saveOwnedSlugs(a) { try { localStorage.setItem('oly_owned_slugs', JSON.stringify(a)); } catch (e) {} }
+function isOwned(game) { return getOwnedSlugs().indexOf(game.slug) >= 0; }
+function markOwned(slug) {
+  const a = getOwnedSlugs();
+  if (a.indexOf(slug) < 0) { a.push(slug); saveOwnedSlugs(a); }
+}
+
+const dlItems = {}; // slug -> { game, status, progress, received, total, ctrl, chunks }
+let dlModalSlug = null;
+
+function queueDownload(game) {
+  if (!game || !game.slug) return;
+  if (isOwned(game)) { launchStoreGame(game); return; }
+  const ex = dlItems[game.slug];
+  if (ex && (ex.status === 'downloading' || ex.status === 'queued' || ex.status === 'paused')) {
+    if (ex.status === 'paused') resumeDownload(game.slug);
+    else toast('Already downloading: ' + game.name);
+    return;
+  }
+  dlItems[game.slug] = { game: game, status: navigator.onLine === false ? 'paused' : 'downloading',
+    progress: 0, received: 0, total: 0, ctrl: null, chunks: [] };
+  toast('Downloading ' + game.name + ' — see Library.');
+  if (dlItems[game.slug].status === 'downloading') pumpDownload(dlItems[game.slug]);
   if ($('#screen-library').classList.contains('open')) ScreenRender.library();
 }
-function processDlQueue() {
-  const q = getDlQueue();
-  let changed = false;
-  const up = navigator.onLine !== false;
-  q.forEach(item => {
-    if (!up && (item.status === 'queued' || item.status === 'downloading')) { item.status = 'paused'; changed = true; }
-    else if (up && item.status === 'paused') { item.status = 'queued'; changed = true; }
+async function pumpDownload(item) {
+  const g = item.game;
+  try {
+    const headers = {};
+    if (item.received > 0) headers['Range'] = 'bytes=' + item.received + '-';
+    item.ctrl = new AbortController();
+    const resp = await fetch(g.file_url, { headers: headers, signal: item.ctrl.signal });
+    if (resp.status === 200 && item.received > 0) { item.received = 0; item.chunks = []; } // server ignored Range; restart
+    if (!resp.ok && resp.status !== 206) throw new Error('HTTP ' + resp.status);
+    const len = parseInt(resp.headers.get('Content-Length') || '0', 10);
+    if (len > 0) item.total = item.received + len;
+    const reader = resp.body.getReader();
+    for (;;) {
+      const r = await reader.read();
+      if (r.done) break;
+      item.chunks.push(r.value);
+      item.received += r.value.length;
+      if (item.total > 0) item.progress = Math.min(99, Math.round(100 * item.received / item.total));
+      paintDlProgress(item);
+    }
+    item.progress = 100; item.status = 'done';
+    markOwned(g.slug);
+    toast(g.name + ' installed.');
+  } catch (e) {
+    if (e && e.name === 'AbortError') { item.status = 'paused'; }
+    else { item.status = 'error'; toast('Download failed: ' + g.name); }
+  }
+  paintDlProgress(item);
+  if ($('#screen-library').classList.contains('open')) ScreenRender.library();
+}
+function pauseDownload(slug) {
+  const item = dlItems[slug];
+  if (!item || item.status !== 'downloading') return;
+  item.status = 'pausing';
+  try { if (item.ctrl) item.ctrl.abort(); } catch (e) {}
+}
+function resumeDownload(slug) {
+  const item = dlItems[slug];
+  if (!item || item.status === 'error' || item.status === 'done') return;
+  if (item.status === 'downloading') return;
+  item.status = 'downloading';
+  paintDlProgress(item);
+  pumpDownload(item);
+}
+window.addEventListener('offline', () => {
+  Object.keys(dlItems).forEach(slug => pauseDownload(slug));
+  toast('No Wi-Fi — downloads paused.');
+  if ($('#screen-library').classList.contains('open')) ScreenRender.library();
+});
+window.addEventListener('online', () => {
+  let any = false;
+  Object.keys(dlItems).forEach(slug => {
+    const it = dlItems[slug];
+    if (it.status === 'paused' || it.status === 'pausing') { it.status = 'downloading'; any = true; pumpDownload(it); }
   });
-  if (changed) {
-    saveDlQueue(q);
-    if ($('#screen-library').classList.contains('open')) ScreenRender.library();
+  if (any) toast('Back online — downloads resumed.');
+  if ($('#screen-library').classList.contains('open')) ScreenRender.library();
+});
+const DL_CIRC = 226.2;
+function dlRingSVG(pct) {
+  const off = (DL_CIRC * (1 - Math.max(0, Math.min(100, pct)) / 100)).toFixed(1);
+  return '<svg width="86" height="86" viewBox="0 0 84 84">' +
+    '<circle cx="42" cy="42" r="36" fill="none" stroke="rgba(255,255,255,.16)" stroke-width="7"/>' +
+    '<circle cx="42" cy="42" r="36" fill="none" stroke="#22d3ee" stroke-width="7" stroke-linecap="round"' +
+    ' stroke-dasharray="' + DL_CIRC + '" stroke-dashoffset="' + off + '" transform="rotate(-90 42 42)"/></svg>';
+}
+function paintDlProgress(item) {
+  const slug = item.game.slug;
+  const tile = document.querySelector('.dlTile[data-slug="' + slug + '"]');
+  if (tile) {
+    const ring = tile.querySelector('.dlRingWrap');
+    if (ring) {
+      const pctTxt = item.total > 0 ? Math.round(item.progress) + '%' : (item.received / 1048576).toFixed(1) + ' MB';
+      ring.innerHTML = dlRingSVG(item.progress) +
+        '<div class="dlPct">' + pctTxt + '</div>' +
+        (item.status === 'paused' || item.status === 'pausing' ? '<div class="dlPausedTag">PAUSED</div>' :
+         item.status === 'error' ? '<div class="dlPausedTag" style="color:#f87171">FAILED — TAP TO RETRY</div>' :
+         '<div class="dlName">' + escapeHtml(item.game.name) + '</div>');
+    }
+  }
+  if (dlModalSlug === slug) {
+    const pct = item.total > 0 ? Math.round(item.progress) : 0;
+    $('#dlmPct').textContent = item.total > 0 ? pct + '%' : (item.received / 1048576).toFixed(1) + ' MB';
+    $('#dlmBar').style.width = pct + '%';
   }
 }
-window.addEventListener('online', () => { processDlQueue(); toast('Back online — downloads resumed.'); });
-window.addEventListener('offline', () => { processDlQueue(); toast('No Wi-Fi — downloads paused.'); });
-function paintDownloads(grid) {
-  const q = getDlQueue().filter(x => x.status !== 'done');
-  if (!q.length) return;
+function openDlModal(slug) {
+  const item = dlItems[slug];
+  if (!item) return;
+  if (item.status === 'error') { resumeDownload(slug); return; }
+  dlModalSlug = slug;
+  $('#dlmName').textContent = item.game.name;
+  paintDlProgress(item);
+  $('#dlModalWrap').classList.add('open');
+  setNav($('#dlmOk'));
+}
+function closeDlModal() { $('#dlModalWrap').classList.remove('open'); dlModalSlug = null; }
+$('#dlmOk').addEventListener('click', closeDlModal);
+$('#dlModalWrap').addEventListener('click', e => { if (e.target.id === 'dlModalWrap') closeDlModal(); });
+
+function launchStoreGame(game) {
+  const url = game.file_url;
+  if (!url) { toast('No playable file for this game yet.'); return; }
+  if (/\.html?($|\?)/i.test(url)) {
+    $('#gameFrameView').src = url;
+    $('#gameFrame').classList.add('open');
+  } else {
+    window.open(url, '_blank');
+  }
+}
+function closeGameFrame() {
+  $('#gameFrame').classList.remove('open');
+  $('#gameFrameView').src = 'about:blank';
+}
+$('#gameFrameClose').addEventListener('click', closeGameFrame);
+
+function paintStoreDownloads(grid) {
+  const active = Object.keys(dlItems).map(k => dlItems[k]).filter(x => x.status !== 'done');
+  if (!active.length) return;
   const sec = document.createElement('div');
   sec.className = 'secTitle';
   sec.textContent = 'DOWNLOADS';
   grid.appendChild(sec);
-  q.forEach(item => {
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:20px;margin-bottom:8px';
+  const tiles = [];
+  active.forEach(item => {
     const d = document.createElement('div');
-    d.className = 'card setRow';
-    const label = item.status === 'paused' ? 'Paused — no Wi-Fi' : 'Queued';
-    d.innerHTML = '<div><div class="t">' + escapeHtml(item.name) + '</div><div class="s">' + label + '</div></div>';
-    grid.appendChild(d);
+    d.className = 'libTile dlTile';
+    d.setAttribute('data-slug', item.game.slug);
+    d.innerHTML = (item.game.icon_url ? '<img src="' + item.game.icon_url + '" alt="">' : '') +
+      '<div class="dlRingWrap"></div>';
+    d.addEventListener('click', () => openDlModal(item.game.slug));
+    wrap.appendChild(d);
+    tiles.push(item);
   });
+  grid.appendChild(wrap);
+  tiles.forEach(item => paintDlProgress(item));
 }
 window.Olympus.queueDownload = queueDownload;
+window.Olympus.storeGames = function () { return storeGames; };
 
 /* ---------- Voice parties (WebRTC over Supabase Realtime) ---------- */
 let party = null; // {id, channel, peers:{}, localStream, shareStream, members:[], joinedAt, privacy, makingOffer:{}}
