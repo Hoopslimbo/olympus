@@ -3,8 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Olympus — Home Mockup v2</title>
+<title>Olympus</title>
 <style>
+  :root {
+    --accent: #2f6bff;
+    --accent-rgb: 47, 107, 255;
+    --accent-h: 222;
+    --accent-soft: rgba(47,107,255,.16);
+    --accent-line: rgba(127,176,255,.5);
+    --accent-glow: rgba(47,107,255,.55);
+    --bg0: #05070f;
+    --bg1: #0a0f24;
+    --card: rgba(8, 14, 30, .94);
+    --line: rgba(90, 130, 255, .25);
+    --txt: #dbe6ff;
+    --dim: #8fa8dd;
+    --faint: #5f7fc4;
+  }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html, body {
     width: 100%; height: 100%; overflow: hidden;
@@ -13,6 +28,7 @@
     color: #fff;
     user-select: none;
   }
+  button { font-family: inherit; }
 
   #wallpaper { position: fixed; inset: 0; z-index: 0; }
   #vignette {
@@ -22,7 +38,7 @@
 
   /* ---------- Boot ---------- */
   #boot {
-    position: fixed; inset: 0; z-index: 50; background: #000;
+    position: fixed; inset: 0; z-index: 200; background: #000;
     display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 18px;
     transition: opacity .8s ease;
   }
@@ -30,9 +46,9 @@
   #bootLogo {
     font-size: clamp(48px, 9vw, 110px); font-weight: 800;
     letter-spacing: .35em; text-indent: .35em;
-    background: linear-gradient(180deg, #9fc5ff 0%, #2f6bff 55%, #0a1f66 100%);
+    background: linear-gradient(180deg, #9fc5ff 0%, var(--accent) 55%, #0a1f66 100%);
     -webkit-background-clip: text; background-clip: text; color: transparent;
-    filter: drop-shadow(0 0 28px rgba(47,107,255,.55));
+    filter: drop-shadow(0 0 28px var(--accent-glow));
     opacity: 0; transform: scale(.92);
     animation: logoIn 1.6s cubic-bezier(.2,.8,.2,1) .2s forwards;
   }
@@ -47,7 +63,7 @@
   }
   #bootBar i {
     display: block; height: 100%; width: 40%;
-    background: linear-gradient(90deg, #2f6bff, #9fc5ff); border-radius: 2px;
+    background: linear-gradient(90deg, var(--accent), #9fc5ff); border-radius: 2px;
     animation: loadSlide 1.1s ease-in-out infinite;
   }
   @keyframes loadSlide { 0% { transform: translateX(-110%); } 100% { transform: translateX(480%); } }
@@ -63,92 +79,55 @@
     transition: opacity .9s ease, visibility 0s .9s;
   }
   #home.show { opacity: 1; visibility: visible; transition: opacity .9s ease; }
-
   .rise { opacity: 0; transform: translateY(26px); }
   #home.show .rise { animation: riseIn .8s cubic-bezier(.2,.8,.2,1) forwards; animation-delay: var(--d, 0s); }
   @keyframes riseIn { to { opacity: 1; transform: translateY(0); } }
 
-  /* Top bar */
   #topbar { display: flex; align-items: center; justify-content: space-between; }
   #topLeft { display: flex; align-items: center; gap: 12px; position: relative; }
-  /* Profile pic button — opens the profile switcher */
   #avatarBtn {
     width: 54px; height: 54px; border-radius: 50%; flex: 0 0 auto;
-    background: linear-gradient(135deg, #2f6bff, #0a1f66);
+    background: linear-gradient(135deg, var(--accent), #0a1f66);
     display: flex; align-items: center; justify-content: center;
     font-weight: 700; font-size: 19px; color: #cfe0ff;
-    box-shadow: 0 0 18px rgba(47,107,255,.5);
-    border: 1px solid rgba(90, 130, 255, .35);
-    cursor: pointer;
+    box-shadow: 0 0 18px var(--accent-glow);
+    border: 1px solid var(--accent-line);
+    cursor: pointer; overflow: hidden;
     transition: transform .15s ease, box-shadow .2s ease;
   }
   #avatarBtn:hover { transform: scale(1.06); }
   #avatarBtn svg { width: 30px; height: 30px; }
-  /* Focus glow follows keyboard/controller to whatever control is selected */
+  #avatarBtn img { width: 100%; height: 100%; object-fit: cover; }
   #avatarBtn.focused, #padBtn.focused {
-    box-shadow: 0 0 0 3px rgba(47,107,255,.35), 0 0 28px rgba(47,107,255,.65);
+    box-shadow: 0 0 0 3px rgba(var(--accent-rgb),.35), 0 0 28px var(--accent-glow);
     transform: scale(1.06);
   }
-  /* Player focus glow follows to the avatar while switching profiles */
-  body.profile-open #avatarBtn {
-    box-shadow: 0 0 0 3px rgba(47,107,255,.35), 0 0 28px rgba(47,107,255,.65);
-  }
-  body.profile-open .tile.focused {
-    transform: none;
-    border: 1px solid rgba(100, 140, 255, .22);
-    box-shadow: none;
-  }
-  /* Who's playing? switcher */
-  #profileMenu {
-    position: absolute; top: calc(100% + 12px); left: 0; z-index: 32;
-    min-width: 250px;
-    background: rgba(8, 14, 30, .96);
-    border: 1px solid rgba(90, 130, 255, .25);
-    border-radius: 16px; backdrop-filter: blur(18px);
-    padding: 14px; display: flex; flex-direction: column; gap: 6px;
-    opacity: 0; transform: translateY(-8px); pointer-events: none;
-    transition: opacity .25s ease, transform .25s ease;
-  }
-  #profileMenu.open { opacity: 1; transform: translateY(0); pointer-events: auto; }
-  #profileMenu h3 { font-size: 11px; letter-spacing: .3em; color: #5f7fc4; padding: 4px 10px 8px; }
-  .profileItem {
-    display: flex; align-items: center; gap: 12px;
-    padding: 10px 12px; border-radius: 12px; cursor: pointer;
-    border: 1px solid transparent;
-    font-size: 15px; color: #dbe6ff;
-    transition: background .2s, border-color .2s;
-  }
-  .profileItem .pAv {
-    width: 38px; height: 38px; border-radius: 50%; flex: 0 0 auto;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 700; font-size: 14px; color: #cfe0ff;
-    background: linear-gradient(135deg, #2f6bff, #0a1f66);
-  }
-  .profileItem.add .pAv { background: rgba(47,107,255,.15); border: 1px dashed rgba(127,176,255,.5); font-size: 20px; }
-  .profileItem:hover, .profileItem.focused {
-    background: rgba(47, 107, 255, .16);
-    border-color: #7fb0ff;
-    box-shadow: 0 0 0 3px rgba(47,107,255,.35), 0 8px 28px rgba(47,107,255,.35);
-  }
-  .profileItem .check { margin-left: auto; color: #7fb0ff; font-size: 16px; }
   #topIcons { display: flex; gap: 12px; align-items: center; }
-  #clock { font-size: 15px; color: #8fa8dd; letter-spacing: .12em; margin-right: 8px; font-variant-numeric: tabular-nums; }
+  #clock { font-size: 15px; color: var(--dim); letter-spacing: .12em; margin-right: 8px; font-variant-numeric: tabular-nums; }
   .iconBtn {
     width: 46px; height: 46px; border-radius: 14px;
     background: rgba(10, 18, 40, .55);
-    border: 1px solid rgba(90, 130, 255, .25);
+    border: 1px solid var(--line);
     backdrop-filter: blur(12px);
     display: flex; align-items: center; justify-content: center;
-    font-size: 20px; color: #9fc5ff;
-    transition: transform .15s ease;
+    font-size: 20px; color: #9fc5ff; cursor: pointer;
+    transition: transform .15s ease; position: relative;
   }
   .iconBtn:active { transform: scale(.93); }
+  .iconBtn svg { width: 24px; height: 24px; }
+  .badge {
+    position: absolute; top: -6px; right: -6px;
+    min-width: 22px; height: 22px; padding: 0 6px;
+    border-radius: 999px; background: #ff5470;
+    color: #fff; font-size: 12px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 10px rgba(255,84,112,.6);
+  }
+  .badge.hidden { display: none; }
 
   /* Games row */
   #gamesZone { flex: 1; display: flex; flex-direction: column; justify-content: flex-start; gap: 18px; min-height: 0; }
   #gamesHead { margin-bottom: auto; }
-
-  /* Full-screen hero art behind the whole screen (PS-style) */
   #heroBG {
     position: fixed; inset: 0; z-index: 1; pointer-events: none;
     opacity: 0; transition: opacity .5s ease;
@@ -162,15 +141,12 @@
     content: ''; position: absolute; inset: 0;
     background: linear-gradient(0deg, rgba(0,0,0,.82) 0%, rgba(0,0,0,.25) 42%, rgba(0,0,0,.45) 100%);
   }
-
-  /* Game title + description floating over the art, just above the row */
   #gameMeta { padding: 0 10px 16px; opacity: 0; transition: opacity .4s ease; }
   #gameMeta.show { opacity: 1; }
   #gameTitle { font-size: clamp(30px, 4vw, 54px); font-weight: 800; letter-spacing: .03em; text-shadow: 0 3px 24px rgba(0,0,0,.8); }
   #gameDesc { margin-top: 10px; font-size: 14px; color: #c3d4f8; letter-spacing: .05em; max-width: 560px; line-height: 1.55; text-shadow: 0 2px 12px rgba(0,0,0,.8); }
   #gamesHead h1 { font-size: clamp(24px, 3vw, 36px); font-weight: 700; letter-spacing: .06em; }
-  #gamesHead p { margin-top: 6px; font-size: 13px; color: #5f7fc4; letter-spacing: .22em; }
-
+  #gamesHead p { margin-top: 6px; font-size: 13px; color: var(--faint); letter-spacing: .22em; }
   #rowWrap { position: relative; }
   #tileRow {
     display: flex; gap: 20px;
@@ -179,7 +155,6 @@
     scroll-behavior: smooth;
   }
   #tileRow::-webkit-scrollbar { display: none; }
-
   .tile {
     flex: 0 0 auto;
     width: clamp(150px, 15vw, 210px); aspect-ratio: 1 / 1;
@@ -189,48 +164,33 @@
     transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease;
     cursor: pointer;
   }
-  /* Player focus glow — follows the player wherever they navigate */
   .tile.focused {
     transform: scale(1.07);
     border: 2px solid #7fb0ff;
-    box-shadow: 0 0 0 3px rgba(47,107,255,.35), 0 14px 44px rgba(47,107,255,.4);
+    box-shadow: 0 0 0 3px rgba(var(--accent-rgb),.35), 0 14px 44px rgba(var(--accent-rgb),.4);
   }
-  body.menu-open .tile.focused {
-    transform: none;
-    border: 1px solid rgba(100, 140, 255, .22);
-    box-shadow: none;
+  body.menu-open .tile.focused, body.screen-open .tile.focused {
+    transform: none; border: 1px solid rgba(100, 140, 255, .22); box-shadow: none;
   }
-  .tile.library {
-    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
-    background: rgba(16, 28, 62, .6);
-    border: 1px solid rgba(100, 140, 255, .3);
-  }
-  .tile.library .gridIcon {
-    display: grid; grid-template-columns: repeat(2, 18px); grid-template-rows: repeat(2, 18px); gap: 6px;
-  }
-  .tile.library .gridIcon i { background: rgba(150, 185, 255, .55); border-radius: 4px; }
-  .tile.library span { font-size: 12px; letter-spacing: .28em; text-indent: .28em; color: #8fb0ff; }
-
   #padStatus {
     font-size: 11px; letter-spacing: .18em; color: #8fd694;
     border: 1px solid rgba(120, 220, 150, .35);
     background: rgba(16, 50, 30, .5);
-    padding: 8px 14px; border-radius: 999px;
-    white-space: nowrap;
+    padding: 8px 14px; border-radius: 999px; white-space: nowrap;
   }
 
   /* Side menu */
   #menuOverlay {
-    position: fixed; inset: 0; z-index: 30;
+    position: fixed; inset: 0; z-index: 90;
     background: rgba(0, 0, 0, .5);
     opacity: 0; pointer-events: none; transition: opacity .35s ease;
   }
   #menuOverlay.show { opacity: 1; pointer-events: auto; }
   #sideMenu {
-    position: fixed; top: 0; left: 0; bottom: 0; z-index: 31;
+    position: fixed; top: 0; left: 0; bottom: 0; z-index: 91;
     width: clamp(260px, 26vw, 340px);
-    background: rgba(8, 14, 30, .94);
-    border-right: 1px solid rgba(90, 130, 255, .25);
+    background: var(--card);
+    border-right: 1px solid var(--line);
     backdrop-filter: blur(18px);
     transform: translateX(-105%);
     transition: transform .45s cubic-bezier(.2,.8,.2,1);
@@ -238,44 +198,41 @@
     padding: 32px 22px; gap: 8px;
   }
   #sideMenu.open { transform: translateX(0); }
-  #sideMenu h2 { font-size: 13px; letter-spacing: .34em; color: #5f7fc4; margin-bottom: 16px; padding-left: 14px; }
+  #sideMenu h2 { font-size: 13px; letter-spacing: .34em; color: var(--faint); margin-bottom: 16px; padding-left: 14px; }
   .menuBtn {
     display: flex; align-items: center; gap: 16px;
     padding: 15px 16px; border-radius: 14px;
-    font-size: 16px; letter-spacing: .05em; color: #dbe6ff;
+    font-size: 16px; letter-spacing: .05em; color: var(--txt);
     cursor: pointer; border: 1px solid transparent;
     transition: background .2s, border-color .2s;
-    opacity: 0; transform: translateX(-18px);
+    opacity: 0; transform: translateX(-18px); position: relative;
   }
   #sideMenu.open .menuBtn { animation: menuBtnIn .45s cubic-bezier(.2,.8,.2,1) forwards; animation-delay: var(--d); }
   @keyframes menuBtnIn { to { opacity: 1; transform: translateX(0); } }
   .menuBtn:hover, .menuBtn.focused {
-    background: rgba(47, 107, 255, .16);
+    background: var(--accent-soft);
     border-color: #7fb0ff;
-    box-shadow: 0 0 0 3px rgba(47,107,255,.35), 0 8px 28px rgba(47,107,255,.35);
+    box-shadow: 0 0 0 3px rgba(var(--accent-rgb),.35), 0 8px 28px rgba(var(--accent-rgb),.35);
   }
   .menuBtn .mi { font-size: 22px; width: 30px; text-align: center; }
-
-  /* Toast */
-  #toast {
-    position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px);
-    background: rgba(14, 24, 52, .92);
-    border: 1px solid rgba(120, 160, 255, .35);
-    padding: 12px 26px; border-radius: 999px;
-    font-size: 13px; letter-spacing: .14em; color: #b9cdf7;
-    opacity: 0; pointer-events: none; z-index: 40;
-    transition: opacity .3s ease, transform .3s ease;
-    backdrop-filter: blur(10px);
+  .menuBtn .count {
+    margin-left: auto; min-width: 24px; height: 24px; padding: 0 7px;
+    border-radius: 999px; background: #ff5470; color: #fff;
+    font-size: 13px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
   }
-  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .menuBtn .count.hidden { display: none; }
+  #menuExit { margin-top: auto; color: #ffb3c0; }
+  #menuExit:hover, #menuExit.focused {
+    background: rgba(255,84,112,.12); border-color: rgba(255,84,112,.5);
+    box-shadow: 0 0 0 3px rgba(255,84,112,.25), 0 8px 28px rgba(255,84,112,.25);
+  }
 
-  #skipTip { position: fixed; bottom: 14px; right: 20px; z-index: 60; font-size: 11px; letter-spacing: .2em; color: #3d5488; }
-
-  /* Menu tab — left-edge tab showing the controller's top face button */
+  /* Menu tab — left edge */
   #menuTab {
-    position: fixed; left: 0; top: 50%; transform: translateY(-50%); z-index: 29;
-    background: rgba(8, 14, 30, .9);
-    border: 1px solid rgba(90, 130, 255, .25); border-left: none;
+    position: fixed; left: 0; top: 50%; transform: translateY(-50%); z-index: 89;
+    background: var(--card);
+    border: 1px solid var(--line); border-left: none;
     border-radius: 0 14px 14px 0;
     padding: 14px 10px 14px 8px;
     cursor: pointer; backdrop-filter: blur(12px);
@@ -286,96 +243,331 @@
   @keyframes tabIn { to { opacity: 1; } }
   #menuTabBtn {
     width: 34px; height: 34px; border-radius: 50%;
-    background: rgba(47,107,255,.18);
-    border: 1px solid rgba(127,176,255,.5);
+    background: var(--accent-soft);
+    border: 1px solid var(--accent-line);
     display: flex; align-items: center; justify-content: center;
     font-weight: 700; font-size: 15px; color: #9fc5ff;
   }
-  #menuTab small { font-size: 9px; letter-spacing: .24em; color: #5f7fc4; writing-mode: vertical-rl; }
-  #menuTab:hover #menuTabBtn { box-shadow: 0 0 14px rgba(47,107,255,.6); }
+  #menuTab small { font-size: 9px; letter-spacing: .24em; color: var(--faint); writing-mode: vertical-rl; }
+  #menuTab:hover #menuTabBtn { box-shadow: 0 0 14px var(--accent-glow); }
   #menuTab.focused #menuTabBtn {
-    box-shadow: 0 0 0 3px rgba(47,107,255,.4), 0 0 24px rgba(47,107,255,.7);
+    box-shadow: 0 0 0 3px rgba(var(--accent-rgb),.4), 0 0 24px var(--accent-glow);
   }
   body.menu-open #menuTab { transform: translateY(-50%) translateX(-110%); opacity: 0; pointer-events: none; }
 
-  /* ---------- Accounts ---------- */
+  /* ---------- Screens ---------- */
+  .screen {
+    position: fixed; inset: 0; z-index: 60;
+    background: rgba(3, 5, 12, .88);
+    backdrop-filter: blur(24px);
+    display: none; flex-direction: column;
+    padding: clamp(24px, 4vw, 56px) clamp(28px, 6vw, 90px);
+    animation: screenIn .35s cubic-bezier(.2,.8,.2,1);
+  }
+  .screen.open { display: flex; }
+  body.screen-open #home { filter: brightness(.55); }
+  @keyframes screenIn { from { opacity: 0; transform: translateY(18px); } }
+  .screenHead { display: flex; align-items: center; gap: 18px; margin-bottom: 26px; }
+  .backBtn {
+    width: 48px; height: 48px; border-radius: 50%; flex: 0 0 auto;
+    background: rgba(10, 18, 40, .6); border: 1px solid var(--line);
+    color: #9fc5ff; font-size: 20px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: transform .15s ease, box-shadow .2s ease;
+  }
+  .backBtn:hover { box-shadow: 0 0 18px var(--accent-glow); transform: scale(1.06); }
+  .screenHead h1 { font-size: clamp(26px, 3.2vw, 40px); font-weight: 800; letter-spacing: .04em; }
+  .screenHead .sub { font-size: 13px; color: var(--faint); letter-spacing: .2em; margin-top: 4px; }
+  .screenHead .spacer { flex: 1; }
+  .screenBody { flex: 1; overflow-y: auto; min-height: 0; padding-bottom: 30px; }
+  .screenBody::-webkit-scrollbar { width: 8px; }
+  .screenBody::-webkit-scrollbar-thumb { background: rgba(var(--accent-rgb),.35); border-radius: 4px; }
+
+  .card {
+    background: rgba(10, 18, 40, .55);
+    border: 1px solid var(--line);
+    border-radius: 18px; padding: 20px;
+    backdrop-filter: blur(12px);
+  }
+  .rowCard {
+    display: flex; align-items: center; gap: 16px;
+    background: rgba(10, 18, 40, .55);
+    border: 1px solid var(--line);
+    border-radius: 16px; padding: 14px 18px; margin-bottom: 12px;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  .rowCard:hover { border-color: var(--accent-line); box-shadow: 0 0 20px rgba(var(--accent-rgb),.18); }
+  .pAv {
+    width: 52px; height: 52px; border-radius: 50%; flex: 0 0 auto;
+    background: linear-gradient(135deg, var(--accent), #0a1f66);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 18px; color: #cfe0ff; overflow: hidden;
+  }
+  .pAv img { width: 100%; height: 100%; object-fit: cover; }
+  .rowMain { flex: 1; min-width: 0; }
+  .rowMain .t { font-size: 16px; font-weight: 600; color: #fff; }
+  .rowMain .s { font-size: 13px; color: var(--dim); margin-top: 3px; }
+  .btn {
+    padding: 10px 20px; border-radius: 999px; cursor: pointer;
+    background: var(--accent-soft); border: 1px solid var(--accent-line);
+    color: #cfe0ff; font-size: 14px; letter-spacing: .04em;
+    transition: background .2s, transform .12s;
+    white-space: nowrap;
+  }
+  .btn:hover { background: rgba(var(--accent-rgb),.32); }
+  .btn:active { transform: scale(.95); }
+  .btn.primary {
+    background: linear-gradient(135deg, var(--accent), #1a3fa0);
+    border-color: var(--accent-line); color: #fff; font-weight: 700;
+    box-shadow: 0 6px 24px rgba(var(--accent-rgb),.35);
+  }
+  .btn.danger { background: rgba(255,84,112,.12); border-color: rgba(255,84,112,.5); color: #ffb3c0; }
+  .btn:disabled { opacity: .45; cursor: default; }
+  .btnRow { display: flex; gap: 10px; }
+  .txtInput, .searchBox input {
+    width: 100%; padding: 13px 16px; border-radius: 13px;
+    background: rgba(16,26,54,.7); border: 1px solid rgba(90,130,255,.28);
+    color: #fff; font-size: 15px; font-family: inherit; outline: none;
+  }
+  .txtInput:focus, .searchBox input:focus { border-color: #7fb0ff; box-shadow: 0 0 0 3px rgba(var(--accent-rgb),.25); }
+  .txtInput::placeholder, .searchBox input::placeholder { color: #4d6db3; }
+  .searchBox { display: flex; gap: 12px; margin-bottom: 18px; }
+  .segTabs { display: flex; background: rgba(20,32,66,.6); border-radius: 13px; padding: 4px; gap: 4px; margin-bottom: 20px; max-width: 420px; }
+  .segTab { flex: 1; text-align: center; padding: 11px; border-radius: 9px; font-size: 14px; color: var(--dim); cursor: pointer; letter-spacing: .05em; }
+  .segTab.active { background: rgba(var(--accent-rgb),.28); color: #fff; box-shadow: inset 0 0 0 1px var(--accent-line); }
+  .emptyNote { text-align: center; color: var(--faint); padding: 60px 20px; font-size: 15px; letter-spacing: .06em; line-height: 1.8; }
+
+  /* Controllers */
+  #padGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+  .padCard .padName { font-size: 17px; font-weight: 700; }
+  .padCard .slot { font-size: 12px; color: var(--faint); letter-spacing: .2em; margin: 4px 0 14px; }
+  .padTest { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; min-height: 40px; }
+  .padTest .k {
+    padding: 7px 13px; border-radius: 9px; font-size: 13px;
+    background: rgba(20,32,66,.7); border: 1px solid var(--line); color: var(--dim);
+  }
+  .padTest .k.hit { background: rgba(var(--accent-rgb),.4); border-color: var(--accent-line); color: #fff; box-shadow: 0 0 12px var(--accent-glow); }
+
+  /* Profile */
+  #profHead { display: flex; align-items: center; gap: 22px; margin-bottom: 26px; }
+  #profPic {
+    width: 110px; height: 110px; border-radius: 50%; flex: 0 0 auto;
+    background: linear-gradient(135deg, var(--accent), #0a1f66);
+    border: 2px solid var(--accent-line);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 38px; font-weight: 800; color: #cfe0ff; overflow: hidden;
+    box-shadow: 0 0 30px rgba(var(--accent-rgb),.3);
+  }
+  #profPic img { width: 100%; height: 100%; object-fit: cover; }
+  #profTag { font-size: 30px; font-weight: 800; letter-spacing: .03em; }
+  #profName { font-size: 14px; color: var(--dim); margin-top: 4px; }
+  .statGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 14px; margin-bottom: 26px; }
+  .stat { text-align: center; padding: 22px 10px; }
+  .stat .v { font-size: 30px; font-weight: 800; color: #fff; }
+  .stat .l { font-size: 11px; letter-spacing: .22em; color: var(--faint); margin-top: 8px; }
+  .secTitle { font-size: 13px; letter-spacing: .3em; color: var(--faint); margin: 26px 0 14px; }
+  #achGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
+  .ach { text-align: center; padding: 24px 12px; opacity: .45; }
+  .ach .t { font-size: 34px; margin-bottom: 10px; filter: grayscale(1); }
+  .ach .n { font-size: 13px; color: var(--dim); }
+
+  /* Shop */
+  #shopHero {
+    border-radius: 24px; padding: 60px 40px; margin-bottom: 26px;
+    background:
+      radial-gradient(100% 120% at 80% 10%, hsla(var(--accent-h), 85%, 55%, .35), transparent 60%),
+      linear-gradient(135deg, #0d1530, #070b1c);
+    border: 1px solid var(--line);
+    text-align: center;
+  }
+  #shopHero h2 { font-size: clamp(28px, 4vw, 46px); font-weight: 800; letter-spacing: .04em; }
+  #shopHero p { margin-top: 12px; color: var(--dim); font-size: 15px; letter-spacing: .06em; }
+  #shopGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 18px; }
+  .shopCard { overflow: hidden; padding: 0; }
+  .shopCard .art { height: 150px; background: linear-gradient(135deg, hsl(var(--accent-h),60%,22%), hsl(var(--accent-h),70%,10%)); display: flex; align-items: center; justify-content: center; font-size: 52px; }
+  .shopCard .info { padding: 18px; }
+  .shopCard .info .t { font-size: 17px; font-weight: 700; }
+  .shopCard .info .s { font-size: 13px; color: var(--dim); margin-top: 6px; line-height: 1.5; }
+
+  /* Library */
+  #libGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
+  .libTile {
+    aspect-ratio: 1 / 1; border-radius: 18px; cursor: pointer;
+    border: 1px solid rgba(100, 140, 255, .22);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; color: var(--dim); letter-spacing: .08em;
+    transition: transform .2s, box-shadow .2s, border-color .2s;
+    background: rgba(10, 18, 40, .5);
+  }
+  .libTile:hover { transform: scale(1.04); border-color: var(--accent-line); box-shadow: 0 10px 34px rgba(var(--accent-rgb),.3); }
+
+  /* Settings */
+  .setRow { display: flex; align-items: center; gap: 16px; padding: 18px 20px; margin-bottom: 12px; }
+  .setRow .t { font-size: 16px; font-weight: 600; }
+  .setRow .s { font-size: 13px; color: var(--dim); margin-top: 3px; }
+  .setRow .spacer { flex: 1; }
+  #themeWheel { width: 64px; height: 64px; border-radius: 50%; border: 2px solid var(--accent-line); cursor: pointer; padding: 0; background: none; }
+  #themeWheel::-webkit-color-swatch-wrapper { padding: 4px; }
+  #themeWheel::-webkit-color-swatch { border-radius: 50%; border: none; }
+  .swatches { display: flex; gap: 10px; }
+  .swatch { width: 40px; height: 40px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: transform .15s; }
+  .swatch:hover { transform: scale(1.12); }
+  .swatch.sel { border-color: #fff; box-shadow: 0 0 14px rgba(255,255,255,.4); }
+  .toggle { width: 58px; height: 32px; border-radius: 999px; background: rgba(30,42,80,.8); border: 1px solid var(--line); cursor: pointer; position: relative; transition: background .2s; flex: 0 0 auto; }
+  .toggle.on { background: var(--accent); }
+  .toggle::after { content: ''; position: absolute; top: 3px; left: 4px; width: 24px; height: 24px; border-radius: 50%; background: #fff; transition: left .2s; }
+  .toggle.on::after { left: 28px; }
+
+  /* Messages */
+  .chatRow .unread { margin-left: auto; }
+  #chatView { display: flex; flex-direction: column; height: 100%; }
+  #chatScroll { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding: 6px 2px 16px; }
+  .bubble { max-width: 70%; padding: 12px 16px; border-radius: 16px; font-size: 15px; line-height: 1.45; }
+  .bubble.me { align-self: flex-end; background: linear-gradient(135deg, var(--accent), #1a3fa0); border-bottom-right-radius: 5px; }
+  .bubble.them { align-self: flex-start; background: rgba(20,32,66,.85); border: 1px solid var(--line); border-bottom-left-radius: 5px; }
+  .bubble .who { font-size: 11px; color: var(--dim); margin-bottom: 4px; letter-spacing: .06em; }
+  #composer { display: flex; gap: 12px; padding-top: 14px; }
+  #composer input { flex: 1; }
+
+  /* Party */
+  #partyBar {
+    position: fixed; bottom: 24px; right: 24px; z-index: 70;
+    background: var(--card); border: 1px solid var(--line); border-radius: 18px;
+    padding: 14px 18px; backdrop-filter: blur(16px);
+    display: none; align-items: center; gap: 14px;
+    box-shadow: 0 12px 44px rgba(0,0,0,.5), 0 0 30px rgba(var(--accent-rgb),.15);
+  }
+  #partyBar.open { display: flex; }
+  #partyBar .mem { display: flex; }
+  #partyBar .mem .pAv { width: 38px; height: 38px; font-size: 14px; margin-left: -10px; border: 2px solid #0a0f24; }
+  #partyBar .mem .pAv:first-child { margin-left: 0; }
+  #shareGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; margin-top: 14px; }
+  #shareGrid video { width: 100%; border-radius: 14px; border: 1px solid var(--line); background: #000; }
+
+  /* Toast + modal */
+  #toast {
+    position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: rgba(14, 24, 52, .94);
+    border: 1px solid rgba(120, 160, 255, .35);
+    padding: 12px 26px; border-radius: 999px;
+    font-size: 13px; letter-spacing: .14em; color: #b9cdf7;
+    opacity: 0; pointer-events: none; z-index: 300;
+    transition: opacity .3s ease, transform .3s ease;
+    backdrop-filter: blur(10px); max-width: 90vw; text-align: center;
+  }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  #modalWrap {
+    position: fixed; inset: 0; z-index: 250; display: none;
+    align-items: center; justify-content: center;
+    background: rgba(0,0,0,.6); backdrop-filter: blur(6px);
+  }
+  #modalWrap.open { display: flex; }
+  #modal {
+    width: min(440px, 92vw); background: var(--card);
+    border: 1px solid var(--line); border-radius: 22px; padding: 30px;
+    animation: acctIn .3s cubic-bezier(.2,.8,.2,1);
+  }
+  #modal h3 { font-size: 19px; margin-bottom: 10px; }
+  #modal p { font-size: 14px; color: var(--dim); line-height: 1.6; margin-bottom: 20px; }
+  #modal .btnRow { justify-content: flex-end; }
+  @keyframes acctIn { from { opacity: 0; transform: translateY(22px) scale(.98); } }
+
+  /* Accounts (kept from before, accent-themed) */
   #accountScreen {
-    position: fixed; inset: 0; z-index: 45;
+    position: fixed; inset: 0; z-index: 240;
     background: radial-gradient(1200px 700px at 50% -10%, #16213c 0%, #0a0f24 55%, #05070f 100%);
     display: none; align-items: center; justify-content: center;
   }
   body.in-account #home, body.in-account #menuTab { visibility: hidden; }
   #accountScreen.open { display: flex; }
   .acctCard {
-    width: min(430px, 92vw);
-    background: rgba(8, 14, 30, .96);
-    border: 1px solid rgba(90, 130, 255, .3);
-    border-radius: 22px;
+    width: min(430px, 92vw); background: var(--card);
+    border: 1px solid var(--line); border-radius: 22px;
     padding: 34px 34px 28px;
-    box-shadow: 0 24px 80px rgba(0,0,0,.6), 0 0 60px rgba(47,107,255,.12);
+    box-shadow: 0 24px 80px rgba(0,0,0,.6), 0 0 60px rgba(var(--accent-rgb),.12);
     display: flex; flex-direction: column; gap: 14px;
     animation: acctIn .45s cubic-bezier(.2,.8,.2,1);
   }
-  @keyframes acctIn { from { opacity: 0; transform: translateY(22px) scale(.98); } }
   #acctLogo {
     font-size: 22px; font-weight: 800; letter-spacing: .35em; text-indent: .35em; text-align: center;
-    background: linear-gradient(180deg, #9fc5ff, #2f6bff);
+    background: linear-gradient(180deg, #9fc5ff, var(--accent));
     -webkit-background-clip: text; background-clip: text; color: transparent;
   }
   .acctCard h2 { text-align: center; font-size: 20px; font-weight: 700; letter-spacing: .04em; }
   #acctNotice { text-align: center; font-size: 13px; color: #8fb0ff; line-height: 1.5; }
   #acctNotice:empty { display: none; }
   .acctTabs { display: flex; background: rgba(20,32,66,.6); border-radius: 12px; padding: 4px; gap: 4px; }
-  .acctTab { flex: 1; text-align: center; padding: 10px; border-radius: 9px; font-size: 14px; color: #8fa8dd; cursor: pointer; letter-spacing: .04em; }
-  .acctTab.active { background: rgba(47,107,255,.25); color: #fff; box-shadow: inset 0 0 0 1px rgba(127,176,255,.4); }
+  .acctTab { flex: 1; text-align: center; padding: 10px; border-radius: 9px; font-size: 14px; color: var(--dim); cursor: pointer; letter-spacing: .04em; }
+  .acctTab.active { background: rgba(var(--accent-rgb),.25); color: #fff; box-shadow: inset 0 0 0 1px var(--accent-line); }
   .acctCard input[type=text], .acctCard input[type=email], .acctCard input[type=password] {
     width: 100%; padding: 13px 15px; border-radius: 12px;
     background: rgba(16,26,54,.7); border: 1px solid rgba(90,130,255,.28);
     color: #fff; font-size: 15px; font-family: inherit; outline: none;
   }
-  .acctCard input:focus { border-color: #7fb0ff; box-shadow: 0 0 0 3px rgba(47,107,255,.25); }
+  .acctCard input:focus { border-color: #7fb0ff; box-shadow: 0 0 0 3px rgba(var(--accent-rgb),.25); }
   .acctCard input::placeholder { color: #4d6db3; }
   .nameRow { display: flex; gap: 10px; }
   .tagRow { display: flex; gap: 10px; }
   .tagRow input { flex: 1; }
   #acctDice {
     width: 48px; flex: 0 0 auto; border-radius: 12px; font-size: 20px; cursor: pointer;
-    background: rgba(47,107,255,.16); border: 1px solid rgba(127,176,255,.45); color: #cfe0ff;
+    background: var(--accent-soft); border: 1px solid var(--accent-line); color: #cfe0ff;
   }
-  #acctDice:hover { background: rgba(47,107,255,.3); }
+  #acctDice:hover { background: rgba(var(--accent-rgb),.3); }
   #acctDice:active { transform: scale(.93); }
   #acctAvatarWrap { display: flex; align-items: center; gap: 16px; }
   #acctAvatarPreview {
     width: 64px; height: 64px; border-radius: 50%; flex: 0 0 auto;
-    background: linear-gradient(135deg, #2f6bff, #0a1f66);
-    border: 1px solid rgba(127,176,255,.45);
+    background: linear-gradient(135deg, var(--accent), #0a1f66);
+    border: 1px solid var(--accent-line);
     display: flex; align-items: center; justify-content: center;
     font-weight: 800; font-size: 22px; color: #cfe0ff; overflow: hidden;
   }
   #acctAvatarPreview img { width: 100%; height: 100%; object-fit: cover; }
   #acctUploadBtn {
     padding: 10px 16px; border-radius: 999px; font-size: 13px; letter-spacing: .06em; cursor: pointer;
-    background: rgba(47,107,255,.14); border: 1px solid rgba(127,176,255,.4); color: #b9cdf7; font-family: inherit;
+    background: var(--accent-soft); border: 1px solid var(--accent-line); color: #b9cdf7; font-family: inherit;
   }
-  #acctUploadBtn:hover { background: rgba(47,107,255,.28); }
+  #acctUploadBtn:hover { background: rgba(var(--accent-rgb),.28); }
   .acctBtn {
     padding: 14px; border-radius: 13px; font-size: 16px; font-weight: 700; letter-spacing: .05em; cursor: pointer;
-    background: linear-gradient(135deg, #2f6bff, #1a3fa0); border: 1px solid rgba(127,176,255,.5); color: #fff; font-family: inherit;
-    box-shadow: 0 8px 28px rgba(47,107,255,.35);
+    background: linear-gradient(135deg, var(--accent), #1a3fa0); border: 1px solid var(--accent-line); color: #fff; font-family: inherit;
+    box-shadow: 0 8px 28px rgba(var(--accent-rgb),.35);
   }
   .acctBtn:hover { filter: brightness(1.12); }
   .acctBtn:active { transform: scale(.98); }
   .acctBtn:disabled { opacity: .55; cursor: default; }
   .acctError { font-size: 13px; color: #ff8f9f; text-align: center; }
   .acctError:empty { display: none; }
-  #acctSkip { text-align: center; font-size: 13px; color: #5f7fc4; cursor: pointer; letter-spacing: .06em; padding: 4px; }
+  #acctSkip { text-align: center; font-size: 13px; color: var(--faint); cursor: pointer; letter-spacing: .06em; padding: 4px; }
   #acctSkip:hover { color: #9fc5ff; }
   #gamerTag { font-size: 14px; color: #b9cdf7; letter-spacing: .08em; font-weight: 600; }
-  #avatarBtn img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
-
-  @media (max-width: 760px) {
-    #hintbar { flex-wrap: wrap; gap: 16px; }
+  #profileMenu {
+    position: absolute; top: calc(100% + 12px); left: 0; z-index: 95;
+    min-width: 250px; background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 16px; backdrop-filter: blur(18px);
+    padding: 14px; display: flex; flex-direction: column; gap: 6px;
+    opacity: 0; transform: translateY(-8px); pointer-events: none;
+    transition: opacity .25s ease, transform .25s ease;
   }
+  #profileMenu.open { opacity: 1; transform: translateY(0); pointer-events: auto; }
+  #profileMenu h3 { font-size: 11px; letter-spacing: .3em; color: var(--faint); padding: 4px 10px 8px; }
+  .profileItem {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 12px; border-radius: 12px; cursor: pointer;
+    border: 1px solid transparent;
+    font-size: 15px; color: var(--txt);
+    transition: background .2s, border-color .2s;
+  }
+  .profileItem:hover, .profileItem.focused {
+    background: var(--accent-soft); border-color: #7fb0ff;
+    box-shadow: 0 0 0 3px rgba(var(--accent-rgb),.35), 0 8px 28px rgba(var(--accent-rgb),.35);
+  }
+  .profileItem .check { margin-left: auto; color: #7fb0ff; font-size: 16px; }
+
+  #skipTip { position: fixed; bottom: 14px; right: 20px; z-index: 210; font-size: 11px; letter-spacing: .2em; color: #3d5488; }
+  @media (max-width: 760px) { .bubble { max-width: 88%; } }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -390,20 +582,20 @@
   <div id="bootSub">PRESS START</div>
   <div id="bootBar"><i></i></div>
 </div>
+
 <div id="home">
   <div id="topbar">
     <div id="topLeft">
-      <div id="avatarBtn" class="rise" style="--d:.15s" title="Switch profile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="8.2" r="3.4"/><path d="M5 20.2c1.3-3.4 3.9-5.1 7-5.1s5.7 1.7 7 5.1"/></svg></div>
+      <div id="avatarBtn" class="rise" style="--d:.15s" title="Account"></div>
       <div id="gamerTag" class="rise" style="--d:.18s">Signed out</div>
-      <div id="profileMenu">
-        <h3>WHO'S PLAYING?</h3>
-      </div>
+      <div id="profileMenu"><h3>WHO'S PLAYING?</h3></div>
       <div class="iconBtn rise" id="padBtn" style="--d:.22s" title="Controllers"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="11" rx="5.5"/><path d="M7 10.5v3M5.5 12h3"/><circle cx="15.5" cy="11" r="1.1" fill="currentColor" stroke="none"/><circle cx="18" cy="13.5" r="1.1" fill="currentColor" stroke="none"/></svg></div>
     </div>
     <div id="topIcons" class="rise" style="--d:.3s">
       <div id="clock">--:--</div>
-      <div class="iconBtn">◉</div>
-      <div class="iconBtn">⚙</div>
+      <div class="iconBtn" id="searchBtn" title="Search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></div>
+      <div class="iconBtn" id="msgBtn" title="Messages"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-8 8H4l2-3a8 8 0 1 1 15-5z"/></svg><span class="badge hidden" id="msgBadge"></span></div>
+      <div class="iconBtn" id="settingsBtn" title="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1.04 1.56V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1.04-1.56 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.56-1.04H3a2 2 0 1 1 0-4h.09A1.7 1.7 0 0 0 4.65 8.9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34h.01A1.7 1.7 0 0 0 10.06 3V3a2 2 0 1 1 4 0v.09c0 .68.4 1.3 1.04 1.56.6.26 1.3.11 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87v.01c.26.6.88 1.03 1.56 1.04H21a2 2 0 1 1 0 4h-.09c-.68 0-1.3.4-1.51 1.04z"/></svg></div>
     </div>
   </div>
 
@@ -420,7 +612,163 @@
       <div id="tileRow" tabindex="0"></div>
     </div>
   </div>
+</div>
 
+<div id="menuTab" title="Open menu"><span id="menuTabBtn">Y</span><small>MENU</small></div>
+<div id="menuOverlay"></div>
+<nav id="sideMenu">
+  <h2>OLYMPUS</h2>
+  <div class="menuBtn" data-go="library" style="--d:.05s"><span class="mi">🎮</span>Game Library</div>
+  <div class="menuBtn" data-go="shop" style="--d:.1s"><span class="mi">🛒</span>Shop</div>
+  <div class="menuBtn" data-go="controllers" style="--d:.15s"><span class="mi"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="11" rx="5.5"/><path d="M7 10.5v3M5.5 12h3"/><circle cx="15.5" cy="11" r="1.1" fill="currentColor" stroke="none"/><circle cx="18" cy="13.5" r="1.1" fill="currentColor" stroke="none"/></svg></span>Controllers</div>
+  <div class="menuBtn" data-go="search" style="--d:.2s"><span class="mi">🔍</span>Search</div>
+  <div class="menuBtn" data-go="friends" style="--d:.25s"><span class="mi">👥</span>Friends<span class="count hidden" id="friendReqCount"></span></div>
+  <div class="menuBtn" data-go="profile" style="--d:.3s"><span class="mi">👤</span>Profile</div>
+  <div class="menuBtn" data-go="settings" style="--d:.35s"><span class="mi">⚙</span>Settings</div>
+  <div class="menuBtn" id="menuExit" style="--d:.4s"><span class="mi">⏻</span>Exit Olympus</div>
+</nav>
+
+<!-- Screens -->
+<section class="screen" id="screen-library">
+  <div class="screenHead"><div class="backBtn" data-back>‹</div><div><h1>Game Library</h1><div class="sub">YOUR GAMES</div></div></div>
+  <div class="screenBody"><div id="libGrid"></div></div>
+</section>
+
+<section class="screen" id="screen-shop">
+  <div class="screenHead"><div class="backBtn" data-back>‹</div><div><h1>Shop</h1><div class="sub">DISCOVER GAMES</div></div></div>
+  <div class="screenBody">
+    <div id="shopHero"><h2>The Shop is getting stocked</h2><p>New games will land here. Check back soon.</p></div>
+    <div id="shopGrid"></div>
+  </div>
+</section>
+
+<section class="screen" id="screen-search">
+  <div class="screenHead"><div class="backBtn" data-back>‹</div><div><h1>Search</h1><div class="sub">GAMES AND PLAYERS</div></div></div>
+  <div class="screenBody">
+    <div class="searchBox"><input id="searchInput" type="text" placeholder="Search games or players..." maxlength="40"></div>
+    <div class="segTabs"><div class="segTab active" data-stab="games">Games</div><div class="segTab" data-stab="players">Players</div></div>
+    <div id="searchResults"></div>
+  </div>
+</section>
+
+<section class="screen" id="screen-friends">
+  <div class="screenHead"><div class="backBtn" data-back>‹</div><div><h1>Friends</h1><div class="sub">YOUR CREW</div></div><div class="spacer"></div><button class="btn primary" id="callBtn">📞 Call</button></div>
+  <div class="screenBody">
+    <div id="reqZone"></div>
+    <div class="secTitle">FRIENDS</div>
+    <div id="friendList"></div>
+  </div>
+</section>
+
+<section class="screen" id="screen-messages">
+  <div class="screenHead"><div class="backBtn" data-back>‹</div><div><h1>Messages</h1><div class="sub">CHATS</div></div><div class="spacer"></div><button class="btn" id="newChatBtn">+ New chat</button></div>
+  <div class="screenBody"><div id="chatList"></div></div>
+</section>
+
+<section class="screen" id="screen-chat">
+  <div class="screenHead"><div class="backBtn" data-back>‹</div><div><h1 id="chatTitle">Chat</h1><div class="sub" id="chatSub"></div></div></div>
+  <div class="screenBody" id="chatView">
+    <div id="chatScroll"></div>
+    <div id="composer"><input class="txtInput" id="chatInput" type="text" placeholder="Message..." maxlength="2000"><button class="btn primary" id="chatSend">Send</button></div>
+  </div>
+</section>
+
+<section class="screen" id="screen-profile">
+  <div class="screenHead"><div class="backBtn" data-back>‹</div><div><h1>Profile</h1><div class="sub">YOUR CARD</div></div></div>
+  <div class="screenBody">
+    <div id="profHead">
+      <div id="profPic">?</div>
+      <div style="flex:1">
+        <div id="profTag">—</div>
+        <div id="profName">—</div>
+      </div>
+      <button class="btn" id="editProfBtn">Customize</button>
+    </div>
+    <div class="secTitle">GAME STATS</div>
+    <div class="statGrid" id="statGrid"></div>
+    <div class="secTitle">ACHIEVEMENTS</div>
+    <div id="achGrid"></div>
+  </div>
+</section>
+
+<section class="screen" id="screen-player">
+  <div class="screenHead"><div class="backBtn" data-back>‹</div><div><h1 id="playerTag">Player</h1><div class="sub">PLAYER CARD</div></div><div class="spacer"></div><div class="btnRow" id="playerActions"></div></div>
+  <div class="screenBody">
+    <div id="playerHead" style="display:flex;align-items:center;gap:22px;margin-bottom:26px">
+      <div class="pAv" id="playerPic" style="width:110px;height:110px;font-size:38px">?</div>
+      <div><div id="playerTagBig" style="font-size:30px;font-weight:800">—</div><div id="playerSub" style="font-size:14px;color:var(--dim);margin-top:4px"></div></div>
+    </div>
+    <div class="secTitle">GAME STATS</div>
+    <div class="statGrid" id="playerStats"></div>
+    <div class="secTitle">ACHIEVEMENTS</div>
+    <div id="playerAch" class="emptyNote">No achievements yet.</div>
+  </div>
+</section>
+
+<section class="screen" id="screen-controllers">
+  <div class="screenHead"><div class="backBtn" data-back>‹</div><div><h1>Controllers</h1><div class="sub" id="padCount">NO CONTROLLERS</div></div></div>
+  <div class="screenBody">
+    <div id="padGrid"></div>
+    <div class="emptyNote" id="padEmpty">No controllers connected.<br>Connect one and press any button.</div>
+  </div>
+</section>
+
+<section class="screen" id="screen-settings">
+  <div class="screenHead"><div class="backBtn" data-back>‹</div><div><h1>Settings</h1><div class="sub">MAKE IT YOURS</div></div></div>
+  <div class="screenBody">
+    <div class="secTitle">APPEARANCE</div>
+    <div class="card setRow">
+      <div><div class="t">Theme color</div><div class="s">Recolors buttons, glows and background stripes</div></div>
+      <div class="spacer"></div>
+      <div class="swatches" id="themeSwatches"></div>
+      <input type="color" id="themeWheel" value="#2f6bff" title="Custom color">
+    </div>
+    <div class="secTitle">AUDIO</div>
+    <div class="card setRow">
+      <div><div class="t">Interface sounds</div><div class="s">Clicks and UI feedback</div></div>
+      <div class="spacer"></div>
+      <div class="toggle on" id="sndToggle"></div>
+    </div>
+    <div class="secTitle">CONTROLLERS</div>
+    <div class="card setRow">
+      <div><div class="t">Rumble on connect</div><div class="s">Little buzz when a controller connects</div></div>
+      <div class="spacer"></div>
+      <div class="toggle on" id="rumbleToggle"></div>
+    </div>
+    <div class="secTitle">ACCOUNT</div>
+    <div class="card setRow">
+      <div><div class="t" id="setAcctName">Signed out</div><div class="s" id="setAcctSub">Manage your Olympus account</div></div>
+      <div class="spacer"></div>
+      <button class="btn danger" id="signOutBtn">Sign out</button>
+    </div>
+    <div class="secTitle">ABOUT</div>
+    <div class="card setRow">
+      <div><div class="t">Olympus</div><div class="s">Version 0.2.0 · PC app</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="screen" id="screen-party">
+  <div class="screenHead"><div class="backBtn" data-back>‹</div><div><h1>Party</h1><div class="sub" id="partySub">VOICE CHAT</div></div><div class="spacer"></div><div class="btnRow"><button class="btn" id="shareBtn">🖥 Share screen</button><button class="btn danger" id="leavePartyBtn">Leave</button></div></div>
+  <div class="screenBody">
+    <div class="card" style="margin-bottom:16px;display:flex;align-items:center;gap:16px">
+      <div><div class="t" style="font-size:16px;font-weight:600">Party privacy</div><div class="s" style="font-size:13px;color:var(--dim);margin-top:3px">Invite-only or open for friends to join</div></div>
+      <div class="spacer" style="flex:1"></div>
+      <div class="segTabs" style="margin:0;max-width:280px"><div class="segTab" data-priv="invite">Invite-only</div><div class="segTab" data-priv="open">Joinable</div></div>
+    </div>
+    <div class="secTitle">IN THIS PARTY</div>
+    <div id="partyMembers"></div>
+    <div class="secTitle">SHARED SCREENS</div>
+    <div id="shareGrid"></div>
+    <div class="emptyNote" id="shareEmpty">Nobody is sharing their screen.</div>
+  </div>
+</section>
+
+<div id="partyBar">
+  <div class="mem" id="partyBarMem"></div>
+  <div style="font-size:13px;color:var(--dim);letter-spacing:.08em">PARTY</div>
+  <button class="btn" id="partyBarShare" title="Share your screen">🖥 Share</button>
+  <button class="btn" id="partyBarOpen">Open</button>
 </div>
 
 <div id="accountScreen">
@@ -464,579 +812,745 @@
   </div>
 </div>
 
-<div id="menuTab" title="Open menu"><span id="menuTabBtn">Y</span><small>MENU</small></div>
-<div id="menuOverlay"></div>
-<nav id="sideMenu">
-  <h2>OLYMPUS</h2>
-  <div class="menuBtn" style="--d:.05s"><span class="mi">🎮</span>Game Library</div>
-  <div class="menuBtn" id="menuShop" style="--d:.1s"><span class="mi">🛒</span>Shop</div>
-  <div class="menuBtn" style="--d:.15s"><span class="mi">◉</span>Ondra AI</div>
-  <div class="menuBtn" id="menuFriends" style="--d:.2s"><span class="mi">👥</span>Friends</div>
-  <div class="menuBtn" id="menuMessages" style="--d:.25s"><span class="mi">💬</span>Messages</div>
-  <div class="menuBtn" id="menuProfile" style="--d:.3s"><span class="mi">👤</span>Profile</div>
-  <div class="menuBtn" style="--d:.35s"><span class="mi">⚙</span>Settings</div>
-</nav>
-
-<div id="skipTip">MOCKUP — CLICK TO SKIP BOOT</div>
+<div id="toast"></div>
+<div id="modalWrap"><div id="modal"><h3 id="modalTitle"></h3><p id="modalText"></p><div class="btnRow" id="modalBtns"></div></div></div>
+<div id="skipTip">CLICK TO SKIP BOOT</div>
 
 <script>
-  /* Wavy vertical stripe wallpaper */
-  const cv = document.getElementById('wallpaper');
-  const ctx = cv.getContext('2d');
-  let W, H, lines = [];
-  const LINE_COUNT = 46;
-  function build() {
-    W = cv.width = innerWidth; H = cv.height = innerHeight;
-    lines = [];
-    const gap = W / (LINE_COUNT - 1);
-    for (let i = 0; i < LINE_COUNT; i++) {
-      lines.push({
-        x: i * gap,
-        amp: 26 + Math.random() * 30,
-        freq: 0.0016 + Math.random() * 0.0018,
-        speed: 0.00035 + Math.random() * 0.0005,
-        phase: Math.random() * Math.PI * 2,
-        alpha: 0.10 + Math.random() * 0.16
-      });
-    }
-  }
-  function draw(t) {
-    ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H);
-    ctx.lineWidth = 2;
-    for (const L of lines) {
-      ctx.beginPath();
-      for (let y = -10; y <= H + 10; y += 8) {
-        const x = L.x + Math.sin(y * L.freq + t * L.speed + L.phase) * L.amp;
-        y === -10 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-      }
-      ctx.strokeStyle = `hsla(224, 95%, 52%, ${L.alpha})`;
-      ctx.stroke();
-    }
-    requestAnimationFrame(draw);
-  }
-  build(); addEventListener('resize', build); requestAnimationFrame(draw);
 
-  /* Recently-played games (placeholder data).
-     First-party games get a custom icon different from the hero art;
-     third-party games reuse the same art for both (hero falls back to icon). */
-  /* No games installed yet — all slots are blank */
-  const games = [
-    { name: '', desc: '', icon: null },
-    { name: '', desc: '', icon: null },
-    { name: '', desc: '', icon: null },
-    { name: '', desc: '', icon: null },
-    { name: '', desc: '', icon: null },
-    { name: '', desc: '', icon: null },
-    { name: '', desc: '', icon: null },
-    { name: '', desc: '', icon: null },
-    { name: '', desc: '', icon: null },
-    { name: '', desc: '', icon: null },
-  ];
-  function artBG(h1, h2) {
-    return 'radial-gradient(120% 90% at 85% 20%, hsla(' + h1 + ', 85%, 55%, .55), transparent 60%), ' +
-      'radial-gradient(100% 100% at 70% 90%, hsla(' + h2 + ', 90%, 45%, .4), transparent 55%), ' +
-      'linear-gradient(135deg, hsl(' + h1 + ', 60%, 16%), hsl(' + h2 + ', 70%, 8%))';
-  }
+/* ================= Olympus console ================= */
+'use strict';
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+function escapeHtml(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+function initials(tag) {
+  const t = String(tag || '').replace(/[^A-Za-z0-9]/g, '');
+  return (t.slice(0, 2) || '?').toUpperCase();
+}
+function picHtml(pic, tag, cls) {
+  return '<div class="' + (cls || 'pAv') + '">' + (pic ? '<img src="' + pic + '" alt="">' : escapeHtml(initials(tag))) + '</div>';
+}
+let toastTimer = null;
+function toast(msg) {
+  const t = $('#toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2600);
+}
+function modal(title, text, buttons) {
+  // buttons: [{label, primary, onClick}]
+  $('#modalTitle').textContent = title;
+  $('#modalText').textContent = text;
+  const wrap = $('#modalBtns');
+  wrap.innerHTML = '';
+  (buttons || [{ label: 'OK', primary: true }]).forEach(b => {
+    const el = document.createElement('button');
+    el.className = 'btn' + (b.primary ? ' primary' : '');
+    el.textContent = b.label;
+    el.addEventListener('click', () => { closeModal(); if (b.onClick) b.onClick(); });
+    wrap.appendChild(el);
+  });
+  $('#modalWrap').classList.add('open');
+}
+function closeModal() { $('#modalWrap').classList.remove('open'); }
+$('#modalWrap').addEventListener('click', e => { if (e.target.id === 'modalWrap') closeModal(); });
 
-  /* Tiles: 10 recently-played, each showing its icon art */
-  const row = document.getElementById('tileRow');
-  const tiles = [];
-  games.forEach((g, i) => {
+/* ---------- Theme ---------- */
+function hexToHsl(hex) {
+  const n = parseInt(hex.slice(1), 16);
+  const r = (n >> 16 & 255) / 255, g = (n >> 8 & 255) / 255, b = (n & 255) / 255;
+  const mx = Math.max(r, g, b), mn = Math.min(r, g, b);
+  let h = 0, s = 0; const l = (mx + mn) / 2;
+  if (mx !== mn) {
+    const d = mx - mn;
+    s = l > 0.5 ? d / (2 - mx - mn) : d / (mx + mn);
+    if (mx === r) h = ((g - b) / d + (g < b ? 6 : 0));
+    else if (mx === g) h = (b - r) / d + 2;
+    else h = (r - g) / d + 4;
+    h *= 60;
+  }
+  return { h: Math.round(h), s: Math.round(s * 100), l: Math.round(l * 100) };
+}
+function applyTheme(hex) {
+  const n = parseInt(hex.slice(1), 16);
+  const r = n >> 16 & 255, g = n >> 8 & 255, b = n & 255;
+  const { h } = hexToHsl(hex);
+  const root = document.documentElement.style;
+  root.setProperty('--accent', hex);
+  root.setProperty('--accent-rgb', r + ', ' + g + ', ' + b);
+  root.setProperty('--accent-h', h);
+  try { localStorage.setItem('oly_theme', hex); } catch (e) {}
+  const wheel = $('#themeWheel');
+  if (wheel) wheel.value = hex;
+  $$('#themeSwatches .swatch').forEach(s => s.classList.toggle('sel', s.dataset.c.toLowerCase() === hex.toLowerCase()));
+}
+function initTheme() {
+  let hex = '#2f6bff';
+  try { hex = localStorage.getItem('oly_theme') || hex; } catch (e) {}
+  applyTheme(hex);
+  const presets = ['#2f6bff', '#00c2a8', '#a855f7', '#ff5470', '#ff9f2f', '#7bed6f'];
+  const sw = $('#themeSwatches');
+  presets.forEach(c => {
     const d = document.createElement('div');
-    d.className = 'tile';
-    d.dataset.i = i;
-    if (g.icon) {
-      d.title = g.name;
-      d.style.background = artBG(g.icon[0], g.icon[1]);
-    }
-    if (g.iconImg && g.iconImg.indexOf('data:image') === 0) {
-      d.style.background = 'url(' + g.iconImg + ') center / cover no-repeat, ' + artBG(g.icon[0], g.icon[1]);
-    }
-    row.appendChild(d); tiles.push(d);
+    d.className = 'swatch'; d.dataset.c = c; d.style.background = c;
+    d.addEventListener('click', () => applyTheme(c));
+    sw.appendChild(d);
   });
+  $('#themeWheel').addEventListener('input', e => applyTheme(e.target.value));
+  applyTheme(hex);
+}
 
-  /* Focus glow follows keyboard/controller/mouse to whatever control is
-     selected — game tiles, the top-bar buttons, and the MENU tab. */
-  let focus = 0, zone = 'tiles', topFocus = 0;
-  const topCtrls = [document.getElementById('avatarBtn'), document.getElementById('padBtn')];
-  const menuTabCtl = document.getElementById('menuTab');
-  function paintFocus() {
-    tiles.forEach((t, k) => t.classList.toggle('focused', zone === 'tiles' && k === focus));
-    topCtrls.forEach((c, k) => c && c.classList.toggle('focused', zone === 'top' && k === topFocus));
-    if (menuTabCtl) menuTabCtl.classList.toggle('focused', zone === 'menu');
-    if (zone === 'tiles') paintHero(focus);
-  }
-  function setFocus(i, scroll = true) {
-    focus = Math.max(0, Math.min(tiles.length - 1, i));
-    zone = 'tiles';
-    paintFocus();
-    if (scroll && tiles[focus]) tiles[focus].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-  }
-  function setTopFocus(i) {
-    topFocus = Math.max(0, Math.min(topCtrls.length - 1, i));
-    zone = 'top';
-    paintFocus();
-  }
-  function setMenuFocus() {
-    zone = 'menu';
-    paintFocus();
-  }
-  topCtrls.forEach((c, i) => {
-    if (c) c.addEventListener('mouseenter', () => setTopFocus(i));
-  });
-  if (menuTabCtl) menuTabCtl.addEventListener('mouseenter', setMenuFocus);
-
-  const heroBG = document.getElementById('heroBG');
-  const gameMeta = document.getElementById('gameMeta');
-  const gameTitle = document.getElementById('gameTitle');
-  const gameDesc = document.getElementById('gameDesc');
-  function paintHero(i) {
-    const g = games[i];
-    if (g.hero) {
-      heroBG.style.setProperty('--h1', g.hero[0]);
-      heroBG.style.setProperty('--h2', g.hero[1]);
-      heroBG.classList.add('on');
-      gameTitle.textContent = g.name;
-      gameDesc.textContent = g.desc;
-      gameMeta.classList.add('show');
-    } else {
-      heroBG.classList.remove('on');
-      gameMeta.classList.remove('show');
-    }
-  }
-
-  /* ---------- Olympus accounts (cloud) ----------
-     Accounts live in Supabase: Auth handles email + password securely
-     server-side, profiles hold the gamertag, and game_saves holds cloud
-     saves. Games read window.Olympus.account.gamertag when they have no
-     separate account system, and use cloudSave/cloudLoad for saves. */
-  window.Olympus = window.Olympus || {};
-  const SUPABASE_URL = 'https://zzsvqnnrfngfxtucszgr.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp6c3Zxbm5yZm5nZnh0dWNzemdyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2MDAzNTksImV4cCI6MjEwNjE3NjM1OX0.R-MCzou_q_ObnwXKCQRsRYy0Bwnand-1ktiatLfQ0aU';
-  const supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-  let account = null; // { id, email, firstName, lastName, gamertag, pic }
-  function currentAccount() { return account; }
-  async function refreshAccount() {
-    try {
-      const { data: { session } } = await supa.auth.getSession();
-      if (!session) { account = null; }
-      else {
-        const { data: prof } = await supa.from('profiles').select('*').eq('id', session.user.id).maybeSingle();
-        account = prof
-          ? { id: session.user.id, email: session.user.email, firstName: prof.first_name, lastName: prof.last_name, gamertag: prof.gamertag, pic: prof.pic || null }
-          : null;
-      }
-    } catch (e) { account = null; }
-    paintAccountBadge();
-    buildProfileItems();
-  }
-  /* Games read this for the player's identity when they have no login of their own */
-  Object.defineProperty(window.Olympus, 'account', {
-    get() {
-      const a = currentAccount();
-      return a ? { gamertag: a.gamertag, firstName: a.firstName, lastName: a.lastName, email: a.email, pic: a.pic } : null;
-    }
-  });
-  /* Cloud saves — one row per player per game per slot */
-  window.Olympus.cloudSave = async function (game, slot, data) {
-    const a = currentAccount();
-    if (!a) throw new Error('Not signed in');
-    const { error } = await supa.from('game_saves').upsert(
-      { user_id: a.id, game: game, slot: slot || 'auto', data: data, updated_at: new Date().toISOString() },
-      { onConflict: 'user_id,game,slot' }
-    );
-    if (error) throw error;
-  };
-  window.Olympus.cloudLoad = async function (game, slot) {
-    const a = currentAccount();
-    if (!a) return null;
-    const { data, error } = await supa.from('game_saves').select('data').eq('user_id', a.id).eq('game', game).eq('slot', slot || 'auto').maybeSingle();
-    if (error || !data) return null;
-    return data.data;
-  };
-
-  function escapeHtml(s) {
-    return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  }
-  function initials(tag) {
-    const t = (tag || '').replace(/[^A-Za-z0-9]/g, '');
-    return (t.slice(0, 2) || '?').toUpperCase();
-  }
-
-  /* Random gamertag generator */
-  const TAG_A = ['Shadow','Iron','Nova','Blaze','Frost','Thunder','Ghost','Solar','Crimson','Echo','Vortex','Onyx','Pixel','Storm','Lunar','Apex','Drift','Ember','Flux','Zero'];
-  const TAG_B = ['Fox','Wolf','Hawk','Bear','Viper','Falcon','Raven','Tiger','Cobra','Dragon','Puma','Shark','Wraith','Bolt','Rider','Hunter','Saber','Comet','Reaper','Titan'];
-  function randomTag() {
-    return TAG_A[Math.floor(Math.random() * TAG_A.length)] +
-           TAG_B[Math.floor(Math.random() * TAG_B.length)] +
-           (100 + Math.floor(Math.random() * 900));
-  }
-
-  /* Account screen */
-  const accountScreen = document.getElementById('accountScreen');
-  const acctFirst = document.getElementById('acctFirst');
-  const acctLast = document.getElementById('acctLast');
-  const acctEmail = document.getElementById('acctEmail');
-  const acctTag = document.getElementById('acctTag');
-  const acctPw = document.getElementById('acctPw');
-  const acctPw2 = document.getElementById('acctPw2');
-  const acctFile = document.getElementById('acctFile');
-  const tabCreate = document.getElementById('tabCreate');
-  const tabSignin = document.getElementById('tabSignin');
-  const paneCreate = document.getElementById('paneCreate');
-  const paneSignin = document.getElementById('paneSignin');
-  let accountOpen = false, draftPic = null;
-
-  function setTab(which) {
-    const c = which === 'create';
-    tabCreate.classList.toggle('active', c);
-    tabSignin.classList.toggle('active', !c);
-    paneCreate.style.display = c ? 'flex' : 'none';
-    paneSignin.style.display = c ? 'none' : 'flex';
-  }
-  tabCreate.addEventListener('click', () => setTab('create'));
-  tabSignin.addEventListener('click', () => setTab('signin'));
-
-  function paintAcctAvatar() {
-    const prev = document.getElementById('acctAvatarPreview');
-    if (draftPic) prev.innerHTML = '<img src="' + draftPic + '" alt="">';
-    else prev.textContent = initials(acctTag.value.trim());
-  }
-  acctTag.addEventListener('input', paintAcctAvatar);
-  document.getElementById('acctDice').addEventListener('click', () => {
-    acctTag.value = randomTag();
-    paintAcctAvatar();
-  });
-  document.getElementById('acctUploadBtn').addEventListener('click', () => acctFile.click());
-  acctFile.addEventListener('change', () => {
-    const f = acctFile.files[0];
-    if (!f) return;
-    const img = new Image();
-    img.onload = () => {
-      const s = 256, c = document.createElement('canvas');
-      c.width = c.height = s;
-      const m = Math.min(img.width, img.height);
-      c.getContext('2d').drawImage(img, (img.width - m) / 2, (img.height - m) / 2, m, m, 0, 0, s, s);
-      draftPic = c.toDataURL('image/png');
-      URL.revokeObjectURL(img.src);
-      paintAcctAvatar();
-    };
-    img.src = URL.createObjectURL(f);
-  });
-
-  function openAccount(notice) {
-    accountOpen = true;
-    document.body.classList.add('in-account');
-    document.getElementById('acctNotice').textContent = notice || '';
-    document.getElementById('createError').textContent = '';
-    document.getElementById('signinError').textContent = '';
-    setTab('create');
-    if (profileMenuOpen) setProfileMenu(false);
-    if (menuOpen) setMenu(false);
-    accountScreen.classList.add('open');
-  }
-  function closeAccount() {
-    accountOpen = false;
-    document.body.classList.remove('in-account');
-    zone = 'tiles'; paintFocus();
-    accountScreen.classList.remove('open');
-    draftPic = null;
-    acctFile.value = '';
-    paintAcctAvatar();
-  }
-  document.getElementById('acctSkip').addEventListener('click', closeAccount);
-
-  /* Gate: Shop + communication features need an account */
-  function requireAccount(feature) {
-    if (currentAccount()) return true;
-    openAccount('You need an Olympus account to use ' + feature + '.');
-    return false;
-  }
-
-  document.getElementById('acctCreateBtn').addEventListener('click', async () => {
-    const first = acctFirst.value.trim(), last = acctLast.value.trim();
-    const email = acctEmail.value.trim().toLowerCase();
-    const tag = acctTag.value.trim();
-    const pw = acctPw.value, pw2 = acctPw2.value;
-    const err = document.getElementById('createError');
-    const btn = document.getElementById('acctCreateBtn');
-    if (!first || !last) err.textContent = 'Enter your first and last name.';
-    else if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) err.textContent = 'Enter a valid email address.';
-    else if (tag.length < 3 || tag.length > 16) err.textContent = 'Gamertag must be 3–16 characters.';
-    else if (pw.length < 4) err.textContent = 'Password must be at least 4 characters.';
-    else if (pw !== pw2) err.textContent = 'Passwords don\'t match.';
-    else {
-      err.textContent = '';
-      btn.disabled = true; btn.textContent = 'Creating...';
-      try {
-        const { data, error } = await supa.auth.signUp({ email: email, password: pw });
-        if (error) throw error;
-        const user = data.user;
-        if (!user) throw new Error('Check your email to confirm, then sign in.');
-        const { error: pErr } = await supa.from('profiles').insert({
-          id: user.id, first_name: first, last_name: last, gamertag: tag, pic: draftPic
-        });
-        if (pErr) {
-          if (pErr.code === '23505') err.textContent = 'That gamertag is taken — try another.';
-          else err.textContent = pErr.message;
-        } else {
-          await refreshAccount();
-          closeAccount();
-        }
-      } catch (e) {
-        err.textContent = /already registered/i.test(e.message || '')
-          ? 'That email already has an account — sign in instead.'
-          : (e.message || 'Couldn\'t create the account.');
-      }
-      btn.disabled = false; btn.textContent = 'Create account';
-    }
-  });
-  document.getElementById('acctSigninBtn').addEventListener('click', async () => {
-    const email = document.getElementById('signinEmail').value.trim().toLowerCase();
-    const pw = document.getElementById('signinPw').value;
-    const err = document.getElementById('signinError');
-    const btn = document.getElementById('acctSigninBtn');
-    err.textContent = '';
-    btn.disabled = true; btn.textContent = 'Signing in...';
-    try {
-      const { error } = await supa.auth.signInWithPassword({ email: email, password: pw });
-      if (error) throw error;
-      await refreshAccount();
-      if (!currentAccount()) throw new Error('Signed in, but no Olympus profile was found for this login.');
-      closeAccount();
-    } catch (e) {
-      err.textContent = /invalid login credentials/i.test(e.message || '')
-        ? 'Wrong email or password.'
-        : (e.message || 'Couldn\'t sign in.');
-    }
-    btn.disabled = false; btn.textContent = 'Sign in';
-  });
-
-  /* Top-left badge: pic (or gamertag initials) + gamertag.
-     Signed out = plain person icon (circle head, no features) + "Signed out". */
-  const PERSON_SVG = '<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="8.2" r="3.4"/><path d="M5 20.2c1.3-3.4 3.9-5.1 7-5.1s5.7 1.7 7 5.1"/></svg>';
-  const avatarBtn = document.getElementById('avatarBtn');
-  const gamerTagEl = document.getElementById('gamerTag');
-  function paintAccountBadge() {
-    const a = currentAccount();
-    if (a) {
-      avatarBtn.innerHTML = a.pic ? '<img src="' + a.pic + '" alt="">' : escapeHtml(initials(a.gamertag));
-      gamerTagEl.textContent = a.gamertag;
-    } else {
-      avatarBtn.innerHTML = PERSON_SVG;
-      gamerTagEl.textContent = 'Signed out';
-    }
-  }
-
-  /* Who's playing? — current account, switch, sign out */
-  const profileMenu = document.getElementById('profileMenu');
-  const profileItems = [];
-  let profileMenuOpen = false, profileFocus = 0;
-  function buildProfileItems() {
-    profileMenu.querySelectorAll('.profileItem').forEach(el => el.remove());
-    profileItems.length = 0;
-    const a = currentAccount();
-    if (a) {
-      const d = document.createElement('div');
-      d.className = 'profileItem';
-      const av = a.pic
-        ? '<img src="' + a.pic + '" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover">'
-        : escapeHtml(initials(a.gamertag));
-      d.innerHTML = '<div class="pAv">' + av + '</div><span>' + escapeHtml(a.gamertag) + '</span><span class="check">✓</span>';
-      d.addEventListener('click', e => { e.stopPropagation(); setProfileMenu(false); });
-      d.addEventListener('mouseenter', () => { profileFocus = 0; paintProfiles(); });
-      profileMenu.appendChild(d); profileItems.push(d);
-    }
-    const add = document.createElement('div');
-    add.className = 'profileItem add';
-    add.innerHTML = '<div class="pAv">+</div><span>' + (a ? 'Switch account' : 'Add account') + '</span>';
-    add.addEventListener('click', e => { e.stopPropagation(); setProfileMenu(false); openAccount(''); });
-    add.addEventListener('mouseenter', () => { profileFocus = profileItems.length; paintProfiles(); });
-    profileMenu.appendChild(add); profileItems.push(add);
-    if (a) {
-      const so = document.createElement('div');
-      so.className = 'profileItem';
-      so.innerHTML = '<div class="pAv">↩</div><span>Sign out</span>';
-      so.addEventListener('click', async e => {
-        e.stopPropagation();
-        try { await supa.auth.signOut(); } catch (e2) {}
-        account = null;
-        paintAccountBadge(); buildProfileItems(); setProfileMenu(false);
-      });
-      so.addEventListener('mouseenter', () => { profileFocus = profileItems.length; paintProfiles(); });
-      profileMenu.appendChild(so); profileItems.push(so);
-    }
-  }
-  function setProfileMenu(open) {
-    profileMenuOpen = open;
-    document.body.classList.toggle('profile-open', open);
-    profileMenu.classList.toggle('open', open);
-    if (open) {
-      if (menuOpen) setMenu(false);
-      profileFocus = 0;
-      paintProfiles();
-    }
-  }
-  function paintProfiles() {
-    const a = currentAccount();
-    profileItems.forEach((el, k) => {
-      el.classList.toggle('focused', k === profileFocus);
-      const chk = el.querySelector('.check');
-      if (chk) chk.style.visibility = (a && k === 0) ? 'visible' : 'hidden';
+/* ---------- Wallpaper ---------- */
+const cv = $('#wallpaper');
+const ctx = cv.getContext('2d');
+let W, H, lines = [];
+const LINE_COUNT = 46;
+function build() {
+  W = cv.width = innerWidth; H = cv.height = innerHeight;
+  lines = [];
+  const gap = W / (LINE_COUNT - 1);
+  for (let i = 0; i < LINE_COUNT; i++) {
+    lines.push({
+      x: i * gap,
+      amp: 26 + Math.random() * 30,
+      freq: 0.0016 + Math.random() * 0.0018,
+      speed: 0.00035 + Math.random() * 0.0005,
+      phase: Math.random() * Math.PI * 2,
+      alpha: 0.10 + Math.random() * 0.16
     });
   }
-  refreshAccount();
-  avatarBtn.addEventListener('click', e => { e.stopPropagation(); setProfileMenu(!profileMenuOpen); });
-  document.addEventListener('click', e => {
-    if (profileMenuOpen && !profileMenu.contains(e.target) && e.target !== avatarBtn) setProfileMenu(false);
-  });
+}
+function draw(t) {
+  ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H);
+  ctx.lineWidth = 2;
+  const h = getComputedStyle(document.documentElement).getPropertyValue('--accent-h').trim() || 222;
+  for (const L of lines) {
+    ctx.beginPath();
+    for (let y = -10; y <= H + 10; y += 8) {
+      const x = L.x + Math.sin(y * L.freq + t * L.speed + L.phase) * L.amp;
+      y === -10 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.strokeStyle = 'hsla(' + h + ', 95%, 52%, ' + L.alpha + ')';
+    ctx.stroke();
+  }
+  requestAnimationFrame(draw);
+}
+build(); addEventListener('resize', build); requestAnimationFrame(draw);
 
-  /* Menu tab — shows the top face button for the connected controller */
-  const menuTab = document.getElementById('menuTab');
-  const menuTabBtn = document.getElementById('menuTabBtn');
-  /* Controller preset — the active preset decides which button opens the menu.
-     (Full remapping UI comes later; this is the default binding: top face button.) */
-  const controllerPreset = { menuButton: 3 };
-  const FACE_LABELS = {
-    xbox: ['A', 'B', 'X', 'Y'],
-    switch: ['B', 'A', 'Y', 'X'],
-    ps: ['✕', '○', '□', '△']
+/* ---------- Supabase ---------- */
+window.Olympus = window.Olympus || {};
+const SUPABASE_URL = 'https://zzsvqnnrfngfxtucszgr.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp6c3Zxbm5yZm5nZnh0dWNzemdyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2MDAzNTksImV4cCI6MjEwNjE3NjM1OX0.R-MCzou_q_ObnwXKCQRsRYy0Bwnand-1ktiatLfQ0aU';
+let supa = null;
+try {
+  if (window.supabase && window.supabase.createClient) supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+} catch (e) { supa = null; }
+/* Offline-safe: the console still boots and runs locally if the cloud
+   library can't load (no network). Cloud features just report offline. */
+function online() { return !!supa; }
+function needOnline() {
+  if (!online()) { toast('You\'re offline — connect to the internet for that.'); return false; }
+  return true;
+}
+
+let account = null; // { id, email, firstName, lastName, gamertag, pic }
+function currentAccount() { return account; }
+async function refreshAccount() {
+  try {
+    const { data: { session } } = await supa.auth.getSession();
+    if (!session) { account = null; }
+    else {
+      const { data: prof } = await supa.from('profiles').select('*').eq('id', session.user.id).maybeSingle();
+      account = prof
+        ? { id: session.user.id, email: session.user.email, firstName: prof.first_name, lastName: prof.last_name, gamertag: prof.gamertag, pic: prof.pic || null }
+        : null;
+    }
+  } catch (e) { account = null; }
+  paintAccountBadge();
+  buildProfileItems();
+  paintSettingsAccount();
+  if (account) { subscribeUserChannel(); loadFriendData(); loadChats(); }
+}
+Object.defineProperty(window.Olympus, 'account', {
+  get() {
+    const a = currentAccount();
+    return a ? { gamertag: a.gamertag, firstName: a.firstName, lastName: a.lastName, email: a.email, pic: a.pic } : null;
+  }
+});
+window.Olympus.cloudSave = async function (game, slot, data) {
+  if (!online()) throw new Error('Offline');
+  const a = currentAccount();
+  if (!a) throw new Error('Not signed in');
+  const { error } = await supa.from('game_saves').upsert(
+    { user_id: a.id, game: game, slot: slot || 'auto', data: data, updated_at: new Date().toISOString() },
+    { onConflict: 'user_id,game,slot' }
+  );
+  if (error) throw error;
+};
+window.Olympus.cloudLoad = async function (game, slot) {
+  if (!online()) return null;
+  const a = currentAccount();
+  if (!a) return null;
+  const { data, error } = await supa.from('game_saves').select('data').eq('user_id', a.id).eq('game', game).eq('slot', slot || 'auto').maybeSingle();
+  if (error || !data) return null;
+  return data.data;
+};
+
+/* ---------- Account screen ---------- */
+const accountScreen = $('#accountScreen');
+const acctFirst = $('#acctFirst'), acctLast = $('#acctLast'), acctEmail = $('#acctEmail');
+const acctTag = $('#acctTag'), acctPw = $('#acctPw'), acctPw2 = $('#acctPw2'), acctFile = $('#acctFile');
+const tabCreate = $('#tabCreate'), tabSignin = $('#tabSignin');
+const paneCreate = $('#paneCreate'), paneSignin = $('#paneSignin');
+let accountOpen = false, draftPic = null;
+const TAG_A = ['Shadow','Iron','Nova','Blaze','Frost','Thunder','Ghost','Solar','Crimson','Echo','Vortex','Onyx','Pixel','Storm','Lunar','Apex','Drift','Ember','Flux','Zero'];
+const TAG_B = ['Fox','Wolf','Hawk','Bear','Viper','Falcon','Raven','Tiger','Cobra','Dragon','Puma','Shark','Wraith','Bolt','Rider','Hunter','Saber','Comet','Reaper','Titan'];
+function randomTag() {
+  return TAG_A[Math.floor(Math.random() * TAG_A.length)] + TAG_B[Math.floor(Math.random() * TAG_B.length)] + (100 + Math.floor(Math.random() * 900));
+}
+function setTab(which) {
+  const c = which === 'create';
+  tabCreate.classList.toggle('active', c);
+  tabSignin.classList.toggle('active', !c);
+  paneCreate.style.display = c ? 'flex' : 'none';
+  paneSignin.style.display = c ? 'none' : 'flex';
+}
+tabCreate.addEventListener('click', () => setTab('create'));
+tabSignin.addEventListener('click', () => setTab('signin'));
+function paintAcctAvatar() {
+  const prev = $('#acctAvatarPreview');
+  if (draftPic) prev.innerHTML = '<img src="' + draftPic + '" alt="">';
+  else prev.textContent = initials(acctTag.value.trim());
+}
+acctTag.addEventListener('input', paintAcctAvatar);
+$('#acctDice').addEventListener('click', () => { acctTag.value = randomTag(); paintAcctAvatar(); });
+$('#acctUploadBtn').addEventListener('click', () => acctFile.click());
+acctFile.addEventListener('change', () => {
+  const f = acctFile.files[0];
+  if (!f) return;
+  const img = new Image();
+  img.onload = () => {
+    const s = 256, c = document.createElement('canvas');
+    c.width = c.height = s;
+    const m = Math.min(img.width, img.height);
+    c.getContext('2d').drawImage(img, (img.width - m) / 2, (img.height - m) / 2, m, m, 0, 0, s, s);
+    draftPic = c.toDataURL('image/png');
+    URL.revokeObjectURL(img.src);
+    paintAcctAvatar();
   };
-  function controllerKind() {
-    const pads = navigator.getGamepads ? navigator.getGamepads() : [];
-    const gp = Array.from(pads).find(p => p && p.connected);
-    if (!gp) return 'xbox';
-    const id = (gp.id || '').toLowerCase();
-    if (id.includes('nintendo') || id.includes('switch') || id.includes('pro controller') || id.includes('joy-con') || id.includes('joycon')) return 'switch';
-    if (id.includes('playstation') || id.includes('dualsense') || id.includes('dualshock') || id.includes('sony')) return 'ps';
-    return 'xbox';
+  img.src = URL.createObjectURL(f);
+});
+function openAccount(notice) {
+  accountOpen = true;
+  document.body.classList.add('in-account');
+  $('#acctNotice').textContent = notice || '';
+  $('#createError').textContent = '';
+  $('#signinError').textContent = '';
+  setTab('create');
+  if (profileMenuOpen) setProfileMenu(false);
+  if (menuOpen) setMenu(false);
+  closeAllScreens();
+  accountScreen.classList.add('open');
+}
+function closeAccount() {
+  accountOpen = false;
+  document.body.classList.remove('in-account');
+  accountScreen.classList.remove('open');
+  draftPic = null;
+  acctFile.value = '';
+  paintAcctAvatar();
+}
+$('#acctSkip').addEventListener('click', closeAccount);
+function requireAccount(feature) {
+  if (currentAccount()) return true;
+  openAccount('You need an Olympus account to use ' + feature + '.');
+  return false;
+}
+$('#acctCreateBtn').addEventListener('click', async () => {
+  const first = acctFirst.value.trim(), last = acctLast.value.trim();
+  const email = acctEmail.value.trim().toLowerCase();
+  const tag = acctTag.value.trim();
+  const pw = acctPw.value, pw2 = acctPw2.value;
+  const err = $('#createError');
+  const btn = $('#acctCreateBtn');
+  if (!first || !last) err.textContent = 'Enter your first and last name.';
+  else if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) err.textContent = 'Enter a valid email address.';
+  else if (tag.length < 3 || tag.length > 16) err.textContent = 'Gamertag must be 3–16 characters.';
+  else if (pw.length < 4) err.textContent = 'Password must be at least 4 characters.';
+  else if (pw !== pw2) err.textContent = 'Passwords don\'t match.';
+  else {
+    err.textContent = '';
+    btn.disabled = true; btn.textContent = 'Creating...';
+    try {
+      const { data, error } = await supa.auth.signUp({ email: email, password: pw });
+      if (error) throw error;
+      const user = data.user;
+      if (!user) throw new Error('Check your email to confirm, then sign in.');
+      const { error: pErr } = await supa.from('profiles').insert({
+        id: user.id, first_name: first, last_name: last, gamertag: tag, pic: draftPic
+      });
+      if (pErr) {
+        if (pErr.code === '23505') err.textContent = 'That gamertag is taken — try another.';
+        else err.textContent = pErr.message;
+      } else {
+        await refreshAccount();
+        closeAccount();
+      }
+    } catch (e) {
+      err.textContent = /already registered/i.test(e.message || '')
+        ? 'That email already has an account — sign in instead.'
+        : (e.message || 'Couldn\'t create the account.');
+    }
+    btn.disabled = false; btn.textContent = 'Create account';
   }
-  function faceLabel(btn) {
-    const labels = FACE_LABELS[controllerKind()];
-    return labels[btn] || '?';
+});
+$('#acctSigninBtn').addEventListener('click', async () => {
+  const email = $('#signinEmail').value.trim().toLowerCase();
+  const pw = $('#signinPw').value;
+  const err = $('#signinError');
+  const btn = $('#acctSigninBtn');
+  err.textContent = '';
+  btn.disabled = true; btn.textContent = 'Signing in...';
+  try {
+    const { error } = await supa.auth.signInWithPassword({ email: email, password: pw });
+    if (error) throw error;
+    await refreshAccount();
+    if (!currentAccount()) throw new Error('Signed in, but no Olympus profile was found for this login.');
+    closeAccount();
+  } catch (e) {
+    err.textContent = /invalid login credentials/i.test(e.message || '')
+      ? 'Wrong email or password.'
+      : (e.message || 'Couldn\'t sign in.');
   }
-  function paintMenuTab() { menuTabBtn.textContent = faceLabel(controllerPreset.menuButton); }
-  menuTab.addEventListener('click', e => { e.stopPropagation(); setMenu(true); });
-  paintMenuTab();
+  btn.disabled = false; btn.textContent = 'Sign in';
+});
 
-  /* Side menu */
-  const sideMenu = document.getElementById('sideMenu');
-  const overlay = document.getElementById('menuOverlay');
-  const menuBtns = Array.from(document.querySelectorAll('.menuBtn'));
-  let menuOpen = false, menuFocus = 0;
-  function setMenu(open) {
-    menuOpen = open;
-    document.body.classList.toggle('menu-open', open);
-    sideMenu.classList.toggle('open', open);
-    overlay.classList.toggle('show', open);
-    if (open) { menuFocus = 0; paintMenu(); if (profileMenuOpen) setProfileMenu(false); }
+/* Top-left badge */
+const PERSON_SVG = '<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="8.2" r="3.4"/><path d="M5 20.2c1.3-3.4 3.9-5.1 7-5.1s5.7 1.7 7 5.1"/></svg>';
+const avatarBtn = $('#avatarBtn');
+const gamerTagEl = $('#gamerTag');
+function paintAccountBadge() {
+  const a = currentAccount();
+  if (a) {
+    avatarBtn.innerHTML = a.pic ? '<img src="' + a.pic + '" alt="">' : escapeHtml(initials(a.gamertag));
+    gamerTagEl.textContent = a.gamertag;
+  } else {
+    avatarBtn.innerHTML = PERSON_SVG;
+    gamerTagEl.textContent = 'Signed out';
   }
-  function paintMenu() {
-    menuBtns.forEach((b, k) => b.classList.toggle('focused', k === menuFocus));
+}
+const profileMenu = $('#profileMenu');
+const profileItems = [];
+let profileMenuOpen = false, profileFocus = 0;
+function buildProfileItems() {
+  profileMenu.querySelectorAll('.profileItem').forEach(el => el.remove());
+  profileItems.length = 0;
+  const a = currentAccount();
+  if (a) {
+    const d = document.createElement('div');
+    d.className = 'profileItem';
+    d.innerHTML = picHtml(a.pic, a.gamertag) + '<span>' + escapeHtml(a.gamertag) + '</span><span class="check">✓</span>';
+    d.addEventListener('click', e => { e.stopPropagation(); setProfileMenu(false); });
+    d.addEventListener('mouseenter', () => { profileFocus = 0; paintProfiles(); });
+    profileMenu.appendChild(d); profileItems.push(d);
   }
-  overlay.addEventListener('click', () => setMenu(false));
-  menuBtns.forEach((b, i) => {
-    b.addEventListener('click', () => { menuFocus = i; paintMenu(); });
-    b.addEventListener('mouseenter', () => { menuFocus = i; paintMenu(); });
+  const add = document.createElement('div');
+  add.className = 'profileItem add';
+  add.innerHTML = '<div class="pAv">+</div><span>' + (a ? 'Switch account' : 'Add account') + '</span>';
+  add.addEventListener('click', e => { e.stopPropagation(); setProfileMenu(false); openAccount(''); });
+  add.addEventListener('mouseenter', () => { profileFocus = profileItems.length; paintProfiles(); });
+  profileMenu.appendChild(add); profileItems.push(add);
+  if (a) {
+    const so = document.createElement('div');
+    so.className = 'profileItem';
+    so.innerHTML = '<div class="pAv">↩</div><span>Sign out</span>';
+    so.addEventListener('click', async e => {
+      e.stopPropagation();
+      await signOut();
+      setProfileMenu(false);
+    });
+    so.addEventListener('mouseenter', () => { profileFocus = profileItems.length; paintProfiles(); });
+    profileMenu.appendChild(so); profileItems.push(so);
+  }
+}
+async function signOut() {
+  try { await supa.auth.signOut(); } catch (e) {}
+  account = null;
+  leaveParty();
+  if (userChannel) { try { await supa.removeChannel(userChannel); } catch (e) {} userChannel = null; }
+  paintAccountBadge(); buildProfileItems(); paintSettingsAccount();
+  friendCache = { reqs: [], friends: [] };
+  chatCache = [];
+  paintFriendBadge(); paintMsgBadge();
+}
+function setProfileMenu(open) {
+  profileMenuOpen = open;
+  profileMenu.classList.toggle('open', open);
+  if (open) {
+    if (menuOpen) setMenu(false);
+    profileFocus = 0;
+    paintProfiles();
+  }
+}
+function paintProfiles() {
+  const a = currentAccount();
+  profileItems.forEach((el, k) => {
+    el.classList.toggle('focused', k === profileFocus);
+    const chk = el.querySelector('.check');
+    if (chk) chk.style.visibility = (a && k === 0) ? 'visible' : 'hidden';
   });
+}
+avatarBtn.addEventListener('click', e => { e.stopPropagation(); setProfileMenu(!profileMenuOpen); });
+document.addEventListener('click', e => {
+  if (profileMenuOpen && !profileMenu.contains(e.target) && e.target !== avatarBtn && !avatarBtn.contains(e.target)) setProfileMenu(false);
+});
 
-  /* Shop + communication features require an account */
-  document.getElementById('menuShop').addEventListener('click', () => { requireAccount('the Shop'); });
-  document.getElementById('menuFriends').addEventListener('click', () => { requireAccount('Friends'); });
-  document.getElementById('menuMessages').addEventListener('click', () => { requireAccount('Messages'); });
-  document.getElementById('menuProfile').addEventListener('click', () => { openAccount(''); });
+/* ---------- Screens (with back history) ---------- */
+const screenStack = [];
+function openScreen(name, data) {
+  const el = $('#screen-' + name);
+  if (!el) return;
+  if (screenStack[screenStack.length - 1] === name) return;
+  screenStack.push(name);
+  $$('.screen').forEach(s => s.classList.remove('open'));
+  el.classList.add('open');
+  document.body.classList.add('screen-open');
+  if (menuOpen) setMenu(false);
+  if (profileMenuOpen) setProfileMenu(false);
+  const fn = ScreenRender[name];
+  if (fn) fn(data);
+}
+function closeAllScreens() {
+  screenStack.length = 0;
+  $$('.screen').forEach(s => s.classList.remove('open'));
+  document.body.classList.remove('screen-open');
+}
+function goBack() {
+  if (accountOpen) { closeAccount(); return; }
+  if ($('#modalWrap').classList.contains('open')) { closeModal(); return; }
+  if (profileMenuOpen) { setProfileMenu(false); return; }
+  if (menuOpen) { setMenu(false); return; }
+  if (screenStack.length > 1) {
+    screenStack.pop();
+    const name = screenStack[screenStack.length - 1];
+    $$('.screen').forEach(s => s.classList.remove('open'));
+    $('#screen-' + name).classList.add('open');
+    const fn = ScreenRender[name];
+    if (fn) fn();
+  } else if (screenStack.length === 1) {
+    closeAllScreens();
+  }
+}
+$$('[data-back]').forEach(b => b.addEventListener('click', goBack));
+const ScreenRender = {};
 
-  addEventListener('keydown', e => {
-    const ae = document.activeElement;
-    if (ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA')) {
-      if (e.key === 'Escape') ae.blur();
-      return;
-    }
-    if (accountOpen) {
-      if (e.key === 'Escape') closeAccount();
-      return;
-    }
-    if (e.key === 'y' || e.key === 'Y') {
-      if (profileMenuOpen) setProfileMenu(false);
-      setMenu(!menuOpen);
-      return;
-    }
-    if (profileMenuOpen) {
-      const n = profileItems.length;
-      if (e.key === 'ArrowDown') { profileFocus = Math.min(n - 1, profileFocus + 1); paintProfiles(); }
-      else if (e.key === 'ArrowUp') { profileFocus = Math.max(0, profileFocus - 1); paintProfiles(); }
-      else if (e.key === 'Enter' && profileItems[profileFocus]) profileItems[profileFocus].click();
-      else if (e.key === 'Escape' || e.key === 'b' || e.key === 'B') setProfileMenu(false);
-      return;
-    }
-    if (menuOpen) {
-      if (e.key === 'ArrowDown') { menuFocus = Math.min(menuBtns.length - 1, menuFocus + 1); paintMenu(); }
-      else if (e.key === 'ArrowUp') { menuFocus = Math.max(0, menuFocus - 1); paintMenu(); }
-      else if (e.key === 'Escape' || e.key === 'b' || e.key === 'B') setMenu(false);
-      return;
-    }
-    if (e.key === 'ArrowRight') { if (zone === 'top') setTopFocus(topFocus + 1); else if (zone === 'tiles') setFocus(focus + 1); }
-    else if (e.key === 'ArrowLeft') { if (zone === 'top') setTopFocus(topFocus - 1); else if (zone === 'tiles') setFocus(focus - 1); }
-    else if (e.key === 'ArrowUp') { if (zone === 'tiles') setTopFocus(topFocus); else if (zone === 'menu') setFocus(focus); }
-    else if (e.key === 'ArrowDown') { if (zone === 'top') setFocus(focus); else if (zone === 'tiles') setMenuFocus(); }
-    else if (e.key === 'Enter') {
-      if (zone === 'top' && topCtrls[topFocus]) topCtrls[topFocus].click();
-      else if (zone === 'menu' && menuTabCtl) menuTabCtl.click();
-    }
-  });
-  tiles.forEach((t, i) => {
-    t.addEventListener('click', () => setFocus(i));
-    t.addEventListener('mouseenter', () => setFocus(i, false));
-  });
+/* ---------- Home: games, focus nav ---------- */
+const games = [
+  { name: '', desc: '', icon: null }, { name: '', desc: '', icon: null },
+  { name: '', desc: '', icon: null }, { name: '', desc: '', icon: null },
+  { name: '', desc: '', icon: null }, { name: '', desc: '', icon: null },
+  { name: '', desc: '', icon: null }, { name: '', desc: '', icon: null },
+  { name: '', desc: '', icon: null }, { name: '', desc: '', icon: null },
+];
+function artBG(h1, h2) {
+  return 'radial-gradient(120% 90% at 85% 20%, hsla(' + h1 + ', 85%, 55%, .55), transparent 60%), ' +
+    'radial-gradient(100% 100% at 70% 90%, hsla(' + h2 + ', 90%, 45%, .4), transparent 55%), ' +
+    'linear-gradient(135deg, hsl(' + h1 + ', 60%, 16%), hsl(' + h2 + ', 70%, 8%))';
+}
+const row = $('#tileRow');
+const tiles = [];
+games.forEach((g, i) => {
+  const d = document.createElement('div');
+  d.className = 'tile';
+  d.dataset.i = i;
+  if (g.icon) { d.title = g.name; d.style.background = artBG(g.icon[0], g.icon[1]); }
+  row.appendChild(d); tiles.push(d);
+});
+let focus = 0, zone = 'tiles', topFocus = 0;
+const topCtrls = [avatarBtn, $('#padBtn'), $('#searchBtn'), $('#msgBtn'), $('#settingsBtn')];
+const menuTabCtl = $('#menuTab');
+function paintFocus() {
+  tiles.forEach((t, k) => t.classList.toggle('focused', zone === 'tiles' && k === focus));
+  topCtrls.forEach((c, k) => c && c.classList.toggle('focused', zone === 'top' && k === topFocus));
+  if (menuTabCtl) menuTabCtl.classList.toggle('focused', zone === 'menu');
+  if (zone === 'tiles') paintHero(focus);
+}
+function setFocus(i, scroll) {
+  focus = Math.max(0, Math.min(tiles.length - 1, i));
+  zone = 'tiles';
+  paintFocus();
+  if (scroll !== false && tiles[focus]) tiles[focus].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+}
+function setTopFocus(i) {
+  topFocus = Math.max(0, Math.min(topCtrls.length - 1, i));
+  zone = 'top';
+  paintFocus();
+}
+function setMenuFocus() { zone = 'menu'; paintFocus(); }
+topCtrls.forEach((c, i) => { if (c) c.addEventListener('mouseenter', () => setTopFocus(i)); });
+if (menuTabCtl) menuTabCtl.addEventListener('mouseenter', setMenuFocus);
+const heroBG = $('#heroBG'), gameMeta = $('#gameMeta'), gameTitle = $('#gameTitle'), gameDesc = $('#gameDesc');
+function paintHero(i) {
+  const g = games[i];
+  if (g.hero) {
+    heroBG.style.setProperty('--h1', g.hero[0]);
+    heroBG.style.setProperty('--h2', g.hero[1]);
+    heroBG.classList.add('on');
+    gameTitle.textContent = g.name;
+    gameDesc.textContent = g.desc;
+    gameMeta.classList.add('show');
+  } else {
+    heroBG.classList.remove('on');
+    gameMeta.classList.remove('show');
+  }
+}
+tiles.forEach((t, i) => {
+  t.addEventListener('click', () => { setFocus(i); launchGame(i); });
+  t.addEventListener('mouseenter', () => setFocus(i, false));
+});
+function launchGame(i) {
+  const g = games[i];
+  if (!g.name) { toast('No game installed in this slot yet.'); return; }
+  toast('Launching ' + g.name + '…');
+}
 
-  /* Gamepad: left joystick + d-pad move across tiles */
-  const padState = { dir: 0, nextMove: 0 };
-  function showPadStatus(on) {
-    let el = document.getElementById('padStatus');
-    if (on && !el) {
+/* Menu tab face button */
+const menuTab = $('#menuTab');
+const menuTabBtn = $('#menuTabBtn');
+const controllerPreset = { menuButton: 3 };
+const FACE_LABELS = {
+  xbox: ['A', 'B', 'X', 'Y'],
+  switch: ['B', 'A', 'Y', 'X'],
+  ps: ['✕', '○', '□', '△']
+};
+function controllerKind() {
+  const pads = navigator.getGamepads ? navigator.getGamepads() : [];
+  const gp = Array.from(pads).find(p => p && p.connected);
+  if (!gp) return 'xbox';
+  const id = (gp.id || '').toLowerCase();
+  if (id.includes('nintendo') || id.includes('switch') || id.includes('pro controller') || id.includes('joy-con') || id.includes('joycon')) return 'switch';
+  if (id.includes('playstation') || id.includes('dualsense') || id.includes('dualshock') || id.includes('sony')) return 'ps';
+  return 'xbox';
+}
+function faceLabel(btn) { return (FACE_LABELS[controllerKind()] || FACE_LABELS.xbox)[btn] || '?'; }
+function paintMenuTab() { menuTabBtn.textContent = faceLabel(controllerPreset.menuButton); }
+menuTab.addEventListener('click', e => { e.stopPropagation(); setMenu(true); });
+paintMenuTab();
+
+/* Side menu */
+const sideMenu = $('#sideMenu');
+const overlay = $('#menuOverlay');
+const menuBtns = Array.from(document.querySelectorAll('.menuBtn'));
+let menuOpen = false, menuFocus = 0;
+function setMenu(open) {
+  menuOpen = open;
+  document.body.classList.toggle('menu-open', open);
+  sideMenu.classList.toggle('open', open);
+  overlay.classList.toggle('show', open);
+  if (open) { menuFocus = 0; paintMenu(); if (profileMenuOpen) setProfileMenu(false); }
+}
+function paintMenu() { menuBtns.forEach((b, k) => b.classList.toggle('focused', k === menuFocus)); }
+overlay.addEventListener('click', () => setMenu(false));
+menuBtns.forEach((b, i) => {
+  b.addEventListener('click', () => { menuFocus = i; paintMenu(); activateMenuBtn(b); });
+  b.addEventListener('mouseenter', () => { menuFocus = i; paintMenu(); });
+});
+function activateMenuBtn(b) {
+  if (b.id === 'menuExit') { tryExit(); return; }
+  const go = b.dataset.go;
+  if (go === 'friends' || go === 'profile') { if (!requireAccount(go === 'friends' ? 'Friends' : 'your Profile')) return; }
+  if (go) openScreen(go);
+}
+$('#padBtn').addEventListener('click', () => openScreen('controllers'));
+$('#searchBtn').addEventListener('click', () => openScreen('search'));
+$('#msgBtn').addEventListener('click', () => { if (requireAccount('Messages')) openScreen('messages'); });
+$('#settingsBtn').addEventListener('click', () => openScreen('settings'));
+
+/* Exit */
+let gameRunning = false;
+function tryExit() {
+  if (gameRunning) { toast('Close your game first, then exit.'); return; }
+  modal('Exit Olympus?', 'Are you sure you want to close Olympus?', [
+    { label: 'Stay', onClick: null },
+    { label: 'Exit', primary: true, onClick: () => {
+      if (window.OlympusPC && window.OlympusPC.quit) window.OlympusPC.quit();
+      else toast('This is the browser version — just close the tab to exit.');
+    } }
+  ]);
+}
+
+/* ---------- Controllers ---------- */
+function connectedPads() {
+  const pads = navigator.getGamepads ? navigator.getGamepads() : [];
+  return Array.from(pads).filter(p => p && p.connected);
+}
+function rumblePad(gp, strong, weak, duration) {
+  try {
+    const act = gp.vibrationActuator;
+    if (act && act.playEffect) {
+      act.playEffect('dual-rumble', {
+        startDelay: 0, duration: duration || 400,
+        strongMagnitude: strong == null ? 1 : strong,
+        weakMagnitude: weak == null ? 1 : weak
+      });
+    }
+  } catch (e) {}
+}
+function rumbleOnConnect() {
+  let on = true;
+  try { on = localStorage.getItem('oly_rumble') !== 'off'; } catch (e) {}
+  return on;
+}
+function showPadStatus() {
+  const n = connectedPads().length;
+  let el = document.getElementById('padStatus');
+  if (n > 0) {
+    if (!el) {
       el = document.createElement('div');
       el.id = 'padStatus';
-      el.textContent = '🎮 CONTROLLER CONNECTED';
-      document.getElementById('topIcons').appendChild(el);
-    } else if (!on && el) el.remove();
-  }
-  addEventListener('gamepadconnected', () => { showPadStatus(true); paintMenuTab(); });
-  addEventListener('gamepaddisconnected', () => { showPadStatus(false); paintMenuTab(); });
-  function pollPad() {
-    if (accountOpen) { requestAnimationFrame(pollPad); return; }
-    const pads = navigator.getGamepads ? navigator.getGamepads() : [];
-    const gp = Array.from(pads).find(p => p && p.connected);
-    const now = performance.now();
-    const pressed = i => gp && gp.buttons[i] && gp.buttons[i].pressed;
-    const axX = gp ? (gp.axes[0] || 0) : 0;
-    const axY = gp ? (gp.axes[1] || 0) : 0;
-
-    // Menu button (from the controller preset) toggles menu, B closes it, A selects in profile menu
-    const yB = pressed(controllerPreset.menuButton), bB = pressed(1), aB = pressed(0);
-    const yEdge = yB && !padState.yHeld, bEdge = bB && !padState.bHeld, aEdge = aB && !padState.aHeld;
-    padState.yHeld = yB; padState.bHeld = bB; padState.aHeld = aB;
-
-    if (profileMenuOpen) {
-      let vdir = 0;
-      if (axY > 0.5 || pressed(13)) vdir = 1;
-      else if (axY < -0.5 || pressed(12)) vdir = -1;
-      if (vdir !== 0) {
-        if (padState.pdir !== vdir || now >= padState.pnext) {
-          profileFocus = Math.max(0, Math.min(profileItems.length - 1, profileFocus + vdir));
-          paintProfiles();
-          padState.pnext = now + (padState.pdir === vdir ? 170 : 300);
-          padState.pdir = vdir;
-        }
-      } else { padState.pdir = 0; padState.pnext = 0; }
-      if (aEdge && profileItems[profileFocus]) profileItems[profileFocus].click();
-      if (bEdge) setProfileMenu(false);
-      if (yEdge) { setProfileMenu(false); setMenu(true); }
-    } else {
-      if (yEdge) setMenu(!menuOpen);
-      if (bEdge && menuOpen) setMenu(false);
+      $('#topIcons').appendChild(el);
     }
+    el.textContent = '🎮 ' + n + ' CONTROLLER' + (n > 1 ? 'S' : '');
+  } else if (el) el.remove();
+}
+const BTN_NAMES = ['A', 'B', 'X', 'Y', 'LB', 'RB', 'LT', 'RT', 'Back', 'Start', 'L3', 'R3', 'Up', 'Down', 'Left', 'Right', 'Home'];
+ScreenRender.controllers = function () {
+  const pads = connectedPads().slice().sort((a, b) => String(a.id).localeCompare(String(b.id)));
+  $('#padCount').textContent = pads.length ? pads.length + ' CONNECTED' : 'NO CONTROLLERS';
+  $('#padEmpty').style.display = pads.length ? 'none' : 'block';
+  const grid = $('#padGrid');
+  grid.innerHTML = '';
+  pads.forEach((gp, i) => {
+    const card = document.createElement('div');
+    card.className = 'card padCard';
+    card.innerHTML =
+      '<div class="padName">' + escapeHtml(gp.id.slice(0, 42)) + '</div>' +
+      '<div class="slot">PLAYER ' + (i + 1) + '</div>' +
+      '<div class="btnRow"><button class="btn" data-rumble>Rumble</button><button class="btn" data-test>Test controls</button></div>' +
+      '<div class="padTest" style="display:none"></div>';
+    card.querySelector('[data-rumble]').addEventListener('click', () => rumblePad(gp, 1, 1, 600));
+    const testBtn = card.querySelector('[data-test]');
+    const testZone = card.querySelector('.padTest');
+    testBtn.addEventListener('click', () => {
+      const on = testZone.style.display !== 'none';
+      testZone.style.display = on ? 'none' : 'flex';
+      testBtn.textContent = on ? 'Test controls' : 'Stop test';
+      testZone.dataset.padIndex = gp.index;
+      if (!on) {
+        testZone.innerHTML = '';
+        BTN_NAMES.forEach((n, bi) => {
+          const k = document.createElement('span');
+          k.className = 'k'; k.dataset.b = bi; k.textContent = n;
+          testZone.appendChild(k);
+        });
+      }
+    });
+    grid.appendChild(card);
+  });
+};
+function pollPadTests() {
+  $$('#padGrid .padTest').forEach(zone => {
+    if (zone.style.display === 'none') return;
+    const pads = navigator.getGamepads ? navigator.getGamepads() : [];
+    const gp = pads[Number(zone.dataset.padIndex)];
+    if (!gp) return;
+    zone.querySelectorAll('.k').forEach(k => {
+      const b = gp.buttons[Number(k.dataset.b)];
+      k.classList.toggle('hit', !!(b && b.pressed));
+    });
+  });
+}
+addEventListener('gamepadconnected', e => {
+  showPadStatus(); paintMenuTab();
+  if (rumbleOnConnect() && e.gamepad) rumblePad(e.gamepad, 0.7, 0.7, 350);
+  if ($('#screen-controllers').classList.contains('open')) ScreenRender.controllers();
+});
+addEventListener('gamepaddisconnected', () => {
+  showPadStatus(); paintMenuTab();
+  if ($('#screen-controllers').classList.contains('open')) ScreenRender.controllers();
+});
 
+/* Keyboard + gamepad input */
+addEventListener('keydown', e => {
+  const ae = document.activeElement;
+  if (ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA')) {
+    if (e.key === 'Escape') ae.blur();
+    else if (e.key === 'Enter' && ae.id === 'chatInput') sendChatMessage();
+    else if (e.key === 'Enter' && ae.id === 'searchInput') runSearch();
+    return;
+  }
+  if (accountOpen) { if (e.key === 'Escape') closeAccount(); return; }
+  if (e.key === 'y' || e.key === 'Y') {
+    if (profileMenuOpen) setProfileMenu(false);
+    setMenu(!menuOpen);
+    return;
+  }
+  if (profileMenuOpen) {
+    const n = profileItems.length;
+    if (e.key === 'ArrowDown') { profileFocus = Math.min(n - 1, profileFocus + 1); paintProfiles(); }
+    else if (e.key === 'ArrowUp') { profileFocus = Math.max(0, profileFocus - 1); paintProfiles(); }
+    else if (e.key === 'Enter' && profileItems[profileFocus]) profileItems[profileFocus].click();
+    else if (e.key === 'Escape' || e.key === 'b' || e.key === 'B') setProfileMenu(false);
+    return;
+  }
+  if (menuOpen) {
+    if (e.key === 'ArrowDown') { menuFocus = Math.min(menuBtns.length - 1, menuFocus + 1); paintMenu(); }
+    else if (e.key === 'ArrowUp') { menuFocus = Math.max(0, menuFocus - 1); paintMenu(); }
+    else if (e.key === 'Enter' && menuBtns[menuFocus]) activateMenuBtn(menuBtns[menuFocus]);
+    else if (e.key === 'Escape' || e.key === 'b' || e.key === 'B') setMenu(false);
+    return;
+  }
+  if (screenStack.length) {
+    if (e.key === 'Escape' || e.key === 'b' || e.key === 'B') goBack();
+    return;
+  }
+  if (e.key === 'ArrowRight') { if (zone === 'top') setTopFocus(topFocus + 1); else if (zone === 'tiles') setFocus(focus + 1); }
+  else if (e.key === 'ArrowLeft') { if (zone === 'top') setTopFocus(topFocus - 1); else if (zone === 'tiles') setFocus(focus - 1); }
+  else if (e.key === 'ArrowUp') { if (zone === 'tiles') setTopFocus(topFocus); else if (zone === 'menu') setFocus(focus); }
+  else if (e.key === 'ArrowDown') { if (zone === 'top') setFocus(focus); else if (zone === 'tiles') setMenuFocus(); }
+  else if (e.key === 'Enter') {
+    if (zone === 'top' && topCtrls[topFocus]) topCtrls[topFocus].click();
+    else if (zone === 'menu' && menuTabCtl) menuTabCtl.click();
+    else if (zone === 'tiles') launchGame(focus);
+  }
+});
+const padState = { dir: 0, nextMove: 0 };
+function pollPad() {
+  if (accountOpen) { requestAnimationFrame(pollPad); return; }
+  pollPadTests();
+  const pads = navigator.getGamepads ? navigator.getGamepads() : [];
+  const gp = Array.from(pads).find(p => p && p.connected);
+  const now = performance.now();
+  const pressed = i => gp && gp.buttons[i] && gp.buttons[i].pressed;
+  const axX = gp ? (gp.axes[0] || 0) : 0;
+  const axY = gp ? (gp.axes[1] || 0) : 0;
+  const yB = pressed(controllerPreset.menuButton), bB = pressed(1), aB = pressed(0);
+  const yEdge = yB && !padState.yHeld, bEdge = bB && !padState.bHeld, aEdge = aB && !padState.aHeld;
+  padState.yHeld = yB; padState.bHeld = bB; padState.aHeld = aB;
+
+  if (bEdge) { goBack(); requestAnimationFrame(pollPad); return; }
+
+  if (profileMenuOpen) {
+    let vdir = 0;
+    if (axY > 0.5 || pressed(13)) vdir = 1;
+    else if (axY < -0.5 || pressed(12)) vdir = -1;
+    if (vdir !== 0) {
+      if (padState.pdir !== vdir || now >= padState.pnext) {
+        profileFocus = Math.max(0, Math.min(profileItems.length - 1, profileFocus + vdir));
+        paintProfiles();
+        padState.pnext = now + (padState.pdir === vdir ? 170 : 300);
+        padState.pdir = vdir;
+      }
+    } else { padState.pdir = 0; padState.pnext = 0; }
+    if (aEdge && profileItems[profileFocus]) profileItems[profileFocus].click();
+    if (yEdge) { setProfileMenu(false); setMenu(true); }
+  } else if (screenStack.length) {
+    if (yEdge) setMenu(!menuOpen);
+  } else {
+    if (yEdge) setMenu(!menuOpen);
     if (menuOpen) {
       let vdir = 0;
       if (axY > 0.5 || pressed(13)) vdir = 1;
@@ -1049,6 +1563,7 @@
           padState.vdir = vdir;
         }
       } else { padState.vdir = 0; padState.vnext = 0; }
+      if (aEdge && menuBtns[menuFocus]) activateMenuBtn(menuBtns[menuFocus]);
     } else {
       let dir = 0;
       if (axX > 0.5 || pressed(15)) dir = 1;
@@ -1060,7 +1575,6 @@
           padState.dir = dir;
         }
       } else { padState.dir = 0; padState.nextMove = 0; }
-      /* Stick up/down moves the glow between the game row and the top bar */
       const vv = (axY > 0.5 || pressed(13)) ? 1 : (axY < -0.5 || pressed(12)) ? -1 : 0;
       if (vv !== 0 && padState.vv !== vv) {
         if (vv === -1 && zone === 'tiles') setTopFocus(topFocus);
@@ -1071,40 +1585,978 @@
       padState.vv = vv;
       if (aEdge && zone === 'top' && topCtrls[topFocus]) topCtrls[topFocus].click();
       else if (aEdge && zone === 'menu' && menuTabCtl) menuTabCtl.click();
+      else if (aEdge && zone === 'tiles') launchGame(focus);
     }
-    requestAnimationFrame(pollPad);
   }
   requestAnimationFrame(pollPad);
-  row.addEventListener('wheel', e => {
-    if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) { e.preventDefault(); row.scrollLeft += e.deltaY; }
-  }, { passive: false });
+}
+requestAnimationFrame(pollPad);
+row.addEventListener('wheel', e => {
+  if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) { e.preventDefault(); row.scrollLeft += e.deltaY; }
+}, { passive: false });
 
-  /* Clock */
-  function clock() {
-    const d = new Date();
-    let h = d.getHours(), m = String(d.getMinutes()).padStart(2, '0');
-    const ap = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12;
-    document.getElementById('clock').textContent = `${h}:${m} ${ap}`;
+/* Clock */
+function clock() {
+  const d = new Date();
+  let h = d.getHours(), m = String(d.getMinutes()).padStart(2, '0');
+  const ap = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12;
+  $('#clock').textContent = h + ':' + m + ' ' + ap;
+}
+clock(); setInterval(clock, 15000);
+
+/* ---------- Friends ---------- */
+let friendCache = { reqs: [], friends: [] }; // reqs: incoming pending {id, from:{...}}
+function orderedPair(a, b) { return a < b ? [a, b] : [b, a]; }
+async function loadFriendData() {
+  const me = currentAccount();
+  if (!me) return;
+  try {
+    const { data: reqs } = await supa.from('friend_requests')
+      .select('id, from_id, to_id, status, profiles!friend_requests_from_id_fkey(id, gamertag, pic)')
+      .or('from_id.eq.' + me.id + ',to_id.eq.' + me.id)
+      .eq('status', 'pending');
+    const incoming = (reqs || []).filter(r => r.to_id === me.id);
+    friendCache.reqs = incoming.map(r => ({ id: r.id, from: r.profiles }));
+    friendCache.outgoing = (reqs || []).filter(r => r.from_id === me.id).map(r => r.to_id);
+    const { data: fs } = await supa.from('friendships').select('user_a, user_b')
+      .or('user_a.eq.' + me.id + ',user_b.eq.' + me.id);
+    const ids = (fs || []).map(f => f.user_a === me.id ? f.user_b : f.user_a);
+    friendCache.friendIds = ids;
+    if (ids.length) {
+      const { data: profs } = await supa.from('profiles').select('id, gamertag, pic').in('id', ids);
+      friendCache.friends = profs || [];
+    } else friendCache.friends = [];
+  } catch (e) {}
+  paintFriendBadge();
+  if ($('#screen-friends').classList.contains('open')) ScreenRender.friends();
+}
+function paintFriendBadge() {
+  const n = friendCache.reqs.length;
+  const el = $('#friendReqCount');
+  el.textContent = n;
+  el.classList.toggle('hidden', n === 0);
+}
+function isFriend(id) { return (friendCache.friendIds || []).includes(id); }
+function hasOutgoing(id) { return (friendCache.outgoing || []).includes(id); }
+async function sendFriendRequest(toId) {
+  if (!needOnline()) return;
+  const me = currentAccount();
+  if (!me || toId === me.id) return;
+  if (isFriend(toId)) { toast('Already friends.'); return; }
+  if (hasOutgoing(toId)) { toast('Request already sent.'); return; }
+  const { error } = await supa.from('friend_requests').insert({ from_id: me.id, to_id: toId });
+  if (error) { toast('Couldn\'t send request.'); return; }
+  toast('Friend request sent.');
+  notifyUser(toId, 'friend-refresh');
+  loadFriendData();
+  if (ScreenRender.playerData && ScreenRender.playerData.id === toId) ScreenRender.player(ScreenRender.playerData);
+}
+async function acceptRequest(reqId, fromId) {
+  if (!needOnline()) return;
+  const me = currentAccount();
+  const [a, b] = orderedPair(me.id, fromId);
+  const { error: fErr } = await supa.from('friendships').insert({ user_a: a, user_b: b });
+  if (fErr) { toast('Couldn\'t accept.'); return; }
+  await supa.from('friend_requests').update({ status: 'accepted' }).eq('id', reqId);
+  toast('Friend added.');
+  notifyUser(fromId, 'friend-refresh');
+  loadFriendData();
+}
+async function declineRequest(reqId) {
+  if (!needOnline()) return;
+  await supa.from('friend_requests').update({ status: 'declined' }).eq('id', reqId);
+  loadFriendData();
+}
+async function unfriend(id, tag) {
+  const me = currentAccount();
+  const [a, b] = orderedPair(me.id, id);
+  modal('Unfriend ' + tag + '?', 'You\'ll be removed from each other\'s friends lists.', [
+    { label: 'Keep' },
+    { label: 'Unfriend', primary: true, onClick: async () => {
+      await supa.from('friendships').delete().eq('user_a', a).eq('user_b', b);
+      toast('Unfriended.');
+      loadFriendData();
+      if (ScreenRender.playerData && ScreenRender.playerData.id === id) goBack();
+    } }
+  ]);
+}
+ScreenRender.friends = function () {
+  const reqZone = $('#reqZone');
+  reqZone.innerHTML = '';
+  const reqs = friendCache.reqs;
+  if (reqs.length) {
+    const t = document.createElement('div');
+    t.className = 'secTitle';
+    t.textContent = 'REQUESTS';
+    reqZone.appendChild(t);
+    reqs.forEach(r => {
+      const row = document.createElement('div');
+      row.className = 'rowCard';
+      row.innerHTML = picHtml(r.from.pic, r.from.gamertag) +
+        '<div class="rowMain"><div class="t">' + escapeHtml(r.from.gamertag) + '</div><div class="s">Wants to be friends</div></div>';
+      const btns = document.createElement('div');
+      btns.className = 'btnRow';
+      const ok = document.createElement('button');
+      ok.className = 'btn primary'; ok.textContent = 'Accept';
+      ok.addEventListener('click', () => acceptRequest(r.id, r.from.id));
+      const no = document.createElement('button');
+      no.className = 'btn'; no.textContent = 'Decline';
+      no.addEventListener('click', () => declineRequest(r.id));
+      btns.appendChild(ok); btns.appendChild(no);
+      row.appendChild(btns);
+      reqZone.appendChild(row);
+    });
   }
-  clock(); setInterval(clock, 15000);
+  const list = $('#friendList');
+  list.innerHTML = '';
+  const friends = friendCache.friends;
+  if (!friends.length) {
+    list.innerHTML = '<div class="emptyNote">No friends yet.<br>Search for players and send a request.</div>';
+    return;
+  }
+  friends.forEach(f => {
+    const row = document.createElement('div');
+    row.className = 'rowCard';
+    row.innerHTML = picHtml(f.pic, f.gamertag) +
+      '<div class="rowMain"><div class="t">' + escapeHtml(f.gamertag) + '</div><div class="s">Friend</div></div>';
+    const btns = document.createElement('div');
+    btns.className = 'btnRow';
+    if (openParties[f.id]) {
+      const join = document.createElement('button');
+      join.className = 'btn primary'; join.textContent = 'Join party';
+      join.addEventListener('click', () => joinParty(openParties[f.id].partyId));
+      btns.appendChild(join);
+    }
+    if (party && party.members.length < 5) {
+      const inv = document.createElement('button');
+      inv.className = 'btn'; inv.textContent = 'Invite';
+      inv.addEventListener('click', () => inviteToParty(f.id));
+      btns.appendChild(inv);
+    }
+    const msg = document.createElement('button');
+    msg.className = 'btn'; msg.textContent = '💬';
+    msg.title = 'Message ' + f.gamertag;
+    msg.addEventListener('click', () => openDM(f.id));
+    btns.appendChild(msg);
+    row.appendChild(btns);
+    row.querySelector('.rowMain').addEventListener('click', () => openScreen('player', { id: f.id }));
+    list.appendChild(row);
+  });
+};
+$('#callBtn').addEventListener('click', () => {
+  if (!requireAccount('voice parties')) return;
+  if (party) { openScreen('party'); return; }
+  modal('Start a party?', 'Create a voice party and invite friends.', [
+    { label: 'Cancel' },
+    { label: 'Invite-only', primary: true, onClick: () => createParty('invite') },
+    { label: 'Joinable', primary: true, onClick: () => createParty('open') }
+  ]);
+});
 
-  /* Boot -> home */
-  let skipped = false;
-  function goHome() {
-    if (skipped) return; skipped = true;
-    document.getElementById('boot').classList.add('done');
-    document.getElementById('home').classList.add('show');
-    document.getElementById('skipTip').style.display = 'none';
-    setTimeout(() => setFocus(0), 1200);
-    setTimeout(async () => {
+/* ---------- Search ---------- */
+let searchTab = 'games';
+$$('#screen-search .segTab').forEach(t => t.addEventListener('click', () => {
+  searchTab = t.dataset.stab;
+  $$('#screen-search .segTab').forEach(x => x.classList.toggle('active', x === t));
+  runSearch();
+}));
+$('#searchInput').addEventListener('input', runSearch);
+ScreenRender.search = function () { $('#searchInput').value = ''; runSearch(); setTimeout(() => $('#searchInput').focus(), 100); };
+function runSearch() {
+  const q = $('#searchInput').value.trim().toLowerCase();
+  const box = $('#searchResults');
+  box.innerHTML = '';
+  if (searchTab === 'games') {
+    const hits = games.map((g, i) => ({ g: g, i: i })).filter(x => x.g.name && x.g.name.toLowerCase().includes(q));
+    if (!q) box.innerHTML = '<div class="emptyNote">Type to search your games.</div>';
+    else if (!hits.length) box.innerHTML = '<div class="emptyNote">No games match "' + escapeHtml(q) + '".</div>';
+    hits.forEach(x => {
+      const row = document.createElement('div');
+      row.className = 'rowCard';
+      row.innerHTML = '<div class="pAv" style="border-radius:14px;' + (x.g.icon ? 'background:' + artBG(x.g.icon[0], x.g.icon[1]) : '') + '">🎮</div>' +
+        '<div class="rowMain"><div class="t">' + escapeHtml(x.g.name) + '</div><div class="s">' + escapeHtml(x.g.desc || '') + '</div></div>' +
+        '<button class="btn primary">Open</button>';
+      row.querySelector('button').addEventListener('click', () => { closeAllScreens(); setFocus(x.i); launchGame(x.i); });
+      box.appendChild(row);
+    });
+  } else {
+    if (!requireAccountSilent()) { box.innerHTML = '<div class="emptyNote">Sign in to search for players.</div>'; return; }
+    if (!q) { box.innerHTML = '<div class="emptyNote">Type to search players by gamertag.</div>'; return; }
+    searchPlayers(q, box);
+  }
+}
+function requireAccountSilent() { return !!currentAccount(); }
+let searchSeq = 0;
+async function searchPlayers(q, box) {
+  const mySeq = ++searchSeq;
+  box.innerHTML = '<div class="emptyNote">Searching…</div>';
+  try {
+    const me = currentAccount();
+    const { data } = await supa.from('profiles').select('id, gamertag, pic')
+      .ilike('gamertag', '%' + q.replace(/[%_]/g, '') + '%')
+      .neq('id', me.id).limit(20);
+    if (mySeq !== searchSeq) return;
+    if (!data || !data.length) { box.innerHTML = '<div class="emptyNote">No players found.</div>'; return; }
+    box.innerHTML = '';
+    data.forEach(p => {
+      const row = document.createElement('div');
+      row.className = 'rowCard';
+      let action = '';
+      if (isFriend(p.id)) action = '<span style="color:var(--dim);font-size:13px">Friend</span>';
+      else if (hasOutgoing(p.id)) action = '<span style="color:var(--dim);font-size:13px">Requested</span>';
+      else action = '<button class="btn">Add friend</button>';
+      row.innerHTML = picHtml(p.pic, p.gamertag) +
+        '<div class="rowMain"><div class="t">' + escapeHtml(p.gamertag) + '</div></div>' + action;
+      const btn = row.querySelector('button');
+      if (btn) btn.addEventListener('click', e => { e.stopPropagation(); sendFriendRequest(p.id); });
+      row.querySelector('.rowMain').addEventListener('click', () => openScreen('player', { id: p.id }));
+      box.appendChild(row);
+    });
+  } catch (e) {
+    if (mySeq !== searchSeq) return;
+    box.innerHTML = '<div class="emptyNote">Search isn\'t available right now.</div>';
+  }
+}
+ScreenRender.player = async function (data) {
+  ScreenRender.playerData = data || ScreenRender.playerData;
+  const id = ScreenRender.playerData && ScreenRender.playerData.id;
+  if (!id) return;
+  $('#playerTag').textContent = '…';
+  $('#playerTagBig').textContent = '…';
+  try {
+    const { data: p } = await supa.from('profiles').select('id, gamertag, pic, first_name').eq('id', id).maybeSingle();
+    if (!p) { toast('Player not found.'); goBack(); return; }
+    $('#playerTag').textContent = p.gamertag;
+    $('#playerTagBig').textContent = p.gamertag;
+    $('#playerPic').innerHTML = p.pic ? '<img src="' + p.pic + '" alt="">' : escapeHtml(initials(p.gamertag));
+    $('#playerSub').textContent = isFriend(p.id) ? 'Friend' : 'Player';
+    $('#playerStats').innerHTML =
+      statCard('0', 'GAMES') + statCard('0', 'HOURS') + statCard('0', 'ACHIEVEMENTS');
+    const acts = $('#playerActions');
+    acts.innerHTML = '';
+    const mkBtn = (label, primary, fn) => {
+      const b = document.createElement('button');
+      b.className = 'btn' + (primary ? ' primary' : '');
+      b.textContent = label;
+      b.addEventListener('click', fn);
+      acts.appendChild(b);
+    };
+    if (isFriend(p.id)) {
+      mkBtn('Message', false, () => openDM(p.id));
+      mkBtn('Unfriend', false, () => unfriend(p.id, p.gamertag));
+    } else if (hasOutgoing(p.id)) {
+      const s = document.createElement('span');
+      s.style.cssText = 'color:var(--dim);font-size:13px;align-self:center';
+      s.textContent = 'Request sent';
+      acts.appendChild(s);
+    } else {
+      mkBtn('Add friend', true, () => sendFriendRequest(p.id));
+    }
+  } catch (e) { toast('Couldn\'t load player.'); }
+};
+function statCard(v, l) {
+  return '<div class="card stat"><div class="v">' + v + '</div><div class="l">' + l + '</div></div>';
+}
+
+/* ---------- Messages / chats ---------- */
+let chatCache = []; // {id, members:[{id,gamertag,pic}], last:{body,at,by}, unread}
+let chatChannels = {};
+function chatName(c) {
+  const me = currentAccount();
+  const others = c.members.filter(m => m.id !== (me && me.id));
+  if (!others.length) return 'Just you';
+  return others.map(m => m.gamertag).join(', ');
+}
+function lastRead(chatId) {
+  try { return Number(localStorage.getItem('oly_read_' + chatId) || 0); } catch (e) { return 0; }
+}
+function markRead(chatId) {
+  try { localStorage.setItem('oly_read_' + chatId, String(Date.now())); } catch (e) {}
+  const c = chatCache.find(x => x.id === chatId);
+  if (c) c.unread = 0;
+  paintMsgBadge();
+}
+async function loadChats() {
+  const me = currentAccount();
+  if (!me) return;
+  try {
+    const { data: mems } = await supa.from('chat_members').select('chat_id').eq('user_id', me.id);
+    const ids = (mems || []).map(m => m.chat_id);
+    if (!ids.length) { chatCache = []; paintMsgBadge(); if ($('#screen-messages').classList.contains('open')) ScreenRender.messages(); return; }
+    const { data: allMembers } = await supa.from('chat_members').select('chat_id, user_id').in('chat_id', ids);
+    const uids = [...new Set((allMembers || []).map(m => m.user_id))];
+    const { data: profs } = await supa.from('profiles').select('id, gamertag, pic').in('id', uids);
+    const pmap = {};
+    (profs || []).forEach(p => pmap[p.id] = p);
+    const { data: msgs } = await supa.from('messages').select('chat_id, body, created_at, sender_id').in('chat_id', ids).order('created_at', { ascending: false }).limit(ids.length * 5);
+    const lastByChat = {};
+    (msgs || []).forEach(m => { if (!lastByChat[m.chat_id]) lastByChat[m.chat_id] = m; });
+    chatCache = ids.map(id => {
+      const members = (allMembers || []).filter(m => m.chat_id === id).map(m => pmap[m.user_id]).filter(Boolean);
+      const last = lastByChat[id];
+      const lr = lastRead(id);
+      const unread = last && new Date(last.created_at).getTime() > lr && last.sender_id !== me.id;
+      return { id: id, members: members, last: last, unread: !!unread };
+    }).sort((a, b) => {
+      const ta = a.last ? new Date(a.last.created_at).getTime() : 0;
+      const tb = b.last ? new Date(b.last.created_at).getTime() : 0;
+      return tb - ta;
+    });
+  } catch (e) {}
+  paintMsgBadge();
+  if ($('#screen-messages').classList.contains('open')) ScreenRender.messages();
+}
+function paintMsgBadge() {
+  const n = chatCache.filter(c => c.unread).length;
+  const el = $('#msgBadge');
+  el.textContent = n;
+  el.classList.toggle('hidden', n === 0);
+}
+ScreenRender.messages = function () {
+  const list = $('#chatList');
+  list.innerHTML = '';
+  if (!chatCache.length) {
+    list.innerHTML = '<div class="emptyNote">No chats yet.<br>Start one with the + New chat button.</div>';
+    return;
+  }
+  chatCache.forEach(c => {
+    const row = document.createElement('div');
+    row.className = 'rowCard chatRow';
+    const others = c.members.filter(m => m.id !== currentAccount().id);
+    const av = others[0] || c.members[0];
+    row.innerHTML = picHtml(av && av.pic, av && av.gamertag) +
+      '<div class="rowMain"><div class="t">' + escapeHtml(chatName(c)) + '</div><div class="s">' +
+      escapeHtml(c.last ? c.last.body.slice(0, 60) : 'Say hi!') + '</div></div>' +
+      (c.unread ? '<span class="badge unread"></span>' : '');
+    row.addEventListener('click', () => openScreen('chat', { chatId: c.id }));
+    list.appendChild(row);
+  });
+};
+let newChatPick = [];
+$('#newChatBtn').addEventListener('click', () => {
+  const friends = friendCache.friends;
+  if (!friends.length) { toast('Add friends first to start a chat.'); return; }
+  newChatPick = [];
+  modal('New chat', 'Pick friends — up to 5 people total in a chat.', [{ label: 'Cancel' }]);
+  const m = $('#modal');
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'display:flex;flex-direction:column;gap:8px;margin-bottom:20px;max-height:260px;overflow-y:auto';
+  friends.forEach(f => {
+    const r = document.createElement('div');
+    r.className = 'profileItem';
+    r.innerHTML = picHtml(f.pic, f.gamertag) + '<span>' + escapeHtml(f.gamertag) + '</span>';
+    r.addEventListener('click', () => {
+      const i = newChatPick.indexOf(f.id);
+      if (i >= 0) { newChatPick.splice(i, 1); r.classList.remove('focused'); }
+      else {
+        if (newChatPick.length >= 4) { toast('Chats hold 5 people total.'); return; }
+        newChatPick.push(f.id); r.classList.add('focused');
+      }
+    });
+    wrap.appendChild(r);
+  });
+  m.insertBefore(wrap, $('#modalBtns'));
+  const go = document.createElement('button');
+  go.className = 'btn primary'; go.textContent = 'Create chat';
+  go.addEventListener('click', async () => {
+    if (!newChatPick.length) { toast('Pick at least one friend.'); return; }
+    closeModal();
+    await createChat(newChatPick);
+  });
+  $('#modalBtns').appendChild(go);
+});
+async function createChat(memberIds) {
+  if (!needOnline()) return;
+  const me = currentAccount();
+  const { data: chat, error } = await supa.from('chats').insert({ created_by: me.id }).select('id').single();
+  if (error || !chat) { toast('Couldn\'t create chat.'); return; }
+  const rows = [me.id].concat(memberIds).map(uid => ({ chat_id: chat.id, user_id: uid }));
+  const { error: mErr } = await supa.from('chat_members').insert(rows);
+  if (mErr) { toast('Couldn\'t add members.'); return; }
+  await loadChats();
+  openScreen('chat', { chatId: chat.id });
+}
+async function openDM(friendId) {
+  const me = currentAccount();
+  // find existing 1-on-1 chat
+  await loadChats();
+  const dm = chatCache.find(c => c.members.length === 2 && c.members.some(m => m.id === friendId));
+  if (dm) { openScreen('chat', { chatId: dm.id }); return; }
+  await createChat([friendId]);
+}
+let activeChatId = null;
+ScreenRender.chat = async function (data) {
+  activeChatId = (data && data.chatId) || activeChatId;
+  const c = chatCache.find(x => x.id === activeChatId);
+  if (!c) { toast('Chat not found.'); goBack(); return; }
+  $('#chatTitle').textContent = chatName(c);
+  $('#chatSub').textContent = c.members.length + (c.members.length === 1 ? ' PERSON' : ' PEOPLE');
+  markRead(activeChatId);
+  await loadChatMessages(activeChatId);
+  subscribeChatChannel(activeChatId);
+};
+async function loadChatMessages(chatId) {
+  const scroll = $('#chatScroll');
+  scroll.innerHTML = '';
+  const me = currentAccount();
+  try {
+    const { data } = await supa.from('messages').select('id, body, created_at, sender_id').eq('chat_id', chatId).order('created_at', { ascending: true }).limit(200);
+    (data || []).forEach(m => {
+      const c = chatCache.find(x => x.id === chatId);
+      const sender = c && c.members.find(x => x.id === m.sender_id);
+      const mine = m.sender_id === me.id;
+      const b = document.createElement('div');
+      b.className = 'bubble ' + (mine ? 'me' : 'them');
+      b.innerHTML = (mine ? '' : '<div class="who">' + escapeHtml(sender ? sender.gamertag : '?') + '</div>') + escapeHtml(m.body);
+      scroll.appendChild(b);
+    });
+    scroll.scrollTop = scroll.scrollHeight;
+  } catch (e) {}
+}
+function subscribeChatChannel(chatId) {
+  if (chatChannels[chatId]) return;
+  const ch = supa.channel('chat:' + chatId, { config: { broadcast: { self: false } } });
+  ch.on('broadcast', { event: 'msg' }, () => {
+    if (activeChatId === chatId && $('#screen-chat').classList.contains('open')) {
+      loadChatMessages(chatId);
+      markRead(chatId);
+    }
+    loadChats();
+  });
+  ch.subscribe();
+  chatChannels[chatId] = ch;
+}
+async function sendChatMessage() {
+  if (!needOnline()) return;
+  const input = $('#chatInput');
+  const body = input.value.trim();
+  if (!body || !activeChatId) return;
+  const me = currentAccount();
+  input.value = '';
+  const { error } = await supa.from('messages').insert({ chat_id: activeChatId, sender_id: me.id, body: body });
+  if (error) { toast('Couldn\'t send.'); input.value = body; return; }
+  const ch = chatChannels[activeChatId];
+  if (ch) ch.send({ type: 'broadcast', event: 'msg', payload: {} });
+  const cc = chatCache.find(x => x.id === activeChatId);
+  if (cc) cc.members.forEach(m => { if (m.id !== me.id) notifyUser(m.id, 'chat-refresh'); });
+  await loadChatMessages(activeChatId);
+  loadChats();
+}
+$('#chatSend').addEventListener('click', sendChatMessage);
+
+/* ---------- Profile ---------- */
+ScreenRender.profile = function () {
+  const a = currentAccount();
+  if (!a) { openAccount('Sign in to see your profile.'); return; }
+  $('#profPic').innerHTML = a.pic ? '<img src="' + a.pic + '" alt="">' : escapeHtml(initials(a.gamertag));
+  $('#profTag').textContent = a.gamertag;
+  $('#profName').textContent = (a.firstName || '') + ' ' + (a.lastName || '');
+  const owned = games.filter(g => g.name).length;
+  $('#statGrid').innerHTML =
+    statCard(owned, 'GAMES') + statCard('0', 'HOURS') +
+    statCard('0', 'ACHIEVEMENTS') + statCard(friendCache.friends.length, 'FRIENDS');
+  const ag = $('#achGrid');
+  ag.innerHTML = '<div class="emptyNote">No achievements yet.<br>They\'ll show up here when games award them.</div>';
+};
+$('#editProfBtn').addEventListener('click', () => {
+  const a = currentAccount();
+  if (!a) return;
+  modal('Customize profile', 'Change your gamertag or profile picture.', [{ label: 'Done', primary: true }]);
+  const m = $('#modal');
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'display:flex;flex-direction:column;gap:14px;margin-bottom:20px';
+  wrap.innerHTML =
+    '<div style="display:flex;align-items:center;gap:14px">' +
+      '<div class="pAv" id="editPicPrev" style="width:64px;height:64px;font-size:22px">' +
+        (a.pic ? '<img src="' + a.pic + '" alt="">' : escapeHtml(initials(a.gamertag))) + '</div>' +
+      '<button class="btn" id="editPicBtn">Change picture</button>' +
+      '<input type="file" id="editPicFile" accept="image/*" hidden></div>' +
+    '<input class="txtInput" id="editTag" maxlength="16" value="' + escapeHtml(a.gamertag) + '">' +
+    '<div class="acctError" id="editTagErr"></div>' +
+    '<button class="btn primary" id="saveTagBtn">Save gamertag</button>';
+  m.insertBefore(wrap, $('#modalBtns'));
+  let newPic = null;
+  $('#editPicBtn').addEventListener('click', () => $('#editPicFile').click());
+  $('#editPicFile').addEventListener('change', () => {
+    const f = $('#editPicFile').files[0];
+    if (!f) return;
+    const img = new Image();
+    img.onload = () => {
+      const s = 256, c = document.createElement('canvas');
+      c.width = c.height = s;
+      const mm = Math.min(img.width, img.height);
+      c.getContext('2d').drawImage(img, (img.width - mm) / 2, (img.height - mm) / 2, mm, mm, 0, 0, s, s);
+      newPic = c.toDataURL('image/png');
+      URL.revokeObjectURL(img.src);
+      $('#editPicPrev').innerHTML = '<img src="' + newPic + '" alt="">';
+      savePic();
+    };
+    img.src = URL.createObjectURL(f);
+  });
+  async function savePic() {
+    if (!needOnline()) return;
+    const { error } = await supa.from('profiles').update({ pic: newPic }).eq('id', a.id);
+    if (!error) { await refreshAccount(); ScreenRender.profile(); toast('Picture updated.'); }
+    else toast('Couldn\'t save picture.');
+  }
+  $('#saveTagBtn').addEventListener('click', async () => {
+    if (!needOnline()) return;
+    const tag = $('#editTag').value.trim();
+    const err = $('#editTagErr');
+    if (tag.length < 3 || tag.length > 16) { err.textContent = 'Gamertag must be 3–16 characters.'; return; }
+    if (tag === a.gamertag) { closeModal(); return; }
+    const { data: existing } = await supa.from('profiles').select('id').eq('gamertag', tag).maybeSingle();
+    if (existing) { err.textContent = 'That gamertag is taken.'; return; }
+    const { error } = await supa.from('profiles').update({ gamertag: tag }).eq('id', a.id);
+    if (error) { err.textContent = 'Couldn\'t save.'; return; }
+    await refreshAccount();
+    closeModal();
+    ScreenRender.profile();
+    toast('Gamertag updated.');
+  });
+});
+
+/* ---------- Shop ---------- */
+ScreenRender.shop = function () {
+  const grid = $('#shopGrid');
+  grid.innerHTML = '';
+  const soon = [
+    { e: '🎮', t: 'Coming soon', s: 'The first Olympus games are on the way.' },
+    { e: '🏆', t: 'Coming soon', s: 'More worlds to explore.' },
+    { e: '🚀', t: 'Coming soon', s: 'Stay tuned.' }
+  ];
+  soon.forEach(x => {
+    const d = document.createElement('div');
+    d.className = 'card shopCard';
+    d.innerHTML = '<div class="art">' + x.e + '</div><div class="info"><div class="t">' + x.t + '</div><div class="s">' + x.s + '</div></div>';
+    grid.appendChild(d);
+  });
+};
+
+/* ---------- Library ---------- */
+ScreenRender.library = function () {
+  const grid = $('#libGrid');
+  grid.innerHTML = '';
+  const owned = games.map((g, i) => ({ g: g, i: i })).filter(x => x.g.name);
+  if (!owned.length) {
+    grid.innerHTML = '<div class="emptyNote">Your library is empty.<br>Games you get will appear here.</div>';
+    return;
+  }
+  owned.forEach(x => {
+    const d = document.createElement('div');
+    d.className = 'libTile';
+    d.textContent = x.g.name;
+    if (x.g.icon) d.style.background = artBG(x.g.icon[0], x.g.icon[1]);
+    d.addEventListener('click', () => { closeAllScreens(); setFocus(x.i); launchGame(x.i); });
+    grid.appendChild(d);
+  });
+};
+
+/* ---------- Settings ---------- */
+function paintSettingsAccount() {
+  const a = currentAccount();
+  $('#setAcctName').textContent = a ? a.gamertag : 'Signed out';
+  $('#setAcctSub').textContent = a ? a.email : 'Manage your Olympus account';
+  $('#signOutBtn').style.display = a ? '' : 'none';
+}
+$('#signOutBtn').addEventListener('click', signOut);
+$('#sndToggle').addEventListener('click', function () {
+  this.classList.toggle('on');
+  try { localStorage.setItem('oly_snd', this.classList.contains('on') ? 'on' : 'off'); } catch (e) {}
+});
+$('#rumbleToggle').addEventListener('click', function () {
+  this.classList.toggle('on');
+  try { localStorage.setItem('oly_rumble', this.classList.contains('on') ? 'on' : 'off'); } catch (e) {}
+});
+(function initToggles() {
+  try {
+    if (localStorage.getItem('oly_snd') === 'off') $('#sndToggle').classList.remove('on');
+    if (localStorage.getItem('oly_rumble') === 'off') $('#rumbleToggle').classList.remove('on');
+  } catch (e) {}
+})();
+ScreenRender.settings = function () { paintSettingsAccount(); };
+
+/* ---------- Voice parties (WebRTC over Supabase Realtime) ---------- */
+let party = null; // {id, channel, peers:{}, localStream, shareStream, members:[], joinedAt, privacy, makingOffer:{}}
+let userChannel = null;
+let lobbyChannel = null;
+let openParties = {}; // hostId -> {partyId, gamertag, at}
+const RTC_CONF = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+
+function subscribeUserChannel() {
+  if (!online()) return;
+  const me = currentAccount();
+  if (!me || userChannel) return;
+  userChannel = supa.channel('user:' + me.id, { config: { broadcast: { self: false } } });
+  userChannel.on('broadcast', { event: 'party-invite' }, payload => {
+    const p = payload.payload || {};
+    modal('Party invite', (p.fromTag || 'Someone') + ' invited you to a voice party.', [
+      { label: 'Decline' },
+      { label: 'Join', primary: true, onClick: () => joinParty(p.partyId) }
+    ]);
+  });
+  userChannel.on('broadcast', { event: 'friend-refresh' }, () => loadFriendData());
+  userChannel.on('broadcast', { event: 'chat-refresh' }, () => loadChats());
+  userChannel.subscribe();
+}
+function subscribeLobby() {
+  if (!online() || lobbyChannel) return;
+  lobbyChannel = supa.channel('party-lobby', { config: { broadcast: { self: false } } });
+  lobbyChannel.on('broadcast', { event: 'ad' }, payload => {
+    const p = payload.payload || {};
+    if (p.hostId && p.hostId !== (currentAccount() || {}).id) {
+      openParties[p.hostId] = { partyId: p.partyId, gamertag: p.gamertag, at: Date.now() };
+      if ($('#screen-friends').classList.contains('open')) ScreenRender.friends();
+    }
+  });
+  lobbyChannel.subscribe();
+  setInterval(() => {
+    const now = Date.now();
+    Object.keys(openParties).forEach(k => { if (now - openParties[k].at > 45000) delete openParties[k]; });
+  }, 15000);
+setInterval(() => {
+  if (currentAccount() && online() && !document.hidden) { loadFriendData(); loadChats(); }
+}, 30000);
+}
+async function ensureAudio() {
+  if (party.localStream) return party.localStream;
+  party.localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  return party.localStream;
+}
+async function createParty(privacy) {
+  if (!needOnline()) return;
+  const me = currentAccount();
+  if (!me) return;
+  if (party) { openScreen('party'); return; }
+  const id = (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()));
+  party = { id: id, peers: {}, members: [], joinedAt: Date.now(), privacy: privacy || 'invite', makingOffer: {}, polite: {} };
+  party.channel = supa.channel('party:' + id, { config: { broadcast: { self: true }, presence: { key: me.id } } });
+  wirePartyChannel();
+  try { await ensureAudio(); } catch (e) { toast('Mic blocked — party will be listen-only.'); }
+  party.channel.subscribe(async status => {
+    if (status === 'SUBSCRIBED') {
+      await party.channel.track({ id: me.id, gamertag: me.gamertag, pic: me.pic, joinedAt: party.joinedAt, host: true, sharing: false });
+      showPartyBar();
+      openScreen('party');
+      if (party.privacy === 'open') advertiseParty();
+    }
+  });
+}
+async function joinParty(partyId) {
+  if (!needOnline()) return;
+  const me = currentAccount();
+  if (!me || !partyId) return;
+  if (party) { toast('You\'re already in a party.'); return; }
+  party = { id: partyId, peers: {}, members: [], joinedAt: Date.now(), privacy: 'invite', makingOffer: {}, polite: {} };
+  party.channel = supa.channel('party:' + partyId, { config: { broadcast: { self: true }, presence: { key: me.id } } });
+  wirePartyChannel();
+  try { await ensureAudio(); } catch (e) { toast('Mic blocked — party will be listen-only.'); }
+  party.channel.subscribe(async status => {
+    if (status === 'SUBSCRIBED') {
+      await party.channel.track({ id: me.id, gamertag: me.gamertag, pic: me.pic, joinedAt: party.joinedAt, host: false, sharing: false });
+      // enforce the 5-person max once presence has synced
+      setTimeout(() => {
+        if (party && partyMembers().length > 5) { toast('Party is full (5 max).'); leaveParty(); }
+      }, 1500);
+      // I just joined: offer to everyone already here
+      syncMesh();
+      showPartyBar();
+      openScreen('party');
+    }
+  });
+}
+function wirePartyChannel() {
+  const ch = party.channel;
+  ch.on('presence', { event: 'sync' }, () => { syncMembers(); syncMesh(); });
+  ch.on('presence', { event: 'join' }, () => { syncMembers(); syncMesh(); });
+  ch.on('presence', { event: 'leave' }, () => { syncMembers(); prunePeers(); });
+  ch.on('broadcast', { event: 'rtc' }, payload => handleSignal(payload.payload || {}));
+}
+function partyMembers() {
+  if (!party) return [];
+  const state = party.channel.presenceState();
+  const list = [];
+  Object.keys(state).forEach(k => {
+    const m = state[k][0];
+    if (m && m.id) list.push(m);
+  });
+  list.sort((a, b) => a.joinedAt - b.joinedAt);
+  return list;
+}
+function syncMembers() {
+  if (!party) return;
+  const me = currentAccount();
+  party.members = partyMembers();
+  // host = earliest joiner present
+  const host = party.members[0];
+  const iAmHost = host && me && host.id === me.id;
+  if (iAmHost) {
+    const mine = party.members.find(m => m.id === me.id);
+    if (mine && !mine.host) party.channel.track({ id: me.id, gamertag: me.gamertag, pic: me.pic, joinedAt: party.joinedAt, host: true, sharing: !!party.shareStream });
+  }
+  paintParty();
+  paintPartyBar();
+}
+function getPC(peerId, initiator) {
+  if (party.peers[peerId]) return party.peers[peerId];
+  const pc = new RTCPeerConnection(RTC_CONF);
+  party.peers[peerId] = pc;
+  party.polite[peerId] = !initiator;
+  if (party.localStream) party.localStream.getTracks().forEach(t => pc.addTrack(t, party.localStream));
+  if (party.shareStream) party.shareStream.getTracks().forEach(t => pc.addTrack(t, party.shareStream));
+  pc.onicecandidate = e => {
+    if (e.candidate && party) party.channel.send({ type: 'broadcast', event: 'rtc', payload: { kind: 'ice', to: peerId, from: currentAccount().id, candidate: e.candidate } });
+  };
+  pc.ontrack = e => {
+    const stream = e.streams[0];
+    if (e.track.kind === 'audio') attachRemoteAudio(peerId, stream);
+    else attachShareVideo(peerId, stream);
+  };
+  pc.onnegotiationneeded = async () => {
+    try {
+      if (pc.signalingState !== 'stable' || party.makingOffer[peerId]) return;
+      party.makingOffer[peerId] = true;
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+      party.channel.send({ type: 'broadcast', event: 'rtc', payload: { kind: 'offer', to: peerId, from: currentAccount().id, sdp: pc.localDescription } });
+    } catch (e) {}
+    finally { party.makingOffer[peerId] = false; }
+  };
+  return pc;
+}
+async function syncMesh() {
+  if (!party) return;
+  const me = currentAccount();
+  // I offer to everyone who joined before me
+  for (const m of party.members) {
+    if (m.id === me.id || party.peers[m.id]) continue;
+    if (m.joinedAt < party.joinedAt) {
+      const pc = getPC(m.id, true);
       try {
-        const { data: { session } } = await supa.auth.getSession();
-        if (!session) openAccount('Welcome to Olympus — create your account to get started.');
+        party.makingOffer[m.id] = true;
+        const offer = await pc.createOffer();
+        await pc.setLocalDescription(offer);
+        party.channel.send({ type: 'broadcast', event: 'rtc', payload: { kind: 'offer', to: m.id, from: me.id, sdp: pc.localDescription } });
       } catch (e) {}
-    }, 1600);
+      finally { party.makingOffer[m.id] = false; }
+    }
   }
-  setTimeout(goHome, 3400);
-  addEventListener('click', e => { if (!skipped) goHome(); });
+}
+function prunePeers() {
+  if (!party) return;
+  const ids = new Set(party.members.map(m => m.id));
+  Object.keys(party.peers).forEach(pid => {
+    if (!ids.has(pid)) {
+      try { party.peers[pid].close(); } catch (e) {}
+      delete party.peers[pid];
+      const a = document.getElementById('ra_' + pid);
+      if (a) a.remove();
+      const v = document.getElementById('sv_' + pid);
+      if (v) v.remove();
+      paintShareEmpty();
+    }
+  });
+}
+async function handleSignal(p) {
+  if (!party || !p.to) return;
+  const me = currentAccount();
+  if (p.to !== me.id) return;
+  const pc = getPC(p.from, false);
+  try {
+    if (p.kind === 'offer') {
+      const polite = party.polite[p.from];
+      const collision = party.makingOffer[p.from] || pc.signalingState !== 'stable';
+      if (polite && collision) await pc.setRemoteDescription({ type: 'rollback' });
+      else if (collision) return;
+      await pc.setRemoteDescription(new RTCSessionDescription(p.sdp));
+      const answer = await pc.createAnswer();
+      await pc.setLocalDescription(answer);
+      party.channel.send({ type: 'broadcast', event: 'rtc', payload: { kind: 'answer', to: p.from, from: me.id, sdp: pc.localDescription } });
+    } else if (p.kind === 'answer') {
+      if (pc.signalingState !== 'stable') await pc.setRemoteDescription(new RTCSessionDescription(p.sdp));
+    } else if (p.kind === 'ice') {
+      try { await pc.addIceCandidate(new RTCIceCandidate(p.candidate)); } catch (e) {}
+    }
+  } catch (e) {}
+}
+function attachRemoteAudio(peerId, stream) {
+  let a = document.getElementById('ra_' + peerId);
+  if (!a) {
+    a = document.createElement('audio');
+    a.id = 'ra_' + peerId;
+    a.autoplay = true;
+    document.body.appendChild(a);
+  }
+  a.srcObject = stream;
+}
+function attachShareVideo(peerId, stream) {
+  let v = document.getElementById('sv_' + peerId);
+  if (!v) {
+    v = document.createElement('video');
+    v.id = 'sv_' + peerId;
+    v.autoplay = true; v.playsInline = true;
+    v.style.cssText = 'width:100%;border-radius:14px;border:1px solid var(--line);background:#000';
+    const wrap = document.createElement('div');
+    wrap.id = 'svw_' + peerId;
+    const m = (party.members || []).find(x => x.id === peerId);
+    wrap.innerHTML = '<div style="font-size:13px;color:var(--dim);margin-bottom:6px;letter-spacing:.08em">' + escapeHtml(m ? m.gamertag : 'Player') + ' — SHARING</div>';
+    wrap.appendChild(v);
+    $('#shareGrid').appendChild(wrap);
+  }
+  v.srcObject = stream;
+  paintShareEmpty();
+}
+function paintShareEmpty() {
+  const has = $('#shareGrid').children.length > 0;
+  $('#shareEmpty').style.display = has ? 'none' : 'block';
+}
+async function toggleShare() {
+  if (!party) return;
+  const me = currentAccount();
+  if (party.shareStream) {
+    party.shareStream.getTracks().forEach(t => t.stop());
+    party.shareStream = null;
+    Object.keys(party.peers).forEach(pid => {
+      const pc = party.peers[pid];
+      pc.getSenders().forEach(s => { if (s.track && s.track.kind === 'video') { try { pc.removeTrack(s); } catch (e) {} } });
+    });
+    await party.channel.track({ id: me.id, gamertag: me.gamertag, pic: me.pic, joinedAt: party.joinedAt, host: isPartyHost(), sharing: false });
+    paintShareBtn();
+    toast('Stopped sharing.');
+    return;
+  }
+  try {
+    const stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: false });
+    party.shareStream = stream;
+    stream.getVideoTracks()[0].addEventListener('ended', () => { if (party && party.shareStream) toggleShare(); });
+    Object.keys(party.peers).forEach(pid => {
+      const pc = party.peers[pid];
+      stream.getTracks().forEach(t => pc.addTrack(t, stream));
+    });
+    await party.channel.track({ id: me.id, gamertag: me.gamertag, pic: me.pic, joinedAt: party.joinedAt, host: isPartyHost(), sharing: true });
+    paintShareBtn();
+    toast('Sharing your screen with the party.');
+  } catch (e) {
+    toast('Screen share cancelled.');
+  }
+}
+function isPartyHost() {
+  if (!party || !party.members.length) return false;
+  const me = currentAccount();
+  return party.members[0].id === me.id;
+}
+function notifyUser(userId, event, payload) {
+  if (!online() || !userId) return;
+  const ch = supa.channel('ping:' + userId + ':' + Date.now(), { config: { broadcast: { self: false } } });
+  ch.subscribe(status => {
+    if (status === 'SUBSCRIBED') {
+      ch.send({ type: 'broadcast', event: event, payload: payload || {} });
+      setTimeout(() => { try { supa.removeChannel(ch); } catch (e) {} }, 4000);
+    }
+  });
+}
+function inviteToParty(friendId) {
+  if (!party) return;
+  const me = currentAccount();
+  notifyUser(friendId, 'party-invite', { partyId: party.id, fromTag: me.gamertag, fromId: me.id });
+  toast('Invite sent.');
+}
+function advertiseParty() {
+  if (!party || party.privacy !== 'open' || !isPartyHost()) return;
+  const me = currentAccount();
+  const send = () => {
+    if (!party || party.privacy !== 'open' || !isPartyHost()) return;
+    lobbyChannel.send({ type: 'broadcast', event: 'ad', payload: { partyId: party.id, hostId: me.id, gamertag: me.gamertag } });
+  };
+  send();
+  party.adTimer = setInterval(send, 20000);
+}
+function showPartyBar() { $('#partyBar').classList.add('open'); paintPartyBar(); }
+function hidePartyBar() { $('#partyBar').classList.remove('open'); }
+function paintPartyBar() {
+  const mem = $('#partyBarMem');
+  mem.innerHTML = '';
+  (party ? party.members : []).slice(0, 5).forEach(m => { mem.innerHTML += picHtml(m.pic, m.gamertag); });
+}
+$('#partyBarOpen').addEventListener('click', () => openScreen('party'));
+$('#partyBarShare').addEventListener('click', toggleShare);
+function paintShareBtn() {
+  const label = (party && party.shareStream) ? '⏹ Stop' : '🖥 Share';
+  const sb = $('#shareBtn'); if (sb) sb.textContent = (party && party.shareStream) ? '⏹ Stop sharing' : '🖥 Share screen';
+  const pb = $('#partyBarShare'); if (pb) pb.textContent = label;
+};
+function paintParty() {
+  if (!party) return;
+  const me = currentAccount();
+  $('#partySub').textContent = party.members.length + ' / 5 IN PARTY';
+  const list = $('#partyMembers');
+  list.innerHTML = '';
+  party.members.forEach(m => {
+    const row = document.createElement('div');
+    row.className = 'rowCard';
+    row.innerHTML = picHtml(m.pic, m.gamertag) +
+      '<div class="rowMain"><div class="t">' + escapeHtml(m.gamertag) + (m.id === me.id ? ' (you)' : '') + '</div><div class="s">' +
+      (m.host ? '👑 Host' : 'Member') + (m.sharing ? ' · 🖥 Sharing' : '') + '</div></div>';
+    list.appendChild(row);
+  });
+  $$('#screen-party .segTab').forEach(t => t.classList.toggle('active', t.dataset.priv === party.privacy));
+  paintShareEmpty();
+}
+$$('#screen-party .segTab').forEach(t => t.addEventListener('click', async () => {
+  if (!party || !isPartyHost()) { toast('Only the host can change privacy.'); return; }
+  party.privacy = t.dataset.priv;
+  $$('#screen-party .segTab').forEach(x => x.classList.toggle('active', x === t));
+  if (party.privacy === 'open') advertiseParty();
+  else if (party.adTimer) { clearInterval(party.adTimer); party.adTimer = null; }
+  toast(party.privacy === 'open' ? 'Party is joinable.' : 'Party is invite-only.');
+}));
+$('#shareBtn').addEventListener('click', toggleShare);
+$('#leavePartyBtn').addEventListener('click', leaveParty);
+async function leaveParty() {
+  if (!party) return;
+  try {
+    if (party.adTimer) clearInterval(party.adTimer);
+    Object.keys(party.peers).forEach(pid => { try { party.peers[pid].close(); } catch (e) {} });
+    if (party.localStream) party.localStream.getTracks().forEach(t => t.stop());
+    if (party.shareStream) party.shareStream.getTracks().forEach(t => t.stop());
+    await supa.removeChannel(party.channel);
+  } catch (e) {}
+  party = null;
+  $$('audio[id^="ra_"]').forEach(a => a.remove());
+  $('#shareGrid').innerHTML = '';
+  hidePartyBar();
+  paintShareBtn();
+  if ($('#screen-party').classList.contains('open')) goBack();
+  toast('Left the party.');
+}
+ScreenRender.party = function () {
+  if (!party) { goBack(); return; }
+  paintParty();
+};
+
+/* ---------- Boot ---------- */
+let skipped = false;
+function goHome() {
+  if (skipped) return; skipped = true;
+  $('#boot').classList.add('done');
+  $('#home').classList.add('show');
+  $('#skipTip').style.display = 'none';
+  setTimeout(() => setFocus(0), 1200);
+  setTimeout(async () => {
+    try {
+      const { data: { session } } = await supa.auth.getSession();
+      if (!session) openAccount('Welcome to Olympus — create your account to get started.');
+    } catch (e) {}
+  }, 1600);
+}
+setTimeout(goHome, 3400);
+addEventListener('click', e => { if (!skipped) goHome(); });
+
+initTheme();
+showPadStatus();
+paintAccountBadge();
+refreshAccount();
+subscribeLobby();
 </script>
 </body>
 </html>
