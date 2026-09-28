@@ -893,7 +893,7 @@
     </div>
     <div class="secTitle">ABOUT</div>
     <div class="card setRow">
-      <div><div class="t">Olympus</div><div class="s" id="verSub">Version 0.3.0 · PC app</div></div>
+      <div><div class="t">Olympus</div><div class="s" id="verSub">Version 0.3.1 · PC app</div></div>
       <div class="spacer"></div>
       <button class="btn" id="updateBtn">Check for updates</button>
     </div>
@@ -1046,7 +1046,7 @@ function initials(tag) {
 function picHtml(pic, tag, cls) {
   return '<div class="' + (cls || 'pAv') + '">' + (pic ? '<img src="' + pic + '" alt="">' : escapeHtml(initials(tag))) + '</div>';
 }
-const OLY_VERSION = '0.3.0';
+const OLY_VERSION = '0.3.1';
 let toastTimer = null;
 const toastLog = [];
 function toast(msg) {
@@ -1809,6 +1809,7 @@ function pollPadTests() {
   });
 }
 addEventListener('gamepadconnected', e => {
+  startPadLoop();
   showPadStatus(); paintMenuTab();
   if (rumbleOnConnect() && e.gamepad) rumblePad(e.gamepad, 0.7, 0.7, 350);
   if ($('#screen-controllers').classList.contains('open')) ScreenRender.controllers();
@@ -1849,7 +1850,7 @@ addEventListener('keydown', e => {
     return;
   }
   if (screenStack.length) {
-    if (e.key === 'Escape' || e.key === 'b' || e.key === 'B') goBack();
+    if (e.key === 'Escape' || ((e.key === 'b' || e.key === 'B') && !$('#remapWrap').classList.contains('open'))) goBack();
     else if (e.key === 'ArrowUp') moveNav(0, -1);
     else if (e.key === 'ArrowDown') moveNav(0, 1);
     else if (e.key === 'ArrowLeft') moveNav(-1, 0);
@@ -2009,7 +2010,7 @@ function paintRemapRows(){
       box.querySelectorAll('.remapRow').forEach(x => x.classList.remove('capturing'));
       r.classList.add('capturing');
       r.querySelector('.rv').textContent = 'Press a button…';
-      remapCapture = { logical: logical, row: r, t: Date.now() };
+      remapCapture = { logical: logical, row: r, t: Date.now(), needRelease: true };
     });
     box.appendChild(r);
   });
@@ -2073,7 +2074,17 @@ document.addEventListener('mouseover', e => {
   if (t && sc.contains(t) && t !== navEl) setNav(t);
 });
 
+// The controller input loop must be explicitly started (boot + whenever a
+// controller connects). The heartbeat lets a fresh connection revive the
+// loop if it ever died, without ever running two loops at once.
+let padLoopOn = false, padLastTick = 0;
+function startPadLoop(){
+  if (padLoopOn && Date.now() - padLastTick < 2000) return;
+  padLoopOn = true;
+  requestAnimationFrame(pollPad);
+}
 function pollPad() {
+  padLastTick = Date.now();
   if (accountOpen) { requestAnimationFrame(pollPad); return; }
   const pads = navigator.getGamepads ? navigator.getGamepads() : [];
   let gp = null;
@@ -2095,9 +2106,13 @@ function pollPad() {
   padState.yHeld = yB; padState.bHeld = bB; padState.aHeld = aB;
   padState.homeHeld = homeB; padState.startHeld = startB; padState.selHeld = selB;
 
-  // Remap capture: any physical button press assigns the selected row.
+  // Remap capture: wait for every button to be released first (swallows the
+  // press that armed the row), then the next physical press assigns the row.
   if (remapCapture) {
-    if (Date.now() - remapCapture.t > 350) {
+    let anyDown = false;
+    for (let bi = 0; bi < gp.buttons.length; bi++) { if (gp.buttons[bi] && gp.buttons[bi].pressed) { anyDown = true; break; } }
+    if (remapCapture.needRelease) { if (!anyDown) remapCapture.needRelease = false; }
+    else if (anyDown) {
       for (let bi = 0; bi < gp.buttons.length; bi++) {
         if (gp.buttons[bi] && gp.buttons[bi].pressed) {
           const m = getRemap(gp.id); m[remapCapture.logical] = bi; saveRemap(gp.id, m); _rmId = null;
@@ -2141,7 +2156,13 @@ function pollPad() {
     applyMicState();
   }
 
-  if (bEdge) { goBack(); requestAnimationFrame(pollPad); return; }
+  // B is never "back" inside the remap overlay: while it's open B is either
+  // captured as the new mapping (row armed) or ignored, so trying to remap B
+  // can't kick you out of the overlay.
+  if (bEdge) {
+    if (!$('#remapWrap').classList.contains('open')) goBack();
+    requestAnimationFrame(pollPad); return;
+  }
 
   // Home button: on the main home menu it asks to leave Olympus; anywhere else it goes home.
   if (homeEdge) {
@@ -3906,6 +3927,7 @@ setTimeout(async () => {
 
 initTheme();
 showPadStatus();
+startPadLoop();
 paintAccountBadge();
 refreshAccount();
 subscribeLobby();
