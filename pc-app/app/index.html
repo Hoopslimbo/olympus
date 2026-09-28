@@ -9,13 +9,14 @@
     --accent: #2f6bff;
     --accent-rgb: 47, 107, 255;
     --accent-h: 222;
+    --surf-h: 222;
     --accent-soft: rgba(47,107,255,.16);
     --accent-line: rgba(127,176,255,.5);
     --accent-glow: rgba(47,107,255,.55);
     --bg0: #05070f;
     --bg1: #0a0f24;
-    --card: rgba(8, 14, 30, .94);
-    --line: rgba(90, 130, 255, .25);
+    --card: hsla(var(--surf-h), 58%, 12%, .94);
+    --line: hsla(var(--surf-h), 80%, 65%, .25);
     --txt: #dbe6ff;
     --dim: #8fa8dd;
     --faint: #5f7fc4;
@@ -53,7 +54,7 @@
   #topLeft { display: flex; align-items: center; gap: 12px; position: relative; }
   #avatarBtn {
     width: 54px; height: 54px; border-radius: 50%; flex: 0 0 auto;
-    background: linear-gradient(135deg, var(--accent), #0a1f66);
+    background: linear-gradient(135deg, var(--accent), hsl(var(--accent-h), 85%, 20%));
     display: flex; align-items: center; justify-content: center;
     font-weight: 700; font-size: 19px; color: #cfe0ff;
     box-shadow: 0 0 18px var(--accent-glow);
@@ -203,7 +204,7 @@
     border: 1px solid var(--line); border-left: none;
     border-radius: 0 14px 14px 0;
     padding: 14px 10px 14px 8px;
-    cursor: pointer;
+    pointer-events: none;
     display: flex; flex-direction: column; align-items: center; gap: 8px;
     opacity: 1; animation: tabIn .8s ease 1s backwards;
     transition: transform .35s ease, opacity .35s ease;
@@ -217,7 +218,6 @@
     font-weight: 700; font-size: 15px; color: #9fc5ff;
   }
   #menuTab small { font-size: 9px; letter-spacing: .24em; color: var(--faint); writing-mode: vertical-rl; }
-  #menuTab:hover #menuTabBtn { box-shadow: 0 0 14px var(--accent-glow); }
   #menuTab.focused #menuTabBtn {
     box-shadow: 0 0 0 3px rgba(var(--accent-rgb),.4), 0 0 24px var(--accent-glow);
   }
@@ -232,7 +232,10 @@
     animation: screenIn .35s cubic-bezier(.2,.8,.2,1);
   }
   .screen.open { display: flex; }
-  body.screen-open #home { filter: brightness(.55); }
+  /* Screens are opaque full-screen layers: hide the home view beneath them so
+     it can never paint through during focus/scale animations (blue-band glitch). */
+  body.screen-open #home { visibility: hidden; }
+  body.menu-open:not(.screen-open) #home { filter: brightness(.55); }
   @keyframes screenIn { from { opacity: 0; transform: translateY(18px); } }
   .screenHead { display: flex; align-items: center; gap: 18px; margin-bottom: 26px; }
   .backBtn {
@@ -251,13 +254,13 @@
   .screenBody::-webkit-scrollbar-thumb { background: rgba(var(--accent-rgb),.35); border-radius: 4px; }
 
   .card {
-    background: linear-gradient(180deg, rgba(17,28,58,.97), rgba(10,16,36,.97));
+    background: linear-gradient(180deg, hsla(var(--surf-h), 55%, 17%, .97), hsla(var(--surf-h), 60%, 10%, .97));
     border: 1px solid var(--line);
     border-radius: 18px; padding: 20px;
   }
   .rowCard {
     display: flex; align-items: center; gap: 16px;
-    background: rgba(10, 18, 40, .55);
+    background: hsla(var(--surf-h), 55%, 13%, .55);
     border: 1px solid var(--line);
     border-radius: 16px; padding: 14px 18px; margin-bottom: 12px;
     transition: border-color .2s, box-shadow .2s;
@@ -265,7 +268,7 @@
   .rowCard:hover { border-color: var(--accent-line); box-shadow: 0 0 20px rgba(var(--accent-rgb),.18); }
   .pAv {
     width: 52px; height: 52px; border-radius: 50%; flex: 0 0 auto;
-    background: linear-gradient(135deg, var(--accent), #0a1f66);
+    background: linear-gradient(135deg, var(--accent), hsl(var(--accent-h), 85%, 20%));
     display: flex; align-items: center; justify-content: center;
     font-weight: 700; font-size: 18px; color: #cfe0ff; overflow: hidden;
   }
@@ -314,6 +317,9 @@
     box-shadow: 0 0 0 3px rgba(var(--accent-rgb),.6), 0 0 28px var(--accent-glow) !important;
     transform: scale(1.03);
   }
+  /* Full-width inputs keep the glow but don't scale (scaling shifts them and
+     can glitch composited layers underneath). */
+  input.navFocus, textarea.navFocus { transform: none; }
   .tile.navFocus, .galItem.navFocus, .shopCard.navFocus, .libTile.navFocus { transform: scale(1.06); }
   .menuBtn.navFocus { background: rgba(var(--accent-rgb),.22); }
   #menuExit.navFocus { box-shadow: 0 0 0 3px rgba(255,84,112,.6), 0 0 28px rgba(255,84,112,.45) !important; }
@@ -364,13 +370,13 @@
   .remapRow.capturing .rv { color: #fff; font-weight: 700; }
   .txtInput, .searchBox input {
     width: 100%; padding: 13px 16px; border-radius: 13px;
-    background: rgba(16,26,54,.7); border: 1px solid rgba(90,130,255,.28);
+    background: hsla(var(--surf-h), 55%, 14%, .7); border: 1px solid rgba(90,130,255,.28);
     color: #fff; font-size: 15px; font-family: inherit; outline: none;
   }
   .txtInput:focus, .searchBox input:focus { border-color: #7fb0ff; box-shadow: 0 0 0 3px rgba(var(--accent-rgb),.25); }
   .txtInput::placeholder, .searchBox input::placeholder { color: #4d6db3; }
   .searchBox { display: flex; gap: 12px; margin-bottom: 18px; }
-  .segTabs { display: flex; background: rgba(20,32,66,.6); border-radius: 13px; padding: 4px; gap: 4px; margin-bottom: 20px; max-width: 420px; }
+  .segTabs { display: flex; background: hsla(var(--surf-h), 52%, 17%, .6); border-radius: 13px; padding: 4px; gap: 4px; margin-bottom: 20px; max-width: 420px; }
   .segTab { flex: 1; text-align: center; padding: 11px; border-radius: 9px; font-size: 14px; color: var(--dim); cursor: pointer; letter-spacing: .05em; }
   .segTab.active { background: rgba(var(--accent-rgb),.28); color: #fff; box-shadow: inset 0 0 0 1px var(--accent-line); }
   .emptyNote { text-align: center; color: var(--faint); padding: 60px 20px; font-size: 15px; letter-spacing: .06em; line-height: 1.8; }
@@ -382,7 +388,7 @@
   .padTest { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; min-height: 40px; }
   .padTest .k {
     padding: 7px 13px; border-radius: 9px; font-size: 13px;
-    background: rgba(20,32,66,.7); border: 1px solid var(--line); color: var(--dim);
+    background: hsla(var(--surf-h), 52%, 17%, .7); border: 1px solid var(--line); color: var(--dim);
   }
   .padTest .k.hit { background: rgba(var(--accent-rgb),.4); border-color: var(--accent-line); color: #fff; box-shadow: 0 0 12px var(--accent-glow); }
 
@@ -390,7 +396,7 @@
   #profHead { display: flex; align-items: center; gap: 22px; margin-bottom: 26px; }
   #profPic {
     width: 110px; height: 110px; border-radius: 50%; flex: 0 0 auto;
-    background: linear-gradient(135deg, var(--accent), #0a1f66);
+    background: linear-gradient(135deg, var(--accent), hsl(var(--accent-h), 85%, 20%));
     border: 2px solid var(--accent-line);
     display: flex; align-items: center; justify-content: center;
     font-size: 38px; font-weight: 800; color: #cfe0ff; overflow: hidden;
@@ -409,48 +415,38 @@
   .ach .t { font-size: 34px; margin-bottom: 10px; filter: grayscale(1); }
   .ach .n { font-size: 13px; color: var(--dim); }
 
-  /* Shop */
-  #shopHero {
-    border-radius: 24px; padding: 44px 40px; margin-bottom: 26px;
-    background:
-      radial-gradient(90% 130% at 85% 0%, hsla(var(--accent-h), 85%, 55%, .4), transparent 55%),
-      linear-gradient(120deg, #0e1633, #070b1c 70%);
-    border: 1px solid rgba(var(--accent-rgb),.3);
-    box-shadow: 0 12px 44px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.06);
-    display: flex; align-items: center; gap: 28px; text-align: left;
-  }
-  #shopHero .kick { font-size: 11px; font-weight: 800; letter-spacing: .32em; color: var(--accent); margin-bottom: 10px; }
-  #shopHero h2 { font-size: clamp(26px, 3.6vw, 42px); font-weight: 800; letter-spacing: .03em; line-height: 1.1; }
-  #shopHero p { margin-top: 10px; color: var(--dim); font-size: 15px; letter-spacing: .04em; }
-  #shopHero .heroIco {
-    flex: 0 0 auto; width: 92px; height: 92px; border-radius: 24px;
-    background: linear-gradient(135deg, var(--accent), #1a3fa0);
-    display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 10px 34px rgba(var(--accent-rgb),.45);
-  }
-  #shopHero .heroIco svg { width: 52px; height: 52px; color: #fff; }
-  #shopGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
-  .shopCard {
-    overflow: hidden; padding: 0; cursor: default;
-    border-radius: 20px; border: 1px solid rgba(var(--accent-rgb),.18);
-    background: linear-gradient(180deg, rgba(17,28,58,.97), rgba(10,16,36,.97));
-    transition: transform .18s ease, box-shadow .25s ease, border-color .2s ease;
-  }
-  .shopCard:hover { transform: translateY(-4px); border-color: rgba(var(--accent-rgb),.5); box-shadow: 0 14px 40px rgba(0,0,0,.5), 0 0 24px rgba(var(--accent-rgb),.18); }
-  .shopCard .art {
-    height: 150px; display: flex; align-items: center; justify-content: center;
-    position: relative; overflow: hidden;
-  }
-  .shopCard .art svg { width: 64px; height: 64px; color: rgba(255,255,255,.92); filter: drop-shadow(0 6px 16px rgba(0,0,0,.5)); }
-  .shopCard .art::after {
-    content: ''; position: absolute; inset: 0;
-    background: linear-gradient(180deg, transparent 55%, rgba(5,8,20,.55));
-    pointer-events: none;
-  }
-  .shopCard .info { padding: 18px 18px 16px; }
-  .shopCard .info .t { font-size: 17px; font-weight: 800; letter-spacing: .02em; }
-  .shopCard .info .s { font-size: 13px; color: var(--dim); margin-top: 6px; line-height: 1.5; min-height: 38px; }
-  .shopCard .foot { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; }
+  /* Store (console-shop style) */
+  #shopHero { position: relative; margin-bottom: 30px; }
+  #storeHero { position: relative; border-radius: 24px; overflow: hidden; border: 1px solid rgba(var(--accent-rgb),.3); box-shadow: 0 12px 44px rgba(0,0,0,.45); }
+  .heroSlide { display: none; width: 100%; min-height: 330px; border: 0; padding: 0; cursor: pointer; text-align: left; color: #fff; background: none; position: relative; font: inherit; }
+  .heroSlide.active { display: block; animation: heroFade .45s ease; }
+  @keyframes heroFade { from { opacity: .2; } to { opacity: 1; } }
+  .heroSlide .hart { position: absolute; inset: 0; }
+  .heroSlide .hart svg { position: absolute; right: 6%; top: 50%; transform: translateY(-50%); width: 190px; height: 190px; color: rgba(255,255,255,.28); filter: drop-shadow(0 14px 44px rgba(0,0,0,.55)); }
+  .heroSlide .hbody { position: relative; padding: 46px 44px; max-width: 640px; }
+  .heroSlide .kick { font-size: 11px; font-weight: 800; letter-spacing: .32em; color: rgba(255,255,255,.85); margin-bottom: 12px; }
+  .heroSlide h2 { font-size: clamp(30px, 4vw, 48px); font-weight: 800; letter-spacing: .02em; line-height: 1.05; text-shadow: 0 4px 24px rgba(0,0,0,.5); }
+  .heroSlide p { margin-top: 12px; color: rgba(255,255,255,.82); font-size: 15px; letter-spacing: .03em; max-width: 460px; }
+  .heroSlide .hfoot { display: flex; align-items: center; gap: 14px; margin-top: 22px; }
+  .soonPill { font-size: 12px; font-weight: 800; letter-spacing: .14em; color: #ffd98a; background: rgba(0,0,0,.35); border: 1px solid rgba(255,217,138,.5); padding: 6px 14px; border-radius: 999px; }
+  .heroArrow { position: absolute; top: 50%; transform: translateY(-50%); z-index: 3; width: 46px; height: 46px; border-radius: 50%; background: rgba(5,8,20,.55); border: 1px solid rgba(255,255,255,.25); color: #fff; font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background .2s, transform .15s; }
+  .heroArrow:hover { background: rgba(5,8,20,.85); transform: translateY(-50%) scale(1.08); }
+  .heroArrow.prev { left: 16px; } .heroArrow.next { right: 16px; }
+  .heroDots { position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; z-index: 3; }
+  .heroDots button { width: 26px; height: 6px; border-radius: 999px; border: 0; background: rgba(255,255,255,.3); cursor: pointer; padding: 0; transition: background .2s, width .2s; }
+  .heroDots button.on { background: #fff; width: 38px; }
+  #shopGrid { display: block; }
+  .storeRowWrap { margin-bottom: 8px; }
+  .storeRow { display: flex; gap: 18px; overflow-x: auto; padding: 8px 4px 20px; margin: 0 -4px; scrollbar-width: thin; }
+  .storeTile { position: relative; flex: 0 0 210px; border-radius: 18px; overflow: hidden; border: 1px solid rgba(var(--accent-rgb),.18); background: linear-gradient(180deg, hsla(var(--surf-h), 55%, 17%, .97), hsla(var(--surf-h), 60%, 10%, .97)); cursor: pointer; padding: 0; text-align: left; color: inherit; font: inherit; transition: transform .18s ease, border-color .2s ease, box-shadow .25s ease; }
+  .storeTile:hover, .storeTile.navFocus { transform: translateY(-4px); border-color: rgba(var(--accent-rgb),.55); box-shadow: 0 14px 40px rgba(0,0,0,.5), 0 0 24px rgba(var(--accent-rgb),.18); }
+  .storeTile .tart { aspect-ratio: 3/3.4; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+  .storeTile .tart svg { width: 72px; height: 72px; color: rgba(255,255,255,.92); filter: drop-shadow(0 6px 16px rgba(0,0,0,.5)); }
+  .storeTile .tart::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 55%, rgba(5,8,20,.5)); pointer-events: none; }
+  .storeTile .tinfo { padding: 14px 16px 16px; }
+  .storeTile .tinfo .t { font-size: 16px; font-weight: 800; letter-spacing: .02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .storeTile .tinfo .s { font-size: 12px; color: var(--dim); margin-top: 5px; line-height: 1.45; min-height: 34px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .storeTile .tfoot { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; }
   .priceTag {
     font-size: 12px; font-weight: 800; letter-spacing: .14em; color: #8fd6a4;
     background: rgba(53,208,127,.1); border: 1px solid rgba(53,208,127,.35);
@@ -492,6 +488,7 @@
   .swatches { display: flex; gap: 10px; }
   .swatch { width: 40px; height: 40px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: transform .15s; }
   .swatch:hover { transform: scale(1.12); }
+  .swatch.navFocus { transform: scale(1.18); border-color: #fff; box-shadow: 0 0 16px rgba(255,255,255,.55); }
   .swatch.sel { border-color: #fff; box-shadow: 0 0 14px rgba(255,255,255,.4); }
   .toggle { width: 58px; height: 32px; border-radius: 999px; background: rgba(30,42,80,.8); border: 1px solid var(--line); cursor: pointer; position: relative; transition: background .2s; flex: 0 0 auto; }
   .toggle.on { background: var(--accent); }
@@ -504,7 +501,7 @@
   #chatScroll { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding: 6px 2px 16px; }
   .bubble { max-width: 70%; padding: 12px 16px; border-radius: 16px; font-size: 15px; line-height: 1.45; }
   .bubble.me { align-self: flex-end; background: linear-gradient(135deg, var(--accent), #1a3fa0); border-bottom-right-radius: 5px; }
-  .bubble.them { align-self: flex-start; background: rgba(20,32,66,.85); border: 1px solid var(--line); border-bottom-left-radius: 5px; }
+  .bubble.them { align-self: flex-start; background: hsla(var(--surf-h), 52%, 17%, .85); border: 1px solid var(--line); border-bottom-left-radius: 5px; }
   .bubble .who { font-size: 11px; color: var(--dim); margin-bottom: 4px; letter-spacing: .06em; }
   #composer { display: flex; gap: 12px; padding-top: 14px; }
   #composer input { flex: 1; }
@@ -528,7 +525,7 @@
   /* Toast + modal */
   #toast {
     position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px);
-    background: rgba(14, 24, 52, .94);
+    background: hsla(var(--surf-h), 58%, 13%, .94);
     border: 1px solid rgba(120, 160, 255, .35);
     padding: 12px 26px; border-radius: 999px;
     font-size: 13px; letter-spacing: .14em; color: #b9cdf7;
@@ -577,12 +574,12 @@
   .acctCard h2 { text-align: center; font-size: 20px; font-weight: 700; letter-spacing: .04em; }
   #acctNotice { text-align: center; font-size: 13px; color: #8fb0ff; line-height: 1.5; }
   #acctNotice:empty { display: none; }
-  .acctTabs { display: flex; background: rgba(20,32,66,.6); border-radius: 12px; padding: 4px; gap: 4px; }
+  .acctTabs { display: flex; background: hsla(var(--surf-h), 52%, 17%, .6); border-radius: 12px; padding: 4px; gap: 4px; }
   .acctTab { flex: 1; text-align: center; padding: 10px; border-radius: 9px; font-size: 14px; color: var(--dim); cursor: pointer; letter-spacing: .04em; }
   .acctTab.active { background: rgba(var(--accent-rgb),.25); color: #fff; box-shadow: inset 0 0 0 1px var(--accent-line); }
   .acctCard input[type=text], .acctCard input[type=email], .acctCard input[type=password] {
     width: 100%; padding: 13px 15px; border-radius: 12px;
-    background: rgba(16,26,54,.7); border: 1px solid rgba(90,130,255,.28);
+    background: hsla(var(--surf-h), 55%, 14%, .7); border: 1px solid rgba(90,130,255,.28);
     color: #fff; font-size: 15px; font-family: inherit; outline: none;
   }
   .acctCard input:focus { border-color: #7fb0ff; box-shadow: 0 0 0 3px rgba(var(--accent-rgb),.25); }
@@ -599,7 +596,7 @@
   #acctAvatarWrap { display: flex; align-items: center; gap: 16px; }
   #acctAvatarPreview {
     width: 64px; height: 64px; border-radius: 50%; flex: 0 0 auto;
-    background: linear-gradient(135deg, var(--accent), #0a1f66);
+    background: linear-gradient(135deg, var(--accent), hsl(var(--accent-h), 85%, 20%));
     border: 1px solid var(--accent-line);
     display: flex; align-items: center; justify-content: center;
     font-weight: 800; font-size: 22px; color: #cfe0ff; overflow: hidden;
@@ -670,11 +667,30 @@
   #achBanner .achTitle{font-size:16px;font-weight:700;margin-top:2px}
   #achBanner .achDesc{font-size:13px;color:var(--dim);margin-top:2px}
   /* Party invite card */
-  #inviteCard{position:fixed;right:24px;bottom:24px;z-index:9000;width:320px;padding:18px;border-radius:16px;background:rgba(10,16,34,.96);border:1px solid var(--acc);box-shadow:0 8px 40px rgba(0,0,0,.6)}
+  #notifStack{position:fixed;top:24px;right:24px;z-index:9000;display:flex;flex-direction:column;gap:12px;align-items:flex-end;pointer-events:none}
+  #notifStack>*{pointer-events:auto}
+  #inviteCard{width:300px;padding:16px 18px;border-radius:16px;background:hsla(var(--surf-h), 58%, 13%, .96);border:1px solid var(--accent);box-shadow:0 8px 40px rgba(0,0,0,.6);animation:inviteIn .45s cubic-bezier(.2,.9,.25,1.15)}
   #inviteCard.hidden{display:none}
-  #inviteCard .invTitle{font-size:15px;font-weight:700;margin-bottom:6px}
-  #inviteCard .invText{font-size:13px;color:var(--dim);margin-bottom:14px}
+  @keyframes inviteIn{from{transform:translateX(calc(100% + 40px));opacity:0}to{transform:translateX(0);opacity:1}}
+  #inviteCard .invTitle{font-size:15px;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+  #inviteCard .invText{font-size:13px;color:var(--dim);margin-bottom:10px}
+  #inviteCard .invHint{font-size:12px;color:var(--dim);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+  .hk{display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:26px;padding:0 8px;border-radius:8px;background:hsla(var(--surf-h), 52%, 22%, .9);border:1px solid var(--accent-line);font-size:11px;font-weight:800;letter-spacing:.08em;color:#fff}
   #inviteCard .invBtns{display:flex;gap:10px;justify-content:flex-end}
+  .msgToast{width:300px;padding:14px 16px;border-radius:16px;background:hsla(var(--surf-h), 58%, 13%, .96);border:1px solid var(--line);box-shadow:0 8px 40px rgba(0,0,0,.6);animation:inviteIn .45s cubic-bezier(.2,.9,.25,1.15);cursor:pointer}
+  .msgToast .mtHead{font-size:11px;letter-spacing:.2em;color:var(--faint);margin-bottom:6px;display:flex;align-items:center;gap:8px}
+  .msgToast .mtBody{font-size:14px}
+  .msgToast .mtBody b{color:#fff}
+  .msgToast .mtHint{font-size:12px;color:var(--dim);margin-top:8px;display:flex;align-items:center;gap:8px}
+  #miniChat{position:fixed;right:24px;top:50%;transform:translateY(-50%);z-index:9500;width:340px;max-height:70vh;display:flex;flex-direction:column;border-radius:18px;background:hsla(var(--surf-h), 55%, 12%, .98);border:1px solid var(--accent-line);box-shadow:0 12px 60px rgba(0,0,0,.7);animation:inviteIn .35s cubic-bezier(.2,.9,.25,1.15);overflow:hidden}
+  #miniChat.hidden{display:none}
+  #miniChat .mcHead{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line);font-weight:700;font-size:15px}
+  #miniChat .mcHead .spacer{flex:1}
+  #miniChat .mcClose{width:34px;height:34px;border-radius:10px;padding:0;font-size:14px}
+  #mcScroll{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:8px;min-height:180px;max-height:44vh}
+  #miniChat .mcInputRow{display:flex;gap:8px;padding:12px;border-top:1px solid var(--line)}
+  #miniChat .mcInputRow input{flex:1}
+  #miniChat .bubble{max-width:88%}
   /* Gallery */
   #galGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
   .galItem{position:relative;aspect-ratio:16/9;border-radius:12px;overflow:hidden;border:1px solid rgba(100,140,255,.2);cursor:pointer;background:#0a0f22}
@@ -760,7 +776,7 @@
 <section class="screen" id="screen-shop">
   <div class="screenHead"><div class="backBtn" data-back><span data-ic="chevL"></span></div><div><h1>Shop</h1><div class="sub">DISCOVER GAMES</div></div></div>
   <div class="screenBody">
-    <div id="shopHero"><div class="heroIco"><span data-ic="cart"></span></div><div><div class="kick">OLYMPUS STORE</div><h2>The Shop is getting stocked</h2><p>New games will land here. Check back soon.</p></div></div>
+    <div id="shopHero"></div>
     <div id="shopGrid"></div>
   </div>
 </section>
@@ -805,8 +821,8 @@
         <div id="profTag">—</div>
         <div id="profName">—</div>
         <div id="profBio" style="font-size:14px;color:var(--dim);margin-top:6px;max-width:560px"></div>
+        <button class="btn" id="editProfBtn" style="margin-top:12px">Customize</button>
       </div>
-      <button class="btn" id="editProfBtn">Customize</button>
     </div>
     <div class="secTitle">GAME STATS</div>
     <div class="statGrid" id="statGrid"></div>
@@ -852,7 +868,7 @@
   <div class="screenBody">
     <div class="secTitle">APPEARANCE</div>
     <div class="card setRow">
-      <div><div class="t">Theme color</div><div class="s">Recolors buttons, glows and background stripes</div></div>
+      <div><div class="t">Theme color</div><div class="s">Recolors buttons, surfaces, glows and background stripes</div></div>
       <div class="spacer"></div>
       <div class="swatches" id="themeSwatches"></div>
       <input type="color" id="themeWheel" value="#2f6bff" title="Custom color">
@@ -893,7 +909,7 @@
     </div>
     <div class="secTitle">ABOUT</div>
     <div class="card setRow">
-      <div><div class="t">Olympus</div><div class="s" id="verSub">Version 0.3.1 · PC app</div></div>
+      <div><div class="t">Olympus</div><div class="s" id="verSub">Version 0.3.2 · PC app</div></div>
       <div class="spacer"></div>
       <button class="btn" id="updateBtn">Check for updates</button>
     </div>
@@ -966,11 +982,19 @@
 
 <div id="toast"></div>
   <div id="achBanner"><div class="achIcon"><span data-ic="trophy"></span></div><div class="achBody"><div class="achKicker">ACHIEVEMENT UNLOCKED</div><div class="achTitle" id="achTitle"></div><div class="achDesc" id="achDesc"></div></div></div>
+<div id="notifStack">
   <div id="inviteCard" class="hidden">
     <div class="invTitle"><span data-ic="mic"></span> Party invite</div>
     <div class="invText" id="inviteText"></div>
+    <div class="invHint">Press <span class="hk">HOME</span> to join</div>
     <div class="invBtns"><button class="btn" id="inviteDecline">Decline</button><button class="btn primary" id="inviteJoin">Join</button></div>
   </div>
+</div>
+<div id="miniChat" class="hidden">
+  <div class="mcHead"><span data-ic="chat"></span><span id="mcTitle">Chat</span><div class="spacer"></div><button class="btn mcClose" id="mcClose" title="Close">✕</button></div>
+  <div id="mcScroll"></div>
+  <div class="mcInputRow"><input id="mcInput" class="txtInput" placeholder="Message…" maxlength="500" autocomplete="off"><button class="btn primary" id="mcSend">Send</button></div>
+</div>
 <div id="modalWrap"><div id="modal"><h3 id="modalTitle"></h3><p id="modalText"></p><div class="btnRow" id="modalBtns"></div></div></div>
 
 <div id="remapWrap"><div id="remapBox">
@@ -1046,7 +1070,32 @@ function initials(tag) {
 function picHtml(pic, tag, cls) {
   return '<div class="' + (cls || 'pAv') + '">' + (pic ? '<img src="' + pic + '" alt="">' : escapeHtml(initials(tag))) + '</div>';
 }
-const OLY_VERSION = '0.3.1';
+const OLY_VERSION = '0.3.2';
+/* Welcome email: sent once when a new Olympus account is created.
+   Uses EmailJS (free tier, sends from your Gmail — no domain needed).
+   Fill these in (or set localStorage 'oly_welcome_email' to a JSON object
+   with the same fields); while empty, no email is sent. */
+const WELCOME_EMAIL = { publicKey: '', serviceId: '', templateId: '' };
+function welcomeEmailCfg() {
+  try {
+    const ls = JSON.parse(localStorage.getItem('oly_welcome_email') || 'null');
+    if (ls && (ls.publicKey || ls.serviceId)) return ls;
+  } catch (e) {}
+  return (WELCOME_EMAIL.publicKey && WELCOME_EMAIL.serviceId) ? WELCOME_EMAIL : null;
+}
+function sendWelcomeEmail(toEmail, gamertag, firstName) {
+  const cfg = welcomeEmailCfg();
+  if (!cfg || !toEmail) return;
+  try {
+    fetch('https://api.emailjs.com/api/v1.0/email/send', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        service_id: cfg.serviceId, template_id: cfg.templateId, user_id: cfg.publicKey,
+        template_params: { to_email: toEmail, gamertag: gamertag || '', first_name: firstName || gamertag || 'player' }
+      })
+    }).catch(() => {});
+  } catch (e) {}
+}
 let toastTimer = null;
 const toastLog = [];
 function toast(msg) {
@@ -1091,6 +1140,8 @@ window.Olympus = window.Olympus || {};
 window.Olympus.unlockAchievement = unlockAchievement;
 function modal(title, text, buttons) {
   // buttons: [{label, primary, onClick}]
+  // Clear any custom content a previous modal injected (profile editor, pickers, …)
+  $$('#modal .modalCustom').forEach(el => el.remove());
   $('#modalTitle').textContent = title;
   $('#modalText').textContent = text;
   const wrap = $('#modalBtns');
@@ -1103,6 +1154,10 @@ function modal(title, text, buttons) {
     wrap.appendChild(el);
   });
   $('#modalWrap').classList.add('open');
+  // Put focus inside the dialog (prefer the safe, non-primary button) so
+  // controller/keyboard drive the dialog instead of the screen behind it.
+  const defBtn = wrap.querySelector('button:not(.primary)') || wrap.querySelector('button');
+  if (defBtn) setNav(defBtn);
 }
 function closeModal() { $('#modalWrap').classList.remove('open'); }
 $('#modalWrap').addEventListener('click', e => { if (e.target.id === 'modalWrap') closeModal(); });
@@ -1131,6 +1186,7 @@ function applyTheme(hex) {
   root.setProperty('--accent', hex);
   root.setProperty('--accent-rgb', r + ', ' + g + ', ' + b);
   root.setProperty('--accent-h', h);
+  root.setProperty('--surf-h', h);
   try { localStorage.setItem('oly_theme', hex); } catch (e) {}
   const wheel = $('#themeWheel');
   if (wheel) wheel.value = hex;
@@ -1358,6 +1414,7 @@ $('#acctCreateBtn').addEventListener('click', async () => {
       } else {
         rememberEmail(email);
         await refreshAccount();
+        sendWelcomeEmail(email, tag, first);
         closeAccount();
       }
     } catch (e) {
@@ -1422,7 +1479,7 @@ function buildProfileItems() {
   const add = document.createElement('div');
   add.className = 'profileItem add';
   add.innerHTML = '<div class="pAv">' + ic('plus') + '</div><span>' + (a ? 'Switch account' : 'Add account') + '</span>';
-  add.addEventListener('click', e => { e.stopPropagation(); setProfileMenu(false); openAccount(''); });
+  add.addEventListener('click', async e => { e.stopPropagation(); setProfileMenu(false); if (currentAccount()) await signOut(); openAccount(''); });
   add.addEventListener('mouseenter', () => { profileFocus = profileItems.length; paintProfiles(); });
   profileMenu.appendChild(add); profileItems.push(add);
   if (a) {
@@ -1485,8 +1542,8 @@ function openScreen(name, data) {
   $$('.screen').forEach(s => s.classList.remove('open'));
   el.classList.add('open');
   document.body.classList.add('screen-open');
-  menuBeforeScreen = menuOpen;
   navEl = null;
+  backMenuShown = false;
   if (menuOpen) setMenu(false);
   if (profileMenuOpen) setProfileMenu(false);
   const fn = ScreenRender[name];
@@ -1497,6 +1554,7 @@ function closeAllScreens() {
   $$('.screen').forEach(s => s.classList.remove('open'));
   document.body.classList.remove('screen-open');
 }
+let backMenuShown = false; // Back opened the tab menu; the next Back keeps going back
 function goBack() {
   if ($('#viewer') && $('#viewer').classList.contains('open')) { closeViewer(); return; }
   if (accountOpen) { closeAccount(); return; }
@@ -1512,8 +1570,11 @@ function goBack() {
     const fn = ScreenRender[name];
     if (fn) fn();
   } else if (screenStack.length === 1) {
+    // One press: open the tab menu only (don't jump home). Press again to
+    // close it, and again to keep going back until the main menu.
+    if (!backMenuShown) { backMenuShown = true; setMenu(true); return; }
+    backMenuShown = false;
     closeAllScreens();
-    if (menuBeforeScreen) { menuBeforeScreen = false; setMenu(true); }
   }
 }
 $$('[data-back]').forEach(b => b.addEventListener('click', goBack));
@@ -1604,11 +1665,9 @@ async function syncRecentGames() {
 }
 let focus = 0, zone = 'tiles', topFocus = 0;
 const topCtrls = [avatarBtn, $('#padBtn'), $('#searchBtn'), $('#msgBtn'), $('#settingsBtn')];
-const menuTabCtl = $('#menuTab');
 function paintFocus() {
   tiles.forEach((t, k) => t.classList.toggle('focused', zone === 'tiles' && k === focus));
   topCtrls.forEach((c, k) => c && c.classList.toggle('focused', zone === 'top' && k === topFocus));
-  if (menuTabCtl) menuTabCtl.classList.toggle('focused', zone === 'menu');
   if (zone === 'tiles') paintHero(rowOrder[focus]);
 }
 function setFocus(i, scroll) {
@@ -1622,9 +1681,10 @@ function setTopFocus(i) {
   zone = 'top';
   paintFocus();
 }
-function setMenuFocus() { zone = 'menu'; paintFocus(); }
 topCtrls.forEach((c, i) => { if (c) c.addEventListener('mouseenter', () => setTopFocus(i)); });
-if (menuTabCtl) menuTabCtl.addEventListener('mouseenter', setMenuFocus);
+/* NOTE: the menu tab is a controller-button-only indicator. It is opened solely
+   by the physical button mapped to the Menu action (default: Y). No keyboard
+   key, no mouse hover/click, no arrow-key focus, and no Start/Select can open it. */
 const heroBG = $('#heroBG'), gameMeta = $('#gameMeta'), gameTitle = $('#gameTitle'), gameDesc = $('#gameDesc');
 function paintHero(i) {
   const g = games[i];
@@ -1673,20 +1733,36 @@ function controllerKind() {
   if (!gp) return 'xbox';
   const id = (gp.id || '').toLowerCase();
   if (id.includes('nintendo') || id.includes('switch') || id.includes('pro controller') || id.includes('joy-con') || id.includes('joycon')) return 'switch';
-  if (id.includes('playstation') || id.includes('dualsense') || id.includes('dualshock') || id.includes('sony')) return 'ps';
+  if (id.includes('playstation') || id.includes('dualsense') || id.includes('dualshock') || id.includes('sony') || id.includes('wireless controller')) return 'ps';
   return 'xbox';
 }
 function faceLabel(btn) { return (FACE_LABELS[controllerKind()] || FACE_LABELS.xbox)[btn] || '?'; }
-function paintMenuTab() { menuTabBtn.textContent = faceLabel(controllerPreset.menuButton); }
-menuTab.addEventListener('click', e => { e.stopPropagation(); setMenu(true); });
-paintMenuTab();
+/* Logical action name, controller-aware for the four face buttons (e.g. the
+   "Y" action is labeled X on Switch, △ on PlayStation). */
+function logicalName(l) {
+  if (l >= 0 && l < 4) { try { return faceLabel(l); } catch (e) {} }
+  return BTN_NAMES[l];
+}
+function paintMenuTab() {
+  // Show the actual physical button the Menu action is mapped to (respects remap).
+  let phys = controllerPreset.menuButton, label = faceLabel(controllerPreset.menuButton);
+  try {
+    const pads = navigator.getGamepads ? navigator.getGamepads() : [];
+    for (const g of pads) { if (g && g.connected) { phys = physIdx(g, controllerPreset.menuButton); break; } }
+  } catch (e) {}
+  if (phys !== controllerPreset.menuButton && typeof BTN_NAMES !== 'undefined' && BTN_NAMES[phys]) label = BTN_NAMES[phys];
+  menuTabBtn.textContent = label;
+  menuTabBtn.style.fontSize = label.length > 2 ? '10px' : '';
+}
+/* The menu tab badge always shows the physical button currently mapped to the
+   Menu action (default Y). Repainted on boot, controller connect/disconnect,
+   and after remapping. */
 
 /* Side menu */
 const sideMenu = $('#sideMenu');
 const overlay = $('#menuOverlay');
 const menuBtns = Array.from(document.querySelectorAll('.menuBtn'));
 let menuOpen = false, menuFocus = 0;
-let menuBeforeScreen = false;
 function setMenu(open) {
   menuOpen = open;
   document.body.classList.toggle('menu-open', open);
@@ -1788,7 +1864,7 @@ ScreenRender.controllers = function () {
         testZone.innerHTML = '';
         BTN_NAMES.forEach((n, bi) => {
           const k = document.createElement('span');
-          k.className = 'k'; k.dataset.b = bi; k.textContent = n;
+          k.className = 'k'; k.dataset.b = bi; k.textContent = logicalName(bi);
           testZone.appendChild(k);
         });
       }
@@ -1828,10 +1904,23 @@ addEventListener('keydown', e => {
     else if (e.key === 'Enter' && ae.id === 'searchInput') runSearch();
     return;
   }
-  if (accountOpen) { if (e.key === 'Escape') closeAccount(); return; }
-  if (e.key === 'y' || e.key === 'Y') {
-    if (profileMenuOpen) setProfileMenu(false);
-    setMenu(!menuOpen);
+  if (accountOpen) {
+    if (e.key === 'Escape' || e.key === 'b' || e.key === 'B') closeAccount();
+    else if (e.key === 'ArrowUp') moveNav(0, -1);
+    else if (e.key === 'ArrowDown') moveNav(0, 1);
+    else if (e.key === 'ArrowLeft') moveNav(-1, 0);
+    else if (e.key === 'ArrowRight') moveNav(1, 0);
+    else if (e.key === 'Enter' && navEl && document.contains(navEl)) navEl.click();
+    return;
+  }
+  // Any modal open: keyboard stays inside the dialog.
+  if ($('#modalWrap').classList.contains('open')) {
+    if (e.key === 'Escape' || e.key === 'b' || e.key === 'B') closeModal();
+    else if (e.key === 'ArrowUp') moveNav(0, -1);
+    else if (e.key === 'ArrowDown') moveNav(0, 1);
+    else if (e.key === 'ArrowLeft') moveNav(-1, 0);
+    else if (e.key === 'ArrowRight') moveNav(1, 0);
+    else if (e.key === 'Enter' && navEl && document.contains(navEl)) navEl.click();
     return;
   }
   if (profileMenuOpen) {
@@ -1860,13 +1949,13 @@ addEventListener('keydown', e => {
   }
   if (e.key === 'ArrowRight') { if (zone === 'top') setTopFocus(topFocus + 1); else if (zone === 'tiles') setFocus(focus + 1); }
   else if (e.key === 'ArrowLeft') { if (zone === 'top') setTopFocus(topFocus - 1); else if (zone === 'tiles') setFocus(focus - 1); }
-  else if (e.key === 'ArrowUp') { if (zone === 'tiles') setTopFocus(topFocus); else if (zone === 'menu') setFocus(focus); }
-  else if (e.key === 'ArrowDown') { if (zone === 'top') setFocus(focus); else if (zone === 'tiles') setMenuFocus(); }
+  else if (e.key === 'ArrowUp') { if (zone === 'tiles') setTopFocus(topFocus); }
+  else if (e.key === 'ArrowDown') { if (zone === 'top') setFocus(focus); }
   else if (e.key === 'Enter') {
     if (zone === 'top' && topCtrls[topFocus]) topCtrls[topFocus].click();
-    else if (zone === 'menu' && menuTabCtl) menuTabCtl.click();
     else if (zone === 'tiles') launchGame(focus);
   }
+  else if (e.key === 'Escape') tryExit();
 });
 const padState = { dir: 0, nextMove: 0 };
 async function takeScreenshot() {
@@ -2005,7 +2094,7 @@ function paintRemapRows(){
   BTN_NAMES.forEach((name, logical) => {
     const r = document.createElement('div');
     r.className = 'remapRow';
-    r.innerHTML = '<span class="rk">' + escapeHtml(name) + '</span><span class="rv">' + escapeHtml(physName(logical)) + '</span>';
+    r.innerHTML = '<span class="rk">' + escapeHtml(logicalName(logical)) + '</span><span class="rv">' + escapeHtml(physName(logical)) + '</span>';
     r.addEventListener('click', () => {
       box.querySelectorAll('.remapRow').forEach(x => x.classList.remove('capturing'));
       r.classList.add('capturing');
@@ -2015,16 +2104,18 @@ function paintRemapRows(){
     box.appendChild(r);
   });
 }
-$('#remapDone').addEventListener('click', closeRemap);
+$('#remapDone').addEventListener('click', () => { closeRemap(); try { paintMenuTab(); } catch (e) {} });
 $('#remapReset').addEventListener('click', () => {
   try { localStorage.removeItem('oly_remap_' + remapPadId); } catch(e){}
   _rmId = null; remapCapture = null; paintRemapRows();
+  try { paintMenuTab(); } catch (e) {}
 });
 
 /* ---------- Universal spatial navigation (controller / keyboard / mouse) ---------- */
-const NAV_SEL = 'button:not([disabled]), .menuBtn, .tile, .galItem, .shopCard, .libTile, .rowCard, .profileItem, .iconBtn, .backBtn, .statLink, .remapRow, input.txtInput, .searchBox input, input[type="color"]';
+const NAV_SEL = 'button:not([disabled]), .menuBtn, .tile, .galItem, .shopCard, .libTile, .rowCard, .profileItem, .iconBtn, .backBtn, .statLink, .remapRow, .swatch, input.txtInput, .searchBox input, input[type="color"]';
 let navEl = null;
 function navScopeEl(){
+  if (accountOpen) return $('#accountScreen');
   if ($('#remapWrap').classList.contains('open')) return $('#remapBox');
   if ($('#modalWrap').classList.contains('open')) return $('#modal');
   if ($('#viewer').classList.contains('open')) return $('#viewer');
@@ -2085,7 +2176,6 @@ function startPadLoop(){
 }
 function pollPad() {
   padLastTick = Date.now();
-  if (accountOpen) { requestAnimationFrame(pollPad); return; }
   const pads = navigator.getGamepads ? navigator.getGamepads() : [];
   let gp = null;
   for (const p of pads) { if (p && p.connected) { gp = p; break; } }
@@ -2102,9 +2192,25 @@ function pollPad() {
   const homeB = pressed(16), startB = pressed(9), selB = pressed(8);
   if (yB || bB || aB || homeB || startB || selB || Math.abs(axX) > 0.25 || Math.abs(axY) > 0.25) pokeActive();
   const yEdge = yB && !padState.yHeld, bEdge = bB && !padState.bHeld, aEdge = aB && !padState.aHeld;
-  const homeEdge = homeB && !padState.homeHeld, startEdge = startB && !padState.startHeld, selEdge = selB && !padState.selHeld;
+  const homeEdge = homeB && !padState.homeHeld;
   padState.yHeld = yB; padState.bHeld = bB; padState.aHeld = aB;
-  padState.homeHeld = homeB; padState.startHeld = startB; padState.selHeld = selB;
+  padState.homeHeld = homeB;
+
+  // Account screen: the controller used to be fully dead here, trapping
+  // controller users on the form. D-pad moves through the form, A activates, B backs out.
+  if (accountOpen) {
+    let ndx = 0, ndy = 0;
+    if (axX > 0.5 || pressed(15)) ndx = 1; else if (axX < -0.5 || pressed(14)) ndx = -1;
+    if (axY > 0.5 || pressed(13)) ndy = 1; else if (axY < -0.5 || pressed(12)) ndy = -1;
+    if ((ndx || ndy) && (padState.ndx !== ndx || padState.ndy !== ndy || now >= padState.nnext)) {
+      const first = (padState.ndx !== ndx || padState.ndy !== ndy);
+      moveNav(ndx, ndy);
+      padState.ndx = ndx; padState.ndy = ndy; padState.nnext = now + (first ? 350 : 180);
+    } else if (!ndx && !ndy) { padState.ndx = 0; padState.ndy = 0; padState.nnext = 0; }
+    if (aEdge && navEl && document.contains(navEl)) navEl.click();
+    if (bEdge) closeAccount();
+    requestAnimationFrame(pollPad); return;
+  }
 
   // Remap capture: wait for every button to be released first (swallows the
   // press that armed the row), then the next physical press assigns the row.
@@ -2167,11 +2273,26 @@ function pollPad() {
   // Home button: on the main home menu it asks to leave Olympus; anywhere else it goes home.
   if (homeEdge) {
     if (!screenStack.length && !menuOpen && !profileMenuOpen) tryExit();
-    else { closeAllScreens(); setMenu(false); if (profileMenuOpen) setProfileMenu(false); }
+    else { closeAllScreens(); setMenu(false); backMenuShown = false; if (profileMenuOpen) setProfileMenu(false); }
     requestAnimationFrame(pollPad); return;
   }
-  // Start / Select open the tabs menu.
-  if ((startEdge || selEdge) && !menuOpen) { setMenu(true); requestAnimationFrame(pollPad); return; }
+  // The tab menu opens ONLY from the controller button mapped to the Menu
+  // action (default Y). Start/Select intentionally do nothing here.
+
+  // Modal open: the controller stays inside the dialog (D-pad moves, A selects).
+  // B is handled above via goBack() -> closeModal().
+  if ($('#modalWrap').classList.contains('open')) {
+    let ndx = 0, ndy = 0;
+    if (axX > 0.5 || pressed(15)) ndx = 1; else if (axX < -0.5 || pressed(14)) ndx = -1;
+    if (axY > 0.5 || pressed(13)) ndy = 1; else if (axY < -0.5 || pressed(12)) ndy = -1;
+    if ((ndx || ndy) && (padState.ndx !== ndx || padState.ndy !== ndy || now >= padState.nnext)) {
+      const first = (padState.ndx !== ndx || padState.ndy !== ndy);
+      moveNav(ndx, ndy);
+      padState.ndx = ndx; padState.ndy = ndy; padState.nnext = now + (first ? 350 : 180);
+    } else if (!ndx && !ndy) { padState.ndx = 0; padState.ndy = 0; padState.nnext = 0; }
+    if (aEdge && navEl && document.contains(navEl)) navEl.click();
+    requestAnimationFrame(pollPad); return;
+  }
 
   if (profileMenuOpen) {
     let vdir = 0;
@@ -2220,7 +2341,8 @@ function pollPad() {
       else if (axX < -0.5 || pressed(14)) dir = -1;
       if (dir !== 0) {
         if (padState.dir !== dir || now >= padState.nextMove) {
-          setFocus(focus + dir);
+          if (zone === 'top') setTopFocus(topFocus + dir);
+          else setFocus(focus + dir);
           padState.nextMove = now + (padState.dir === dir ? 170 : 300);
           padState.dir = dir;
         }
@@ -2228,13 +2350,10 @@ function pollPad() {
       const vv = (axY > 0.5 || pressed(13)) ? 1 : (axY < -0.5 || pressed(12)) ? -1 : 0;
       if (vv !== 0 && padState.vv !== vv) {
         if (vv === -1 && zone === 'tiles') setTopFocus(topFocus);
-        else if (vv === -1 && zone === 'menu') setFocus(focus);
         else if (vv === 1 && zone === 'top') setFocus(focus);
-        else if (vv === 1 && zone === 'tiles') setMenuFocus();
       }
       padState.vv = vv;
       if (aEdge && zone === 'top' && topCtrls[topFocus]) topCtrls[topFocus].click();
-      else if (aEdge && zone === 'menu' && menuTabCtl) menuTabCtl.click();
       else if (aEdge && zone === 'tiles') launchGame(focus);
     }
   }
@@ -2756,6 +2875,7 @@ $('#newChatBtn').addEventListener('click', () => {
   const m = $('#modal');
   const wrap = document.createElement('div');
   wrap.style.cssText = 'display:flex;flex-direction:column;gap:8px;margin-bottom:20px;max-height:260px;overflow-y:auto';
+  wrap.classList.add('modalCustom');
   friends.forEach(f => {
     const r = document.createElement('div');
     r.className = 'profileItem';
@@ -2916,6 +3036,7 @@ $('#chatEditBtn').addEventListener('click', () => {
   const m = $('#modal');
   const wrap = document.createElement('div');
   wrap.style.cssText = 'display:flex;flex-direction:column;gap:12px;margin-bottom:20px';
+  wrap.classList.add('modalCustom');
   wrap.innerHTML =
     '<input class="txtInput" id="grpName" maxlength="30" placeholder="Group name" value="' + escapeHtml(c.name || '') + '">' +
     '<input type="hidden" id="grpIcon" value="' + escapeHtml(c.icon || '') + '">' +
@@ -2978,6 +3099,7 @@ $('#editProfBtn').addEventListener('click', () => {
   const m = $('#modal');
   const wrap = document.createElement('div');
   wrap.style.cssText = 'display:flex;flex-direction:column;gap:14px;margin-bottom:20px';
+  wrap.classList.add('modalCustom');
   wrap.innerHTML =
     '<div style="display:flex;align-items:center;gap:14px">' +
       '<div class="pAv" id="editPicPrev" style="width:64px;height:64px;font-size:22px">' +
@@ -3045,7 +3167,11 @@ $('#editProfBtn').addEventListener('click', () => {
 
 /* ---------- Shop ---------- */
 function getWishlist() { try { return JSON.parse(localStorage.getItem('oly_wishlist') || '[]'); } catch (e) { return []; } }
+let storeHeroTimer = null, storeHeroIdx = 0;
 ScreenRender.shop = function () {
+  if (storeHeroTimer) { clearInterval(storeHeroTimer); storeHeroTimer = null; }
+  const heroBox = $('#shopHero');
+  heroBox.innerHTML = '';
   const grid = $('#shopGrid');
   grid.innerHTML = '';
   const soon = [
@@ -3054,14 +3180,60 @@ ScreenRender.shop = function () {
     { id: 's2', icon: 'gamepad', g: 'linear-gradient(135deg,#7a2fe0,#2a0a5e)', t: 'Coming soon', s: 'New worlds are on the way. Check back soon.' }
   ];
   const wl = getWishlist();
-  const mkCard = x => {
+  /* Featured hero carousel */
+  const hero = document.createElement('div');
+  hero.id = 'storeHero';
+  const slides = soon.map((x, i) => {
+    const s = document.createElement('button');
+    s.className = 'heroSlide' + (i === 0 ? ' active' : '');
+    s.innerHTML = '<div class="hart" style="background:' + x.g + '">' + ic(x.icon) + '</div>' +
+      '<div class="hbody"><div class="kick">FEATURED \u00B7 OLYMPUS STORE</div><h2>' + x.t + '</h2><p>' + x.s + '</p>' +
+      '<div class="hfoot"><span class="priceTag">FREE</span><span class="soonPill">COMING SOON</span></div></div>';
+    s.addEventListener('click', () => toast('\u201C' + x.t + '\u201D is coming soon.'));
+    hero.appendChild(s);
+    return s;
+  });
+  const dots = soon.map((x, i) => {
+    const d = document.createElement('button');
+    if (i === 0) d.classList.add('on');
+    d.setAttribute('aria-label', 'Featured ' + (i + 1));
+    d.addEventListener('click', e => { e.stopPropagation(); show(i); restart(); });
+    return d;
+  });
+  const show = i => {
+    storeHeroIdx = (i + slides.length) % slides.length;
+    slides.forEach((s, k) => s.classList.toggle('active', k === storeHeroIdx));
+    dots.forEach((d, k) => d.classList.toggle('on', k === storeHeroIdx));
+  };
+  const restart = () => {
+    if (storeHeroTimer) clearInterval(storeHeroTimer);
+    storeHeroTimer = setInterval(() => show(storeHeroIdx + 1), 7000);
+  };
+  const prev = document.createElement('button');
+  prev.className = 'heroArrow prev'; prev.innerHTML = '&#8249;'; prev.setAttribute('aria-label', 'Previous featured');
+  const nextB = document.createElement('button');
+  nextB.className = 'heroArrow next'; nextB.innerHTML = '&#8250;'; nextB.setAttribute('aria-label', 'Next featured');
+  prev.addEventListener('click', e => { e.stopPropagation(); show(storeHeroIdx - 1); restart(); });
+  nextB.addEventListener('click', e => { e.stopPropagation(); show(storeHeroIdx + 1); restart(); });
+  hero.appendChild(prev); hero.appendChild(nextB);
+  const dotWrap = document.createElement('div');
+  dotWrap.className = 'heroDots';
+  dots.forEach(d => dotWrap.appendChild(d));
+  hero.appendChild(dotWrap);
+  hero.addEventListener('pointerenter', () => { if (storeHeroTimer) clearInterval(storeHeroTimer); storeHeroTimer = null; });
+  hero.addEventListener('pointerleave', restart);
+  heroBox.appendChild(hero);
+  restart();
+  /* Game rows */
+  const mkTile = x => {
     const d = document.createElement('div');
-    d.className = 'card shopCard';
+    d.className = 'storeTile shopCard';
     const inWl = wl.indexOf(x.id) >= 0;
     d.innerHTML = '<button class="wishBtn' + (inWl ? ' on' : '') + '" title="Wishlist">' + ic('heart') + '</button>' +
-      '<div class="art" style="background:' + x.g + '">' + ic(x.icon) + '</div>' +
-      '<div class="info"><div class="t">' + x.t + '</div><div class="s">' + x.s + '</div>' +
-      '<div class="foot"><span class="priceTag">FREE</span></div></div>';
+      '<div class="tart" style="background:' + x.g + '">' + ic(x.icon) + '</div>' +
+      '<div class="tinfo"><div class="t">' + x.t + '</div><div class="s">' + x.s + '</div>' +
+      '<div class="tfoot"><span class="priceTag">FREE</span></div></div>';
+    d.addEventListener('click', () => toast('\u201C' + x.t + '\u201D is coming soon.'));
     d.querySelector('.wishBtn').addEventListener('click', ev => {
       ev.stopPropagation();
       const w = getWishlist();
@@ -3074,15 +3246,22 @@ ScreenRender.shop = function () {
   };
   const sec = t => {
     const h = document.createElement('div');
-    h.className = 'secTitle'; h.style.gridColumn = '1 / -1'; h.textContent = t;
+    h.className = 'secTitle'; h.textContent = t;
     return h;
   };
-  if (wl.length) {
-    grid.appendChild(sec('WISHLIST'));
-    soon.filter(x => wl.indexOf(x.id) >= 0).forEach(x => grid.appendChild(mkCard(x)));
-    grid.appendChild(sec('ALL'));
-  }
-  soon.forEach(x => grid.appendChild(mkCard(x)));
+  const row = items => {
+    const w = document.createElement('div');
+    w.className = 'storeRowWrap';
+    const r = document.createElement('div');
+    r.className = 'storeRow';
+    items.forEach(x => r.appendChild(mkTile(x)));
+    w.appendChild(r);
+    return w;
+  };
+  const wlItems = soon.filter(x => wl.indexOf(x.id) >= 0);
+  if (wlItems.length) { grid.appendChild(sec('WISHLIST')); grid.appendChild(row(wlItems)); }
+  grid.appendChild(sec('COMING SOON'));
+  grid.appendChild(row(soon));
 };
 
 /* ---------- Library ---------- */
@@ -3135,6 +3314,7 @@ $('#switchAcctBtn').addEventListener('click', () => {
   const m = $('#modal');
   const wrap = document.createElement('div');
   wrap.style.cssText = 'display:flex;flex-direction:column;gap:8px;margin-bottom:20px';
+  wrap.classList.add('modalCustom');
   if (!emails.length) wrap.innerHTML = '<div class="emptyNote">No other accounts used on this console yet.</div>';
   emails.forEach(e => {
     const r = document.createElement('div');
@@ -3928,6 +4108,7 @@ setTimeout(async () => {
 initTheme();
 showPadStatus();
 startPadLoop();
+paintMenuTab();
 paintAccountBadge();
 refreshAccount();
 subscribeLobby();
