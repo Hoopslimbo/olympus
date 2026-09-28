@@ -3372,7 +3372,7 @@ ScreenRender.game = function (g) {
   main.className = 'btn primary';
   const dl = dlItems[g.slug];
   if (isOwned(g)) {
-    main.textContent = 'Play';
+    main.textContent = needsUpdate(g) ? 'Update to v' + catalogVersion(g) : 'Play';
     main.addEventListener('click', () => launchStoreGame(g));
   } else if (dl && dl.status !== 'done') {
     main.textContent = 'Downloading' + (dl.total > 0 ? ' ' + Math.round(dl.progress) + '%' : '') + ' — view in Library';
@@ -3442,6 +3442,12 @@ ScreenRender.library = async function () {
     d.style.overflow = 'hidden';
     d.innerHTML = (g.icon_url ? '<img src="' + g.icon_url + '" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">' : '') +
       '<div style="position:absolute;left:8px;right:8px;bottom:10px;z-index:1;color:#fff;text-shadow:0 2px 8px #000;text-align:center;font-size:14px;font-weight:700;letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escapeHtml(g.name) + '</div>';
+    if (needsUpdate(g)) {
+      const u = document.createElement('div');
+      u.textContent = 'UPDATE';
+      u.style.cssText = 'position:absolute;top:8px;right:8px;z-index:2;background:#f59e0b;color:#000;font-size:11px;font-weight:800;padding:3px 8px;border-radius:20px;letter-spacing:.06em';
+      d.appendChild(u);
+    }
     d.addEventListener('click', () => launchStoreGame(g));
     grid.appendChild(d);
   });
@@ -3540,6 +3546,36 @@ function markOwned(slug) {
   const a = getOwnedSlugs();
   if (a.indexOf(slug) < 0) { a.push(slug); saveOwnedSlugs(a); }
 }
+/* ---------- Game updates ---------- */
+function catalogVersion(g) { return g.version || '1.0.0'; }
+function getInstalledVersions() { try { return JSON.parse(localStorage.getItem('oly_installed_versions') || '{}'); } catch (e) { return {}; } }
+function getInstalledVersion(slug) { return getInstalledVersions()[slug] || null; }
+function setInstalledVersion(slug, v) {
+  try { const o = getInstalledVersions(); o[slug] = v; localStorage.setItem('oly_installed_versions', JSON.stringify(o)); } catch (e) {}
+}
+function needsUpdate(game) {
+  if (!game || !game.slug || !isOwned(game)) return false;
+  const inst = getInstalledVersion(game.slug);
+  if (!inst) { setInstalledVersion(game.slug, catalogVersion(game)); return false; } // owned before version tracking: adopt current
+  return inst !== catalogVersion(game);
+}
+function openUpdateModal(game) {
+  const oldV = getInstalledVersion(game.slug) || '1.0.0';
+  modal('Update available', game.name + ' has an update (v' + oldV + ' \u2192 v' + catalogVersion(game) + '). Update now to keep playing.', [
+    { label: 'Later' },
+    { label: 'Update', primary: true, onClick: () => updateGame(game) }
+  ]);
+}
+function updateGame(game) {
+  delete dlItems[game.slug];
+  const item = { game: game, status: navigator.onLine === false ? 'paused' : 'downloading',
+    progress: 0, received: 0, total: 0, ctrl: null, chunks: [],
+    onDone: () => launchStoreGame(game) };
+  dlItems[game.slug] = item;
+  toast('Updating ' + game.name + ' \u2014 see Library.');
+  if (item.status === 'downloading') pumpDownload(item);
+  if ($('#screen-library').classList.contains('open')) ScreenRender.library();
+}
 
 const dlItems = {}; // slug -> { game, status, progress, received, total, ctrl, chunks }
 let dlModalSlug = null;
@@ -3581,7 +3617,9 @@ async function pumpDownload(item) {
     }
     item.progress = 100; item.status = 'done';
     markOwned(g.slug);
+    setInstalledVersion(g.slug, catalogVersion(g));
     toast(g.name + ' installed.');
+    if (item.onDone) { const cb = item.onDone; item.onDone = null; cb(); }
   } catch (e) {
     if (e && e.name === 'AbortError') { item.status = 'paused'; }
     else { item.status = 'error'; toast('Download failed: ' + g.name); }
@@ -3660,6 +3698,7 @@ $('#dlmOk').addEventListener('click', closeDlModal);
 $('#dlModalWrap').addEventListener('click', e => { if (e.target.id === 'dlModalWrap') closeDlModal(); });
 
 function launchStoreGame(game) {
+  if (needsUpdate(game)) { openUpdateModal(game); return; }
   const url = game.file_url;
   if (!url) { toast('No playable file for this game yet.'); return; }
   if (/\.html?($|\?)/i.test(url)) {
