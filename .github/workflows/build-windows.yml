@@ -1,0 +1,23 @@
+name: Build Windows app
+
+on:
+  push:
+    tags: ['v*']
+
+jobs:
+  build:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: pc-app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - run: npx electron-builder --win --publish never
+      - name: Attach installer to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: pc-app/dist/*.exe
