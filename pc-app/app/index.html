@@ -36,40 +36,6 @@
     background: radial-gradient(ellipse at center, transparent 45%, rgba(0,0,0,.6) 100%);
   }
 
-  /* ---------- Boot ---------- */
-  #boot {
-    position: fixed; inset: 0; z-index: 200; background: #000;
-    display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 18px;
-    transition: opacity .8s ease;
-  }
-  #boot.done { opacity: 0; pointer-events: none; }
-  #bootLogo {
-    font-size: clamp(48px, 9vw, 110px); font-weight: 800;
-    letter-spacing: .35em; text-indent: .35em;
-    background: linear-gradient(180deg, #9fc5ff 0%, var(--accent) 55%, #0a1f66 100%);
-    -webkit-background-clip: text; background-clip: text; color: transparent;
-    filter: drop-shadow(0 0 28px var(--accent-glow));
-    opacity: 0; transform: scale(.92);
-    animation: logoIn 1.6s cubic-bezier(.2,.8,.2,1) .2s forwards;
-  }
-  #bootSub {
-    font-size: clamp(11px, 1.6vw, 15px); letter-spacing: .5em; text-indent: .5em;
-    color: #4d6db3; opacity: 0; animation: fadeUp 1.2s ease 1s forwards;
-  }
-  #bootBar {
-    width: 180px; height: 3px; border-radius: 2px;
-    background: rgba(80,120,220,.18); overflow: hidden;
-    opacity: 0; animation: fadeUp 1s ease 1.3s forwards;
-  }
-  #bootBar i {
-    display: block; height: 100%; width: 40%;
-    background: linear-gradient(90deg, var(--accent), #9fc5ff); border-radius: 2px;
-    animation: loadSlide 1.1s ease-in-out infinite;
-  }
-  @keyframes loadSlide { 0% { transform: translateX(-110%); } 100% { transform: translateX(480%); } }
-  @keyframes logoIn { to { opacity: 1; transform: scale(1); } }
-  @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
   /* ---------- Home ---------- */
   #home {
     position: fixed; inset: 0; z-index: 10;
@@ -159,11 +125,14 @@
     flex: 0 0 auto;
     width: clamp(150px, 15vw, 210px); aspect-ratio: 1 / 1;
     border-radius: 16px;
-    background: transparent;
+    background: linear-gradient(160deg, #0c1328, #060a18);
     border: 1px solid rgba(100, 140, 255, .22);
     transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease;
     cursor: pointer;
+    position: relative;
+    overflow: hidden;
   }
+  .tile .tileLabel{position:absolute;left:0;right:0;bottom:0;padding:30px 12px 10px;font-size:13px;font-weight:600;letter-spacing:.02em;background:linear-gradient(transparent,rgba(0,0,0,.8));white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none;text-align:left}
   .tile.focused {
     transform: scale(1.07);
     border: 2px solid #7fb0ff;
@@ -258,8 +227,7 @@
   /* ---------- Screens ---------- */
   .screen {
     position: fixed; inset: 0; z-index: 60;
-    background: rgba(3, 5, 12, .88);
-    backdrop-filter: blur(24px);
+    background: #05070d;
     display: none; flex-direction: column;
     padding: clamp(24px, 4vw, 56px) clamp(28px, 6vw, 90px);
     animation: screenIn .35s cubic-bezier(.2,.8,.2,1);
@@ -441,6 +409,7 @@
   #partyBar .mem { display: flex; }
   #partyBar .mem .pAv { width: 38px; height: 38px; font-size: 14px; margin-left: -10px; border: 2px solid #0a0f24; }
   #partyBar .mem .pAv:first-child { margin-left: 0; }
+  .pAv.speaking { box-shadow: 0 0 0 3px #22c55e, 0 0 18px rgba(34,197,94,.75); }
   #shareGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; margin-top: 14px; }
   #shareGrid video { width: 100%; border-radius: 14px; border: 1px solid var(--line); background: #000; }
 
@@ -457,7 +426,7 @@
   }
   #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   #modalWrap {
-    position: fixed; inset: 0; z-index: 250; display: none;
+    position: fixed; inset: 0; z-index: 9600; display: none;
     align-items: center; justify-content: center;
     background: rgba(0,0,0,.6); backdrop-filter: blur(6px);
   }
@@ -566,8 +535,52 @@
   }
   .profileItem .check { margin-left: auto; color: #7fb0ff; font-size: 16px; }
 
-  #skipTip { position: fixed; bottom: 14px; right: 20px; z-index: 210; font-size: 11px; letter-spacing: .2em; color: #3d5488; }
   @media (max-width: 760px) { .bubble { max-width: 88%; } }
+.tile{position:relative}
+.tile .achBadge{position:absolute;left:8px;top:8px;font-size:11px;background:rgba(0,0,0,.55);padding:2px 8px;border-radius:20px;pointer-events:none}
+.shopCard{position:relative}
+.wishBtn{position:absolute;top:8px;right:10px;background:none;border:none;font-size:20px;color:var(--dim);cursor:pointer;z-index:2;padding:4px}
+.wishBtn.on{color:#ff5d7a}
+.bubble{position:relative}
+.bubble .msgDel{position:absolute;top:2px;right:8px;background:none;border:none;color:var(--dim);font-size:12px;cursor:pointer;opacity:0;padding:4px}
+.bubble:hover .msgDel{opacity:.9}
+.bubble.deleted{opacity:.55;font-style:italic}
+.libTile{flex-direction:column;gap:6px}
+.libTile .t{font-size:15px;color:var(--dim);letter-spacing:.08em}
+.libTile .s{font-size:12px;opacity:.75}
+#sleepOverlay{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;flex-direction:column;gap:18px;background:rgba(4,8,20,.96)}
+#sleepOverlay.on{display:flex}
+  /* Achievement banner */
+  #achBanner{position:fixed;top:76px;left:50%;transform:translate(-50%,-30px);z-index:9000;display:flex;align-items:center;gap:14px;min-width:320px;max-width:440px;padding:14px 20px 14px 16px;border-radius:16px;background:rgba(10,16,34,.94);border:1px solid rgba(255,209,102,.5);box-shadow:0 8px 40px rgba(0,0,0,.6),0 0 24px rgba(255,209,102,.15);opacity:0;pointer-events:none;transition:opacity .35s,transform .35s}
+  #achBanner.show{opacity:1;transform:translate(-50%,0)}
+  #achBanner .achIcon{font-size:34px}
+  #achBanner .achKicker{font-size:10px;letter-spacing:.3em;color:#ffd166;font-weight:700}
+  #achBanner .achTitle{font-size:16px;font-weight:700;margin-top:2px}
+  #achBanner .achDesc{font-size:13px;color:var(--dim);margin-top:2px}
+  /* Party invite card */
+  #inviteCard{position:fixed;right:24px;bottom:24px;z-index:9000;width:320px;padding:18px;border-radius:16px;background:rgba(10,16,34,.96);border:1px solid var(--acc);box-shadow:0 8px 40px rgba(0,0,0,.6)}
+  #inviteCard.hidden{display:none}
+  #inviteCard .invTitle{font-size:15px;font-weight:700;margin-bottom:6px}
+  #inviteCard .invText{font-size:13px;color:var(--dim);margin-bottom:14px}
+  #inviteCard .invBtns{display:flex;gap:10px;justify-content:flex-end}
+  /* Gallery */
+  #galGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+  .galItem{position:relative;aspect-ratio:16/9;border-radius:12px;overflow:hidden;border:1px solid rgba(100,140,255,.2);cursor:pointer;background:#0a0f22}
+  .galItem img,.galItem video{width:100%;height:100%;object-fit:cover;display:block}
+  .galItem .clipTag{position:absolute;top:8px;right:8px;font-size:11px;background:rgba(0,0,0,.6);padding:2px 8px;border-radius:12px}
+  .galItem:hover{border-color:var(--acc)}
+  #viewer{position:fixed;inset:0;z-index:9500;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.9);padding:4vh 4vw}
+  #viewer.open{display:flex}
+  #viewerBox{max-width:1100px;width:100%;display:flex;flex-direction:column;gap:12px}
+  #viewerMedia img,#viewerMedia video{width:100%;max-height:76vh;object-fit:contain;border-radius:12px;background:#000}
+  #viewerBar{display:flex;align-items:center;gap:12px}
+  #viewerName{color:var(--dim);font-size:13px}
+  /* Notification log */
+  .notifItem{padding:10px 4px;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px}
+  .notifItem .nt{color:var(--faint);font-size:11px;margin-top:2px}
+#sleepOverlay .moon{font-size:72px;animation:floaty 4s ease-in-out infinite}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+#sleepOverlay .sleepTxt{font-size:20px;color:var(--dim)}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -577,11 +590,6 @@
 <div id="heroBG"></div>
 <div id="vignette"></div>
 
-<div id="boot">
-  <div id="bootLogo">OLYMPUS</div>
-  <div id="bootSub">PRESS START</div>
-  <div id="bootBar"><i></i></div>
-</div>
 
 <div id="home">
   <div id="topbar">
@@ -620,6 +628,7 @@
   <h2>OLYMPUS</h2>
   <div class="menuBtn" data-go="library" style="--d:.05s"><span class="mi">🎮</span>Game Library</div>
   <div class="menuBtn" data-go="shop" style="--d:.1s"><span class="mi">🛒</span>Shop</div>
+  <div class="menuBtn" data-go="gallery" style="--d:.17s"><span class="mi">🖼️</span>Gallery</div>
   <div class="menuBtn" data-go="controllers" style="--d:.15s"><span class="mi"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="11" rx="5.5"/><path d="M7 10.5v3M5.5 12h3"/><circle cx="15.5" cy="11" r="1.1" fill="currentColor" stroke="none"/><circle cx="18" cy="13.5" r="1.1" fill="currentColor" stroke="none"/></svg></span>Controllers</div>
   <div class="menuBtn" data-go="search" style="--d:.2s"><span class="mi">🔍</span>Search</div>
   <div class="menuBtn" data-go="friends" style="--d:.25s"><span class="mi">👥</span>Friends<span class="count hidden" id="friendReqCount"></span></div>
@@ -666,7 +675,7 @@
 </section>
 
 <section class="screen" id="screen-chat">
-  <div class="screenHead"><div class="backBtn" data-back>‹</div><div><h1 id="chatTitle">Chat</h1><div class="sub" id="chatSub"></div></div></div>
+  <div class="screenHead"><div class="backBtn" data-back>‹</div><div><h1 id="chatTitle">Chat</h1><div class="sub" id="chatSub"></div></div><div class="spacer"></div><button class="btn" id="chatEditBtn" style="display:none">✏️ Name</button></div>
   <div class="screenBody" id="chatView">
     <div id="chatScroll"></div>
     <div id="composer"><input class="txtInput" id="chatInput" type="text" placeholder="Message..." maxlength="2000"><button class="btn primary" id="chatSend">Send</button></div>
@@ -681,6 +690,7 @@
       <div style="flex:1">
         <div id="profTag">—</div>
         <div id="profName">—</div>
+        <div id="profBio" style="font-size:14px;color:var(--dim);margin-top:6px;max-width:560px"></div>
       </div>
       <button class="btn" id="editProfBtn">Customize</button>
     </div>
@@ -688,6 +698,8 @@
     <div class="statGrid" id="statGrid"></div>
     <div class="secTitle">ACHIEVEMENTS</div>
     <div id="achGrid"></div>
+    <div class="secTitle">RECENTLY PLAYED</div>
+    <div id="recentGrid"></div>
   </div>
 </section>
 
@@ -696,12 +708,15 @@
   <div class="screenBody">
     <div id="playerHead" style="display:flex;align-items:center;gap:22px;margin-bottom:26px">
       <div class="pAv" id="playerPic" style="width:110px;height:110px;font-size:38px">?</div>
-      <div><div id="playerTagBig" style="font-size:30px;font-weight:800">—</div><div id="playerSub" style="font-size:14px;color:var(--dim);margin-top:4px"></div></div>
+      <div><div id="playerTagBig" style="font-size:30px;font-weight:800">—</div><div id="playerSub" style="font-size:14px;color:var(--dim);margin-top:4px"></div><div id="playerBio" style="font-size:14px;color:var(--dim);margin-top:6px;max-width:520px"></div></div>
     </div>
+    <div id="playerPartyBox"></div>
     <div class="secTitle">GAME STATS</div>
     <div class="statGrid" id="playerStats"></div>
     <div class="secTitle">ACHIEVEMENTS</div>
     <div id="playerAch" class="emptyNote">No achievements yet.</div>
+    <div class="secTitle">RECENTLY PLAYED</div>
+    <div id="playerRecent" class="emptyNote">—</div>
   </div>
 </section>
 
@@ -713,6 +728,11 @@
   </div>
 </section>
 
+<section class="screen" id="screen-gallery">
+  <div class="screenHead"><div class="backBtn" data-back>‹</div><div><h1>Gallery</h1><div class="sub">SCREENSHOTS & CLIPS</div></div><div class="spacer"></div><div class="s" style="color:var(--dim);font-size:12px">LB + RB: screenshot · hold LB + RB: save last minute</div></div>
+  <div class="screenBody"><div id="galGrid"></div></div>
+</section>
+<div id="viewer"><div id="viewerBox"><div id="viewerMedia"></div><div id="viewerBar"><span id="viewerName"></span><span class="spacer"></span><button class="btn danger" id="viewerDel">Delete</button><button class="btn primary" id="viewerClose">Close</button></div></div></div>
 <section class="screen" id="screen-settings">
   <div class="screenHead"><div class="backBtn" data-back>‹</div><div><h1>Settings</h1><div class="sub">MAKE IT YOURS</div></div></div>
   <div class="screenBody">
@@ -735,21 +755,39 @@
       <div class="spacer"></div>
       <div class="toggle on" id="rumbleToggle"></div>
     </div>
+    <div class="secTitle">PRIVACY</div>
+    <div class="card setRow">
+      <div><div class="t">Appear offline</div><div class="s">Friends won't see you online</div></div>
+      <div class="spacer"></div>
+      <div class="toggle" id="invisToggle"></div>
+    </div>
+    <div class="secTitle">NOTIFICATIONS</div>
+    <div class="card">
+      <div class="setRow" style="margin-bottom:8px">
+        <div><div class="t">Notification history</div><div class="s">Every popup the console has shown you</div></div>
+        <div class="spacer"></div>
+        <button class="btn" id="clearNotifBtn">Clear</button>
+      </div>
+      <div id="notifLog"><div class="emptyNote">Nothing yet.</div></div>
+    </div>
     <div class="secTitle">ACCOUNT</div>
     <div class="card setRow">
       <div><div class="t" id="setAcctName">Signed out</div><div class="s" id="setAcctSub">Manage your Olympus account</div></div>
       <div class="spacer"></div>
+      <button class="btn" id="switchAcctBtn">Switch account</button>
       <button class="btn danger" id="signOutBtn">Sign out</button>
     </div>
     <div class="secTitle">ABOUT</div>
     <div class="card setRow">
-      <div><div class="t">Olympus</div><div class="s">Version 0.2.0 · PC app</div></div>
+      <div><div class="t">Olympus</div><div class="s" id="verSub">Version 0.2.0 · PC app</div></div>
+      <div class="spacer"></div>
+      <button class="btn" id="updateBtn">Check for updates</button>
     </div>
   </div>
 </section>
 
 <section class="screen" id="screen-party">
-  <div class="screenHead"><div class="backBtn" data-back>‹</div><div><h1>Party</h1><div class="sub" id="partySub">VOICE CHAT</div></div><div class="spacer"></div><div class="btnRow"><button class="btn" id="shareBtn">🖥 Share screen</button><button class="btn danger" id="leavePartyBtn">Leave</button></div></div>
+  <div class="screenHead"><div class="backBtn" data-back>‹</div><div><h1>Party</h1><div class="sub" id="partySub">VOICE CHAT</div></div><div class="spacer"></div><div class="btnRow"><button class="btn" id="muteBtn">🎙 Mute</button><button class="btn" id="deafenBtn">🔇 Deafen</button><button class="btn" id="pttBtn">🎙 PTT: Off</button><button class="btn" id="shareBtn">🖥 Share screen</button><button class="btn danger" id="leavePartyBtn">Leave</button></div></div>
   <div class="screenBody">
     <div class="card" style="margin-bottom:16px;display:flex;align-items:center;gap:16px">
       <div><div class="t" style="font-size:16px;font-weight:600">Party privacy</div><div class="s" style="font-size:13px;color:var(--dim);margin-top:3px">Invite-only or open for friends to join</div></div>
@@ -813,9 +851,15 @@
 </div>
 
 <div id="toast"></div>
+  <div id="achBanner"><div class="achIcon">🏆</div><div class="achBody"><div class="achKicker">ACHIEVEMENT UNLOCKED</div><div class="achTitle" id="achTitle"></div><div class="achDesc" id="achDesc"></div></div></div>
+  <div id="inviteCard" class="hidden">
+    <div class="invTitle">🎙 Party invite</div>
+    <div class="invText" id="inviteText"></div>
+    <div class="invBtns"><button class="btn" id="inviteDecline">Decline</button><button class="btn primary" id="inviteJoin">Join</button></div>
+  </div>
 <div id="modalWrap"><div id="modal"><h3 id="modalTitle"></h3><p id="modalText"></p><div class="btnRow" id="modalBtns"></div></div></div>
-<div id="skipTip">CLICK TO SKIP BOOT</div>
 
+<div id="sleepOverlay"><div class="moon">🌙</div><div class="sleepTxt">Sleeping…</div><button class="btn primary" id="wakeBtn">I'm back</button></div>
 <script>
 
 /* ================= Olympus console ================= */
@@ -832,14 +876,49 @@ function initials(tag) {
 function picHtml(pic, tag, cls) {
   return '<div class="' + (cls || 'pAv') + '">' + (pic ? '<img src="' + pic + '" alt="">' : escapeHtml(initials(tag))) + '</div>';
 }
+const OLY_VERSION = '0.2.0';
 let toastTimer = null;
+const toastLog = [];
 function toast(msg) {
   const t = $('#toast');
   t.textContent = msg;
   t.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.classList.remove('show'), 2600);
+  try {
+    toastLog.unshift({ msg: msg, at: Date.now() });
+    if (toastLog.length > 30) toastLog.length = 30;
+  } catch (e) {}
 }
+/* ---------- Achievements ---------- */
+let achTimer = null;
+function playAch() {
+  if (localStorage.getItem('oly_snd') === 'off') return;
+  try {
+    const C = new (window.AudioContext || window.webkitAudioContext)();
+    [523, 784].forEach((f, i) => {
+      const o = C.createOscillator(), g = C.createGain();
+      o.type = 'sine'; o.frequency.value = f;
+      const t0 = C.currentTime + i * 0.14;
+      g.gain.setValueAtTime(0.0001, t0);
+      g.gain.exponentialRampToValueAtTime(0.2, t0 + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.4);
+      o.connect(g); g.connect(C.destination);
+      o.start(t0); o.stop(t0 + 0.45);
+    });
+  } catch (e) {}
+}
+function unlockAchievement(title, desc) {
+  $('#achTitle').textContent = title || 'Achievement';
+  $('#achDesc').textContent = desc || '';
+  const b = $('#achBanner');
+  b.classList.add('show');
+  playAch();
+  clearTimeout(achTimer);
+  achTimer = setTimeout(() => b.classList.remove('show'), 4200);
+}
+window.Olympus = window.Olympus || {};
+window.Olympus.unlockAchievement = unlockAchievement;
 function modal(title, text, buttons) {
   // buttons: [{label, primary, onClick}]
   $('#modalTitle').textContent = title;
@@ -965,14 +1044,14 @@ async function refreshAccount() {
     else {
       const { data: prof } = await supa.from('profiles').select('*').eq('id', session.user.id).maybeSingle();
       account = prof
-        ? { id: session.user.id, email: session.user.email, firstName: prof.first_name, lastName: prof.last_name, gamertag: prof.gamertag, pic: prof.pic || null }
+        ? { id: session.user.id, email: session.user.email, firstName: prof.first_name, lastName: prof.last_name, gamertag: prof.gamertag, pic: prof.pic || null, bio: prof.bio || '' }
         : null;
     }
   } catch (e) { account = null; }
   paintAccountBadge();
   buildProfileItems();
   paintSettingsAccount();
-  if (account) { subscribeUserChannel(); loadFriendData(); loadChats(); }
+  if (account) { subscribeUserChannel(); joinOnline(); loadFriendData(); loadChats(); loadBlocks(); }
 }
 Object.defineProperty(window.Olympus, 'account', {
   get() {
@@ -1043,13 +1122,24 @@ acctFile.addEventListener('change', () => {
   };
   img.src = URL.createObjectURL(f);
 });
-function openAccount(notice) {
+function getKnownEmails() { try { return JSON.parse(localStorage.getItem('oly_known_emails') || '[]'); } catch (e) { return []; } }
+function rememberEmail(email) {
+  email = (email || '').trim().toLowerCase();
+  if (!email) return;
+  try {
+    const list = getKnownEmails().filter(e => e !== email);
+    list.unshift(email);
+    localStorage.setItem('oly_known_emails', JSON.stringify(list.slice(0, 5)));
+  } catch (e) {}
+}
+function openAccount(notice, presetEmail) {
   accountOpen = true;
   document.body.classList.add('in-account');
   $('#acctNotice').textContent = notice || '';
   $('#createError').textContent = '';
   $('#signinError').textContent = '';
-  setTab('create');
+  setTab(presetEmail ? 'signin' : 'create');
+  if (presetEmail) { try { $('#signinEmail').value = presetEmail; } catch (e) {} }
   if (profileMenuOpen) setProfileMenu(false);
   if (menuOpen) setMenu(false);
   closeAllScreens();
@@ -1096,6 +1186,7 @@ $('#acctCreateBtn').addEventListener('click', async () => {
         if (pErr.code === '23505') err.textContent = 'That gamertag is taken — try another.';
         else err.textContent = pErr.message;
       } else {
+        rememberEmail(email);
         await refreshAccount();
         closeAccount();
       }
@@ -1117,6 +1208,7 @@ $('#acctSigninBtn').addEventListener('click', async () => {
   try {
     const { error } = await supa.auth.signInWithPassword({ email: email, password: pw });
     if (error) throw error;
+    rememberEmail(email);
     await refreshAccount();
     if (!currentAccount()) throw new Error('Signed in, but no Olympus profile was found for this login.');
     closeAccount();
@@ -1180,10 +1272,12 @@ async function signOut() {
   try { await supa.auth.signOut(); } catch (e) {}
   account = null;
   leaveParty();
+  leaveOnline();
   if (userChannel) { try { await supa.removeChannel(userChannel); } catch (e) {} userChannel = null; }
   paintAccountBadge(); buildProfileItems(); paintSettingsAccount();
   friendCache = { reqs: [], friends: [] };
   chatCache = [];
+  blockCache = [];
   paintFriendBadge(); paintMsgBadge();
 }
 function setProfileMenu(open) {
@@ -1229,6 +1323,7 @@ function closeAllScreens() {
   document.body.classList.remove('screen-open');
 }
 function goBack() {
+  if ($('#viewer') && $('#viewer').classList.contains('open')) { closeViewer(); return; }
   if (accountOpen) { closeAccount(); return; }
   if ($('#modalWrap').classList.contains('open')) { closeModal(); return; }
   if (profileMenuOpen) { setProfileMenu(false); return; }
@@ -1262,13 +1357,74 @@ function artBG(h1, h2) {
 }
 const row = $('#tileRow');
 const tiles = [];
-games.forEach((g, i) => {
-  const d = document.createElement('div');
-  d.className = 'tile';
-  d.dataset.i = i;
-  if (g.icon) { d.title = g.name; d.style.background = artBG(g.icon[0], g.icon[1]); }
-  row.appendChild(d); tiles.push(d);
-});
+let rowOrder = games.map((_, i) => i).filter(i => games[i].name);
+function getLastPlayed() { try { return JSON.parse(localStorage.getItem('oly_lastplayed') || '{}'); } catch (e) { return {}; } }
+function getHours() { try { return JSON.parse(localStorage.getItem('oly_hours') || '{}'); } catch (e) { return {}; } }
+function fmtPlaytime(sec) {
+  sec = Math.round(sec || 0);
+  const h = Math.floor(sec / 3600), m = Math.round((sec % 3600) / 60);
+  return h > 0 ? h + 'h ' + m + 'm' : m + 'm';
+}
+function recentGameNames() {
+  const lp = getLastPlayed();
+  return Object.keys(lp).sort((a, b) => ((lp[b] || 0) - (lp[a] || 0))).slice(0, 5);
+}
+function buildTiles() {
+  row.innerHTML = '';
+  tiles.length = 0;
+  rowOrder.forEach((gi, pos) => {
+    const g = games[gi];
+    const d = document.createElement('div');
+    d.className = 'tile';
+    d.dataset.i = pos;
+    if (g.icon) { d.title = g.name; d.style.background = artBG(g.icon[0], g.icon[1]); }
+    if (g.ach && g.ach.total > 0) {
+      const pct = Math.round(100 * (g.ach.done || 0) / g.ach.total);
+      const badge = document.createElement('div');
+      badge.className = 'achBadge';
+      badge.textContent = '🏆 ' + pct + '%';
+      d.appendChild(badge);
+    }
+    const label = document.createElement('div');
+    label.className = 'tileLabel';
+    label.textContent = g.name;
+    d.appendChild(label);
+    d.addEventListener('click', () => { setFocus(pos); launchGame(gi); });
+    d.addEventListener('mouseenter', () => setFocus(pos, false));
+    row.appendChild(d); tiles.push(d);
+  });
+  if (!tiles.length) {
+    row.innerHTML = '<div class="emptyNote" style="padding:40px 20px">No games installed yet.<br>Games you get will appear here.</div>';
+  }
+}
+function sortRowRecent() {
+  const lp = getLastPlayed();
+  const cur = rowOrder[focus];
+  rowOrder = games.map((_, i) => i).filter(i => games[i].name).sort((a, b) => ((lp[games[b].name] || 0) - (lp[games[a].name] || 0)));
+  buildTiles();
+  focus = Math.max(0, rowOrder.indexOf(cur));
+  paintFocus();
+}
+buildTiles();
+let playingGame = null;
+function flushPlaySession() {
+  if (!playingGame) return;
+  const secs = Math.floor((Date.now() - playingGame.start) / 1000);
+  if (secs > 0) {
+    try {
+      const h = getHours();
+      h[playingGame.name] = (h[playingGame.name] || 0) + secs;
+      localStorage.setItem('oly_hours', JSON.stringify(h));
+    } catch (e) {}
+  }
+  playingGame = null;
+  updateOnlinePresence();
+}
+async function syncRecentGames() {
+  const me = currentAccount();
+  if (!me || !online()) return;
+  try { await supa.from('profiles').update({ recent_games: recentGameNames() }).eq('id', me.id); } catch (e) {}
+}
 let focus = 0, zone = 'tiles', topFocus = 0;
 const topCtrls = [avatarBtn, $('#padBtn'), $('#searchBtn'), $('#msgBtn'), $('#settingsBtn')];
 const menuTabCtl = $('#menuTab');
@@ -1276,7 +1432,7 @@ function paintFocus() {
   tiles.forEach((t, k) => t.classList.toggle('focused', zone === 'tiles' && k === focus));
   topCtrls.forEach((c, k) => c && c.classList.toggle('focused', zone === 'top' && k === topFocus));
   if (menuTabCtl) menuTabCtl.classList.toggle('focused', zone === 'menu');
-  if (zone === 'tiles') paintHero(focus);
+  if (zone === 'tiles') paintHero(rowOrder[focus]);
 }
 function setFocus(i, scroll) {
   focus = Math.max(0, Math.min(tiles.length - 1, i));
@@ -1295,25 +1451,33 @@ if (menuTabCtl) menuTabCtl.addEventListener('mouseenter', setMenuFocus);
 const heroBG = $('#heroBG'), gameMeta = $('#gameMeta'), gameTitle = $('#gameTitle'), gameDesc = $('#gameDesc');
 function paintHero(i) {
   const g = games[i];
+  if (!g) { heroBG.classList.remove('on'); gameMeta.classList.remove('show'); return; }
   if (g.hero) {
     heroBG.style.setProperty('--h1', g.hero[0]);
     heroBG.style.setProperty('--h2', g.hero[1]);
     heroBG.classList.add('on');
     gameTitle.textContent = g.name;
-    gameDesc.textContent = g.desc;
+    const hrs = getHours()[g.name] || 0;
+    gameDesc.textContent = g.desc + (hrs > 0 ? ' · ' + fmtPlaytime(hrs) + ' played' : '');
     gameMeta.classList.add('show');
   } else {
     heroBG.classList.remove('on');
     gameMeta.classList.remove('show');
   }
 }
-tiles.forEach((t, i) => {
-  t.addEventListener('click', () => { setFocus(i); launchGame(i); });
-  t.addEventListener('mouseenter', () => setFocus(i, false));
-});
 function launchGame(i) {
   const g = games[i];
   if (!g.name) { toast('No game installed in this slot yet.'); return; }
+  flushPlaySession();
+  playingGame = { name: g.name, start: Date.now() };
+  try {
+    const lp = getLastPlayed();
+    lp[g.name] = Date.now();
+    localStorage.setItem('oly_lastplayed', JSON.stringify(lp));
+  } catch (e) {}
+  syncRecentGames();
+  sortRowRecent();
+  updateOnlinePresence();
   toast('Launching ' + g.name + '…');
 }
 
@@ -1376,6 +1540,7 @@ function tryExit() {
   modal('Exit Olympus?', 'Are you sure you want to close Olympus?', [
     { label: 'Stay', onClick: null },
     { label: 'Exit', primary: true, onClick: () => {
+      flushPlaySession();
       if (window.OlympusPC && window.OlympusPC.quit) window.OlympusPC.quit();
       else toast('This is the browser version — just close the tab to exit.');
     } }
@@ -1518,6 +1683,114 @@ addEventListener('keydown', e => {
   }
 });
 const padState = { dir: 0, nextMove: 0 };
+async function takeScreenshot() {
+  try {
+    if (window.OlympusPC && window.OlympusPC.screenshot) {
+      await window.OlympusPC.screenshot();
+      toast('Screenshot saved to Pictures \u25b8 Olympus.');
+      if ($('#screen-gallery').classList.contains('open')) ScreenRender.gallery();
+    } else {
+      toast('Screenshots need the Olympus PC app.');
+    }
+  } catch (e) { toast('Couldn\'t take a screenshot.'); }
+}
+/* ---------- Game DVR: rolling 60s buffer ---------- */
+let dvrChunks = [], dvrRec = null, dvrStream = null, dvrStarting = false;
+async function startDVR() {
+  if (dvrRec || dvrStarting) return;
+  if (!window.OlympusPC || !window.OlympusPC.screenSource) return;
+  dvrStarting = true;
+  try {
+    const sourceId = await window.OlympusPC.screenSource();
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio: false,
+      video: { mandatory: { chromeMediaSource: 'desktop', chromeMediaSourceId: sourceId, maxWidth: 1280, maxHeight: 720, maxFrameRate: 30 } }
+    });
+    const mime = (window.MediaRecorder && MediaRecorder.isTypeSupported('video/webm;codecs=vp9')) ? 'video/webm;codecs=vp9' : 'video/webm';
+    const rec = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 2500000 });
+    rec.ondataavailable = e => {
+      if (e.data && e.data.size) {
+        dvrChunks.push(e.data);
+        while (dvrChunks.length > 60) dvrChunks.shift();
+      }
+    };
+    rec.onerror = () => stopDVR();
+    rec.start(1000);
+    dvrRec = rec; dvrStream = stream;
+  } catch (e) { /* DVR stays off; screenshots still work */ }
+  dvrStarting = false;
+}
+function stopDVR() {
+  try { if (dvrRec && dvrRec.state !== 'inactive') dvrRec.stop(); } catch (e) {}
+  try { if (dvrStream) dvrStream.getTracks().forEach(t => t.stop()); } catch (e) {}
+  dvrRec = null; dvrStream = null; dvrChunks = [];
+}
+async function saveDvrClip() {
+  if (!dvrChunks.length) { toast('No footage yet — give it a moment.'); return; }
+  if (!window.OlympusPC || !window.OlympusPC.saveClip) { toast('Clips need the Olympus PC app.'); return; }
+  try {
+    const blob = new Blob(dvrChunks.slice(), { type: 'video/webm' });
+    await window.OlympusPC.saveClip(await blob.arrayBuffer());
+    toast('Clip saved to the gallery.');
+    if ($('#screen-gallery').classList.contains('open')) ScreenRender.gallery();
+  } catch (e) { toast('Couldn\'t save that clip.'); }
+}
+setTimeout(startDVR, 5000);
+
+/* ---------- Gallery ---------- */
+ScreenRender.gallery = async function () {
+  const grid = $('#galGrid');
+  grid.innerHTML = '';
+  if (!window.OlympusPC || !window.OlympusPC.listCaptures) {
+    grid.innerHTML = '<div class="emptyNote">Screenshots and clips live in the Olympus PC app.</div>';
+    return;
+  }
+  let items = [];
+  try { items = await window.OlympusPC.listCaptures(); } catch (e) {}
+  if (!items.length) {
+    grid.innerHTML = '<div class="emptyNote">Nothing captured yet.<br>Tap LB + RB for a screenshot · hold them to save the last minute as a clip.</div>';
+    return;
+  }
+  items.forEach(it => {
+    const d = document.createElement('div');
+    d.className = 'galItem';
+    const url = String(it.url).replace(/"/g, '&quot;');
+    d.innerHTML = it.kind === 'video'
+      ? '<video src="' + url + '" preload="metadata" muted playsinline></video><span class="clipTag">▶ CLIP</span>'
+      : '<img src="' + url + '" loading="lazy" alt="">';
+    d.addEventListener('click', () => openViewer(it));
+    grid.appendChild(d);
+  });
+};
+let viewerItem = null;
+function openViewer(it) {
+  viewerItem = it;
+  $('#viewerName').textContent = it.name;
+  const url = String(it.url).replace(/"/g, '&quot;');
+  $('#viewerMedia').innerHTML = it.kind === 'video'
+    ? '<video src="' + url + '" controls autoplay></video>'
+    : '<img src="' + url + '" alt="">';
+  $('#viewer').classList.add('open');
+}
+function closeViewer() {
+  $('#viewer').classList.remove('open');
+  $('#viewerMedia').innerHTML = '';
+  viewerItem = null;
+}
+$('#viewerClose').addEventListener('click', closeViewer);
+$('#viewer').addEventListener('click', e => { if (e.target.id === 'viewer') closeViewer(); });
+$('#viewerDel').addEventListener('click', () => {
+  if (!viewerItem) return;
+  const it = viewerItem;
+  modal('Delete capture?', 'Delete ' + it.name + ' from the gallery?', [
+    { label: 'Cancel' },
+    { label: 'Delete', primary: true, onClick: async () => {
+      try { await window.OlympusPC.deleteCapture(it.name); } catch (e) {}
+      closeViewer();
+      ScreenRender.gallery();
+    } }
+  ]);
+});
 function pollPad() {
   if (accountOpen) { requestAnimationFrame(pollPad); return; }
   pollPadTests();
@@ -1528,8 +1801,37 @@ function pollPad() {
   const axX = gp ? (gp.axes[0] || 0) : 0;
   const axY = gp ? (gp.axes[1] || 0) : 0;
   const yB = pressed(controllerPreset.menuButton), bB = pressed(1), aB = pressed(0);
+  if (yB || bB || aB || Math.abs(axX) > 0.25 || Math.abs(axY) > 0.25) pokeActive();
   const yEdge = yB && !padState.yHeld, bEdge = bB && !padState.bHeld, aEdge = aB && !padState.aHeld;
   padState.yHeld = yB; padState.bHeld = bB; padState.aHeld = aB;
+  // Screenshot buttons: tap = screenshot, hold ~1s = save the last minute as a clip.
+  // LB+RB on standard pads; the Switch built-in capture button shows up as an
+  // extra button past the standard 17 on Switch-family pads.
+  const lbB = pressed(4), rbB = pressed(5);
+  let extraShot = false;
+  if (gp && /nintendo|switch|pro controller|joy-con/i.test(gp.id || '')) {
+    for (let bi = 17; bi < gp.buttons.length; bi++) {
+      if (gp.buttons[bi] && gp.buttons[bi].pressed) { extraShot = true; break; }
+    }
+  }
+  const shotNow = !!((lbB && rbB) || extraShot);
+  if (shotNow && !padState.shotHeld) { padState.shotT0 = now; padState.clipFired = false; }
+  else if (shotNow && !padState.clipFired && now - padState.shotT0 >= 900) { padState.clipFired = true; saveDvrClip(); }
+  else if (!shotNow && padState.shotHeld && !padState.clipFired) { takeScreenshot(); }
+  padState.shotHeld = shotNow;
+
+  if (party && party.ptt) {
+    const lb = !party.muted && pressed(4);
+    if (!!lb !== !!party._pttPad) {
+      party._pttPad = !!lb;
+      party.pttTalking = !!(party._pttKey || party._pttPad);
+      applyMicState();
+    }
+  } else if (party && party._pttPad) {
+    party._pttPad = false;
+    party.pttTalking = !!party._pttKey;
+    applyMicState();
+  }
 
   if (bEdge) { goBack(); requestAnimationFrame(pollPad); return; }
 
@@ -1595,6 +1897,38 @@ row.addEventListener('wheel', e => {
   if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) { e.preventDefault(); row.scrollLeft += e.deltaY; }
 }, { passive: false });
 
+/* ---------- Sleep mode ---------- */
+let lastActive = Date.now(), sleeping = false;
+function pokeActive() { lastActive = Date.now(); }
+['keydown', 'mousedown', 'mousemove', 'touchstart', 'wheel'].forEach(ev =>
+  document.addEventListener(ev, pokeActive, { passive: true }));
+$('#wakeBtn').addEventListener('click', () => {
+  sleeping = false;
+  $('#sleepOverlay').classList.remove('on');
+  pokeActive();
+});
+let _wasAway = false;
+setInterval(() => {
+  if (window._olyClosed) return;
+  const idle = Date.now() - lastActive;
+  const awayNow = idle >= 600000 && idle < 1200000;
+  if (awayNow !== _wasAway) { _wasAway = awayNow; updateOnlinePresence(); }
+  const so = $('#sleepOverlay');
+  if (idle >= 3600000) {
+    window._olyClosed = true;
+    flushPlaySession();
+    try { if (window.OlympusPC && window.OlympusPC.quit) window.OlympusPC.quit(); else window.close(); } catch (e) {}
+    so.querySelector('.sleepTxt').textContent = 'Olympus closed after an hour idle.';
+    $('#wakeBtn').style.display = 'none';
+    so.classList.add('on');
+  } else if (idle >= 1200000 && !sleeping && !window._olyClosed) {
+    sleeping = true;
+    so.querySelector('.sleepTxt').textContent = 'Sleeping…';
+    $('#wakeBtn').style.display = '';
+    so.classList.add('on');
+  }
+}, 30000);
+
 /* Clock */
 function clock() {
   const d = new Date();
@@ -1603,6 +1937,38 @@ function clock() {
   $('#clock').textContent = h + ':' + m + ' ' + ap;
 }
 clock(); setInterval(clock, 15000);
+
+/* ---------- Update checker ---------- */
+async function checkForUpdates(silent) {
+  try {
+    const r = await fetch('https://api.github.com/repos/Hoopslimbo/olympus/releases/latest');
+    if (!r.ok) { if (!silent) toast('Couldn\'t check for updates.'); return; }
+    const j = await r.json();
+    const latest = (j.tag_name || '').replace(/^v/, '');
+    const verNewer = (a, b) => {
+      const pa = a.split('.').map(x => parseInt(x, 10) || 0), pb = b.split('.').map(x => parseInt(x, 10) || 0);
+      for (let i = 0; i < 3; i++) { if ((pa[i] || 0) !== (pb[i] || 0)) return (pa[i] || 0) > (pb[i] || 0); }
+      return false;
+    };
+    if (latest && verNewer(latest, OLY_VERSION)) {
+      modal('Update available', 'Olympus v' + latest + ' is out. You\'re on v' + OLY_VERSION + '. Download the new installer to update.',
+        [{ label: 'Later' }, { label: 'Open download page', primary: true, onClick: () => {
+          const url = 'https://github.com/Hoopslimbo/olympus/releases';
+          try { if (window.OlympusPC && window.OlympusPC.openExternal) window.OlympusPC.openExternal(url); else window.open(url, '_blank'); } catch (e) { window.open(url, '_blank'); }
+        }}]);
+    } else if (!silent) {
+      toast('You\'re on the latest version.');
+    }
+    try { localStorage.setItem('oly_update_check', String(Date.now())); } catch (e) {}
+  } catch (e) { if (!silent) toast('Couldn\'t check for updates.'); }
+}
+$('#updateBtn').addEventListener('click', () => checkForUpdates(false));
+setTimeout(() => {
+  try {
+    const last = parseInt(localStorage.getItem('oly_update_check') || '0', 10);
+    if (Date.now() - last > 86400000) checkForUpdates(true);
+  } catch (e) {}
+}, 8000);
 
 /* ---------- Friends ---------- */
 let friendCache = { reqs: [], friends: [] }; // reqs: incoming pending {id, from:{...}}
@@ -1638,6 +2004,55 @@ function paintFriendBadge() {
 }
 function isFriend(id) { return (friendCache.friendIds || []).includes(id); }
 function hasOutgoing(id) { return (friendCache.outgoing || []).includes(id); }
+let blockCache = []; // [{id, gamertag, pic}] users I blocked
+function isBlocked(id) { return blockCache.some(b => b.id === id); }
+async function loadBlocks() {
+  const me = currentAccount();
+  if (!me || !online()) { blockCache = []; return; }
+  try {
+    const { data } = await supa.from('blocks').select('blocked_id').eq('blocker_id', me.id);
+    const ids = (data || []).map(r => r.blocked_id);
+    if (ids.length) {
+      const { data: profs } = await supa.from('profiles').select('id, gamertag, pic').in('id', ids);
+      blockCache = profs || [];
+    } else blockCache = [];
+  } catch (e) {}
+  if (party) {
+    applyAudioMutes();
+    if ($('#screen-party').classList.contains('open')) paintParty();
+  }
+  if ($('#screen-friends').classList.contains('open')) ScreenRender.friends();
+}
+async function blockUser(id, tag) {
+  if (!needOnline()) return;
+  const me = currentAccount();
+  if (!me || !id || id === me.id) return;
+  modal('Block ' + (tag || 'this player') + '?', 'They will stay muted in parties and will not be able to send you friend requests.', [
+    { label: 'Cancel' },
+    { label: 'Block', primary: true, onClick: async () => {
+      const { error } = await supa.from('blocks').insert({ blocker_id: me.id, blocked_id: id });
+      if (error) { toast('Couldn\'t block.'); return; }
+      const [ba, bb] = orderedPair(me.id, id);
+      await supa.from('friendships').delete().eq('user_a', ba).eq('user_b', bb);
+      await supa.from('friend_requests').delete().eq('from_id', me.id).eq('to_id', id);
+      await supa.from('friend_requests').delete().eq('from_id', id).eq('to_id', me.id);
+      toast('Blocked.');
+      await loadBlocks();
+      loadFriendData();
+      if (ScreenRender.playerData && ScreenRender.playerData.id === id) ScreenRender.player(ScreenRender.playerData);
+    } }
+  ]);
+}
+async function unblockUser(id) {
+  if (!needOnline()) return;
+  const me = currentAccount();
+  if (!me || !id) return;
+  const { error } = await supa.from('blocks').delete().eq('blocker_id', me.id).eq('blocked_id', id);
+  if (error) { toast('Couldn\'t unblock.'); return; }
+  toast('Unblocked.');
+  await loadBlocks();
+  if (ScreenRender.playerData && ScreenRender.playerData.id === id) ScreenRender.player(ScreenRender.playerData);
+}
 async function sendFriendRequest(toId) {
   if (!needOnline()) return;
   const me = currentAccount();
@@ -1712,16 +2127,15 @@ ScreenRender.friends = function () {
   const friends = friendCache.friends;
   if (!friends.length) {
     list.innerHTML = '<div class="emptyNote">No friends yet.<br>Search for players and send a request.</div>';
-    return;
-  }
+  } else {
   friends.forEach(f => {
     const row = document.createElement('div');
     row.className = 'rowCard';
     row.innerHTML = picHtml(f.pic, f.gamertag) +
-      '<div class="rowMain"><div class="t">' + escapeHtml(f.gamertag) + '</div><div class="s">Friend</div></div>';
+      '<div class="rowMain"><div class="t">' + (onlineMeta[f.id] ? '<span style="color:' + (onlineMeta[f.id].away ? '#eab308' : '#22c55e') + '">●</span> ' : '') + escapeHtml(f.gamertag) + '</div><div class="s">' + (onlineMeta[f.id] && onlineMeta[f.id].game ? '▶ ' + escapeHtml(onlineMeta[f.id].game) : (onlineMeta[f.id] && onlineMeta[f.id].away ? 'Away' : 'Friend')) + '</div></div>';
     const btns = document.createElement('div');
     btns.className = 'btnRow';
-    if (openParties[f.id]) {
+    if (openParties[f.id] && !isPartyBanned(openParties[f.id].partyId)) {
       const join = document.createElement('button');
       join.className = 'btn primary'; join.textContent = 'Join party';
       join.addEventListener('click', () => joinParty(openParties[f.id].partyId));
@@ -1742,6 +2156,26 @@ ScreenRender.friends = function () {
     row.querySelector('.rowMain').addEventListener('click', () => openScreen('player', { id: f.id }));
     list.appendChild(row);
   });
+  }
+  if (blockCache.length) {
+    const t = document.createElement('div');
+    t.className = 'secTitle'; t.textContent = 'BLOCKED';
+    list.appendChild(t);
+    blockCache.forEach(b => {
+      const row = document.createElement('div');
+      row.className = 'rowCard';
+      row.innerHTML = picHtml(b.pic, b.gamertag) +
+        '<div class="rowMain"><div class="t">' + escapeHtml(b.gamertag) + '</div><div class="s">Blocked</div></div>';
+      const btns = document.createElement('div');
+      btns.className = 'btnRow';
+      const ub = document.createElement('button');
+      ub.className = 'btn'; ub.textContent = 'Unblock';
+      ub.addEventListener('click', () => unblockUser(b.id));
+      btns.appendChild(ub);
+      row.appendChild(btns);
+      list.appendChild(row);
+    });
+  }
 };
 $('#callBtn').addEventListener('click', () => {
   if (!requireAccount('voice parties')) return;
@@ -1776,7 +2210,7 @@ function runSearch() {
       row.innerHTML = '<div class="pAv" style="border-radius:14px;' + (x.g.icon ? 'background:' + artBG(x.g.icon[0], x.g.icon[1]) : '') + '">🎮</div>' +
         '<div class="rowMain"><div class="t">' + escapeHtml(x.g.name) + '</div><div class="s">' + escapeHtml(x.g.desc || '') + '</div></div>' +
         '<button class="btn primary">Open</button>';
-      row.querySelector('button').addEventListener('click', () => { closeAllScreens(); setFocus(x.i); launchGame(x.i); });
+      row.querySelector('button').addEventListener('click', () => { closeAllScreens(); setFocus(Math.max(0, rowOrder.indexOf(x.i))); launchGame(x.i); });
       box.appendChild(row);
     });
   } else {
@@ -1796,9 +2230,10 @@ async function searchPlayers(q, box) {
       .ilike('gamertag', '%' + q.replace(/[%_]/g, '') + '%')
       .neq('id', me.id).limit(20);
     if (mySeq !== searchSeq) return;
-    if (!data || !data.length) { box.innerHTML = '<div class="emptyNote">No players found.</div>'; return; }
+    const visible = (data || []).filter(p => !isBlocked(p.id));
+    if (!visible.length) { box.innerHTML = '<div class="emptyNote">No players found.</div>'; return; }
     box.innerHTML = '';
-    data.forEach(p => {
+    visible.forEach(p => {
       const row = document.createElement('div');
       row.className = 'rowCard';
       let action = '';
@@ -1824,12 +2259,24 @@ ScreenRender.player = async function (data) {
   $('#playerTag').textContent = '…';
   $('#playerTagBig').textContent = '…';
   try {
-    const { data: p } = await supa.from('profiles').select('id, gamertag, pic, first_name').eq('id', id).maybeSingle();
+    const { data: p } = await supa.from('profiles').select('id, gamertag, pic, first_name, bio, recent_games').eq('id', id).maybeSingle();
     if (!p) { toast('Player not found.'); goBack(); return; }
     $('#playerTag').textContent = p.gamertag;
     $('#playerTagBig').textContent = p.gamertag;
     $('#playerPic').innerHTML = p.pic ? '<img src="' + p.pic + '" alt="">' : escapeHtml(initials(p.gamertag));
-    $('#playerSub').textContent = isFriend(p.id) ? 'Friend' : 'Player';
+    (function () {
+      let st = isFriend(p.id) ? 'Friend' : 'Player';
+      const om = onlineMeta[p.id];
+      if (om) st += om.away ? ' · 🟡 Away' : ' · 🟢 Online';
+      if (om && om.game) st += ' · ▶ ' + om.game;
+      $('#playerSub').textContent = st;
+    })();
+    $('#playerBio').textContent = p.bio || '';
+    const pr = $('#playerRecent');
+    const prn = Array.isArray(p.recent_games) ? p.recent_games : [];
+    pr.innerHTML = prn.length
+      ? prn.map(n => '<div class="rowCard"><div class="rowMain"><div class="t">' + escapeHtml(n) + '</div></div></div>').join('')
+      : '<div class="emptyNote">Nothing played yet.</div>';
     $('#playerStats').innerHTML =
       statCard('0', 'GAMES') + statCard('0', 'HOURS') + statCard('0', 'ACHIEVEMENTS');
     const acts = $('#playerActions');
@@ -1852,6 +2299,19 @@ ScreenRender.player = async function (data) {
     } else {
       mkBtn('Add friend', true, () => sendFriendRequest(p.id));
     }
+    mkBtn(isBlocked(p.id) ? 'Unblock' : 'Block', false, () => isBlocked(p.id) ? unblockUser(p.id) : blockUser(p.id, p.gamertag));
+    const pbox = $('#playerPartyBox');
+    const ad = openParties[p.id];
+    if (ad && !isPartyBanned(ad.partyId)) {
+      const n = (ad.members == null) ? '?' : ad.members;
+      const canJoin = (ad.members == null || ad.members < 5);
+      pbox.innerHTML = '<div class="secTitle">PARTY</div><div class="card"><div class="t">🎉 In a voice party</div>' +
+        '<div class="s">' + escapeHtml(p.gamertag) + '\'s party · ' + n + '/5</div>' +
+        (canJoin ? '<div style="margin-top:10px"><button class="btn primary" id="joinTheirParty">Join party</button></div>'
+                 : '<div class="s" style="margin-top:6px">Party is full</div>') + '</div>';
+      const jb = $('#joinTheirParty');
+      if (jb) jb.addEventListener('click', () => joinParty(ad.partyId));
+    } else pbox.innerHTML = '';
   } catch (e) { toast('Couldn\'t load player.'); }
 };
 function statCard(v, l) {
@@ -1862,6 +2322,7 @@ function statCard(v, l) {
 let chatCache = []; // {id, members:[{id,gamertag,pic}], last:{body,at,by}, unread}
 let chatChannels = {};
 function chatName(c) {
+  if (c.name) return (c.icon ? c.icon + ' ' : '') + c.name;
   const me = currentAccount();
   const others = c.members.filter(m => m.id !== (me && me.id));
   if (!others.length) return 'Just you';
@@ -1888,7 +2349,12 @@ async function loadChats() {
     const { data: profs } = await supa.from('profiles').select('id, gamertag, pic').in('id', uids);
     const pmap = {};
     (profs || []).forEach(p => pmap[p.id] = p);
-    const { data: msgs } = await supa.from('messages').select('chat_id, body, created_at, sender_id').in('chat_id', ids).order('created_at', { ascending: false }).limit(ids.length * 5);
+    const { data: msgs } = await supa.from('messages').select('chat_id, body, created_at, sender_id, deleted').in('chat_id', ids).order('created_at', { ascending: false }).limit(ids.length * 5);
+    let chatMeta = {};
+    try {
+      const { data: chats } = await supa.from('chats').select('id, name, icon').in('id', ids);
+      (chats || []).forEach(ch => { chatMeta[ch.id] = ch; });
+    } catch (e) {}
     const lastByChat = {};
     (msgs || []).forEach(m => { if (!lastByChat[m.chat_id]) lastByChat[m.chat_id] = m; });
     chatCache = ids.map(id => {
@@ -1896,7 +2362,8 @@ async function loadChats() {
       const last = lastByChat[id];
       const lr = lastRead(id);
       const unread = last && new Date(last.created_at).getTime() > lr && last.sender_id !== me.id;
-      return { id: id, members: members, last: last, unread: !!unread };
+      const meta = chatMeta[id] || {};
+      return { id: id, members: members, last: last, unread: !!unread, name: meta.name || null, icon: meta.icon || null };
     }).sort((a, b) => {
       const ta = a.last ? new Date(a.last.created_at).getTime() : 0;
       const tb = b.last ? new Date(b.last.created_at).getTime() : 0;
@@ -1926,7 +2393,7 @@ ScreenRender.messages = function () {
     const av = others[0] || c.members[0];
     row.innerHTML = picHtml(av && av.pic, av && av.gamertag) +
       '<div class="rowMain"><div class="t">' + escapeHtml(chatName(c)) + '</div><div class="s">' +
-      escapeHtml(c.last ? c.last.body.slice(0, 60) : 'Say hi!') + '</div></div>' +
+      escapeHtml(c.last ? (c.last.deleted ? '🗑 Message deleted' : c.last.body.slice(0, 60)) : 'Say hi!') + '</div></div>' +
       (c.unread ? '<span class="badge unread"></span>' : '');
     row.addEventListener('click', () => openScreen('chat', { chatId: c.id }));
     list.appendChild(row);
@@ -1991,6 +2458,7 @@ ScreenRender.chat = async function (data) {
   if (!c) { toast('Chat not found.'); goBack(); return; }
   $('#chatTitle').textContent = chatName(c);
   $('#chatSub').textContent = c.members.length + (c.members.length === 1 ? ' PERSON' : ' PEOPLE');
+  $('#chatEditBtn').style.display = c.members.length > 2 ? '' : 'none';
   markRead(activeChatId);
   await loadChatMessages(activeChatId);
   subscribeChatChannel(activeChatId);
@@ -2000,18 +2468,45 @@ async function loadChatMessages(chatId) {
   scroll.innerHTML = '';
   const me = currentAccount();
   try {
-    const { data } = await supa.from('messages').select('id, body, created_at, sender_id').eq('chat_id', chatId).order('created_at', { ascending: true }).limit(200);
+    let { data } = await supa.from('messages').select('id, body, created_at, sender_id, deleted').eq('chat_id', chatId).order('created_at', { ascending: true }).limit(200);
+    data = (data || []).filter(m => !isBlocked(m.sender_id));
     (data || []).forEach(m => {
       const c = chatCache.find(x => x.id === chatId);
       const sender = c && c.members.find(x => x.id === m.sender_id);
       const mine = m.sender_id === me.id;
       const b = document.createElement('div');
-      b.className = 'bubble ' + (mine ? 'me' : 'them');
-      b.innerHTML = (mine ? '' : '<div class="who">' + escapeHtml(sender ? sender.gamertag : '?') + '</div>') + escapeHtml(m.body);
+      b.className = 'bubble ' + (mine ? 'me' : 'them') + (m.deleted ? ' deleted' : '');
+      if (m.deleted) {
+        b.innerHTML = '<i>🗑 Message deleted</i>';
+      } else {
+        b.innerHTML = (mine ? '' : '<div class="who">' + escapeHtml(sender ? sender.gamertag : '?') + '</div>') + escapeHtml(m.body);
+        if (mine) {
+          const del = document.createElement('button');
+          del.className = 'msgDel';
+          del.title = 'Delete for everyone';
+          del.textContent = '🗑';
+          del.addEventListener('click', ev => { ev.stopPropagation(); deleteMessage(chatId, m.id); });
+          b.appendChild(del);
+        }
+      }
       scroll.appendChild(b);
     });
     scroll.scrollTop = scroll.scrollHeight;
   } catch (e) {}
+}
+async function deleteMessage(chatId, msgId) {
+  modal('Delete message?', 'This deletes it for everyone in the chat.', [
+    { label: 'Cancel' },
+    { label: 'Delete', primary: true, onClick: async () => {
+      try {
+        await supa.from('messages').update({ deleted: true }).eq('id', msgId);
+        const ch = chatChannels[chatId];
+        if (ch) { try { ch.send({ type: 'broadcast', event: 'msg', payload: {} }); } catch (e) {} }
+        await loadChatMessages(chatId);
+        loadChats();
+      } catch (e) { toast('Couldn\'t delete that message.'); }
+    } }
+  ]);
 }
 function subscribeChatChannel(chatId) {
   if (chatChannels[chatId]) return;
@@ -2022,6 +2517,19 @@ function subscribeChatChannel(chatId) {
       markRead(chatId);
     }
     loadChats();
+  });
+  ch.on('broadcast', { event: 'typing' }, payload => {
+    const tp = payload.payload || {};
+    const me = currentAccount();
+    if (activeChatId === chatId && tp.by && me && tp.by !== me.id && $('#screen-chat').classList.contains('open')) {
+      const cc = chatCache.find(x => x.id === chatId);
+      const other = cc && cc.members.find(m => m.id === tp.by);
+      const sub = $('#chatSub');
+      if (!ch._typingT) ch._subBase = sub.textContent;
+      sub.textContent = (other ? other.gamertag : 'Someone') + ' is typing…';
+      clearTimeout(ch._typingT);
+      ch._typingT = setTimeout(() => { if (activeChatId === chatId) sub.textContent = ch._subBase || ''; ch._typingT = null; }, 4000);
+    }
   });
   ch.subscribe();
   chatChannels[chatId] = ch;
@@ -2042,7 +2550,54 @@ async function sendChatMessage() {
   await loadChatMessages(activeChatId);
   loadChats();
 }
+$('#chatEditBtn').addEventListener('click', () => {
+  const c = chatCache.find(x => x.id === activeChatId);
+  if (!c || c.members.length <= 2) return;
+  const EMOJIS = ['🎮','🏆','🚀','💬','🔥','⭐','🎯','🎲','✨','👾'];
+  modal('Group chat', 'Give this group a name and an icon.', [{ label: 'Cancel' }, { label: 'Save', primary: true, onClick: async () => {
+    const name = $('#grpName').value.trim().slice(0, 30);
+    const icon = $('#grpIcon').value;
+    if (!needOnline()) return;
+    const { error } = await supa.from('chats').update({ name: name || null, icon: icon || null }).eq('id', c.id);
+    if (error) { toast('Couldn\'t save.'); return; }
+    c.name = name || null; c.icon = icon || null;
+    $('#chatTitle').textContent = chatName(c);
+    loadChats();
+    toast('Group updated.');
+  }}]);
+  const m = $('#modal');
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'display:flex;flex-direction:column;gap:12px;margin-bottom:20px';
+  wrap.innerHTML =
+    '<input class="txtInput" id="grpName" maxlength="30" placeholder="Group name" value="' + escapeHtml(c.name || '') + '">' +
+    '<input type="hidden" id="grpIcon" value="' + escapeHtml(c.icon || '') + '">' +
+    '<div id="grpEmojiRow" style="display:flex;gap:8px;flex-wrap:wrap"></div>';
+  m.insertBefore(wrap, $('#modalBtns'));
+  const erow = $('#grpEmojiRow'), iconInput = $('#grpIcon');
+  const paintEmojis = () => {
+    erow.innerHTML = '';
+    EMOJIS.forEach(e => {
+      const b = document.createElement('button');
+      b.className = 'btn' + (iconInput.value === e ? ' primary' : '');
+      b.style.fontSize = '20px';
+      b.textContent = e;
+      b.addEventListener('click', () => { iconInput.value = (iconInput.value === e) ? '' : e; paintEmojis(); });
+      erow.appendChild(b);
+    });
+  };
+  paintEmojis();
+});
 $('#chatSend').addEventListener('click', sendChatMessage);
+let typingLast = 0;
+$('#chatInput').addEventListener('input', () => {
+  if (!activeChatId || !online()) return;
+  const now = Date.now();
+  if (now - typingLast < 3000) return;
+  typingLast = now;
+  const ch = chatChannels[activeChatId];
+  const me = currentAccount();
+  if (ch && me) { try { ch.send({ type: 'broadcast', event: 'typing', payload: { by: me.id } }); } catch (e) {} }
+});
 
 /* ---------- Profile ---------- */
 ScreenRender.profile = function () {
@@ -2051,10 +2606,19 @@ ScreenRender.profile = function () {
   $('#profPic').innerHTML = a.pic ? '<img src="' + a.pic + '" alt="">' : escapeHtml(initials(a.gamertag));
   $('#profTag').textContent = a.gamertag;
   $('#profName').textContent = (a.firstName || '') + ' ' + (a.lastName || '');
+  $('#profBio').textContent = a.bio || '';
   const owned = games.filter(g => g.name).length;
+  const totalSecs = Object.values(getHours()).reduce((x, y) => x + y, 0);
   $('#statGrid').innerHTML =
-    statCard(owned, 'GAMES') + statCard('0', 'HOURS') +
+    statCard(owned, 'GAMES') + statCard(totalSecs ? fmtPlaytime(totalSecs) : '0', 'HOURS') +
     statCard('0', 'ACHIEVEMENTS') + statCard(friendCache.friends.length, 'FRIENDS');
+  const rg = $('#recentGrid');
+  const names = recentGameNames();
+  if (!names.length) rg.innerHTML = '<div class="emptyNote">Nothing played yet.</div>';
+  else rg.innerHTML = names.map(n => {
+    const hrs = getHours()[n] || 0;
+    return '<div class="rowCard"><div class="rowMain"><div class="t">' + escapeHtml(n) + '</div><div class="s">' + (hrs ? fmtPlaytime(hrs) + ' played' : 'Played recently') + '</div></div></div>';
+  }).join('');
   const ag = $('#achGrid');
   ag.innerHTML = '<div class="emptyNote">No achievements yet.<br>They\'ll show up here when games award them.</div>';
 };
@@ -2073,7 +2637,11 @@ $('#editProfBtn').addEventListener('click', () => {
       '<input type="file" id="editPicFile" accept="image/*" hidden></div>' +
     '<input class="txtInput" id="editTag" maxlength="16" value="' + escapeHtml(a.gamertag) + '">' +
     '<div class="acctError" id="editTagErr"></div>' +
-    '<button class="btn primary" id="saveTagBtn">Save gamertag</button>';
+    '<button class="btn primary" id="saveTagBtn">Save gamertag</button>' +
+    '<div class="secTitle" style="margin-top:6px">BIO (OPTIONAL)</div>' +
+    '<textarea class="txtInput" id="editBio" maxlength="160" rows="3" placeholder="Say something about yourself…">' + escapeHtml(a.bio || '') + '</textarea>' +
+    '<div class="acctError" id="editBioErr"></div>' +
+    '<button class="btn primary" id="saveBioBtn">Save bio</button>';
   m.insertBefore(wrap, $('#modalBtns'));
   let newPic = null;
   $('#editPicBtn').addEventListener('click', () => $('#editPicFile').click());
@@ -2114,40 +2682,89 @@ $('#editProfBtn').addEventListener('click', () => {
     ScreenRender.profile();
     toast('Gamertag updated.');
   });
+  $('#saveBioBtn').addEventListener('click', async () => {
+    if (!needOnline()) return;
+    const bio = $('#editBio').value.trim().slice(0, 160);
+    const { error } = await supa.from('profiles').update({ bio: bio }).eq('id', a.id);
+    if (error) { $('#editBioErr').textContent = 'Couldn\'t save.'; return; }
+    await refreshAccount();
+    closeModal();
+    ScreenRender.profile();
+    toast('Bio updated.');
+  });
 });
 
 /* ---------- Shop ---------- */
+function getWishlist() { try { return JSON.parse(localStorage.getItem('oly_wishlist') || '[]'); } catch (e) { return []; } }
 ScreenRender.shop = function () {
   const grid = $('#shopGrid');
   grid.innerHTML = '';
   const soon = [
-    { e: '🎮', t: 'Coming soon', s: 'The first Olympus games are on the way.' },
-    { e: '🏆', t: 'Coming soon', s: 'More worlds to explore.' },
-    { e: '🚀', t: 'Coming soon', s: 'Stay tuned.' }
+    { id: 's0', e: '🎮', t: 'Coming soon', s: 'The first Olympus games are on the way.' },
+    { id: 's1', e: '🏆', t: 'Coming soon', s: 'More worlds to explore.' },
+    { id: 's2', e: '🚀', t: 'Coming soon', s: 'Stay tuned.' }
   ];
-  soon.forEach(x => {
+  const wl = getWishlist();
+  const mkCard = x => {
     const d = document.createElement('div');
     d.className = 'card shopCard';
-    d.innerHTML = '<div class="art">' + x.e + '</div><div class="info"><div class="t">' + x.t + '</div><div class="s">' + x.s + '</div></div>';
-    grid.appendChild(d);
-  });
+    const inWl = wl.indexOf(x.id) >= 0;
+    d.innerHTML = '<button class="wishBtn' + (inWl ? ' on' : '') + '" title="Wishlist">' + (inWl ? '♥' : '♡') + '</button>' +
+      '<div class="art">' + x.e + '</div><div class="info"><div class="t">' + x.t + '</div><div class="s">' + x.s + '</div></div>';
+    d.querySelector('.wishBtn').addEventListener('click', ev => {
+      ev.stopPropagation();
+      const w = getWishlist();
+      const i = w.indexOf(x.id);
+      if (i >= 0) w.splice(i, 1); else w.push(x.id);
+      try { localStorage.setItem('oly_wishlist', JSON.stringify(w)); } catch (e) {}
+      ScreenRender.shop();
+    });
+    return d;
+  };
+  const sec = t => {
+    const h = document.createElement('div');
+    h.className = 'secTitle'; h.style.gridColumn = '1 / -1'; h.textContent = t;
+    return h;
+  };
+  if (wl.length) {
+    grid.appendChild(sec('WISHLIST'));
+    soon.filter(x => wl.indexOf(x.id) >= 0).forEach(x => grid.appendChild(mkCard(x)));
+    grid.appendChild(sec('ALL'));
+  }
+  soon.forEach(x => grid.appendChild(mkCard(x)));
 };
 
 /* ---------- Library ---------- */
 ScreenRender.library = function () {
   const grid = $('#libGrid');
   grid.innerHTML = '';
+  paintDownloads(grid);
   const owned = games.map((g, i) => ({ g: g, i: i })).filter(x => x.g.name);
   if (!owned.length) {
-    grid.innerHTML = '<div class="emptyNote">Your library is empty.<br>Games you get will appear here.</div>';
+    grid.insertAdjacentHTML('beforeend', '<div class="emptyNote">Your library is empty.<br>Games you get will appear here.</div>');
     return;
+  }
+  const knownSizes = owned.filter(x => x.g.size);
+  if (knownSizes.length) {
+    const sum = document.createElement('div');
+    sum.className = 'emptyNote';
+    sum.style.marginBottom = '14px';
+    sum.textContent = owned.length + (owned.length === 1 ? ' game' : ' games') + ' · ' + knownSizes.map(x => x.g.size).join(' + ');
+    grid.appendChild(sum);
   }
   owned.forEach(x => {
     const d = document.createElement('div');
     d.className = 'libTile';
-    d.textContent = x.g.name;
+    d.innerHTML = '<div class="t">' + escapeHtml(x.g.name) + '</div>' + (x.g.size ? '<div class="s">' + escapeHtml(x.g.size) + '</div>' : '');
     if (x.g.icon) d.style.background = artBG(x.g.icon[0], x.g.icon[1]);
-    d.addEventListener('click', () => { closeAllScreens(); setFocus(x.i); launchGame(x.i); });
+    if (x.g.ach && x.g.ach.total > 0) {
+      const pct = Math.round(100 * (x.g.ach.done || 0) / x.g.ach.total);
+      const badge = document.createElement('div');
+      badge.className = 'achBadge';
+      badge.textContent = '🏆 ' + pct + '%';
+      d.appendChild(badge);
+    }
+    d.addEventListener('click', () => { closeAllScreens(); setFocus(Math.max(0, rowOrder.indexOf(x.i))); launchGame(x.i); });
     grid.appendChild(d);
   });
 };
@@ -2160,6 +2777,36 @@ function paintSettingsAccount() {
   $('#signOutBtn').style.display = a ? '' : 'none';
 }
 $('#signOutBtn').addEventListener('click', signOut);
+$('#switchAcctBtn').addEventListener('click', () => {
+  const a = currentAccount();
+  const emails = getKnownEmails().filter(e => !a || e !== (a.email || '').toLowerCase());
+  modal('Switch account', a ? ('Signed in as ' + a.gamertag + '.') : 'Pick an account.', [{ label: 'Cancel' }]);
+  const m = $('#modal');
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'display:flex;flex-direction:column;gap:8px;margin-bottom:20px';
+  if (!emails.length) wrap.innerHTML = '<div class="emptyNote">No other accounts used on this console yet.</div>';
+  emails.forEach(e => {
+    const r = document.createElement('div');
+    r.className = 'profileItem';
+    r.innerHTML = '<span>' + escapeHtml(e) + '</span>';
+    r.addEventListener('click', async () => {
+      closeModal();
+      await signOut();
+      openAccount('Signed out. Sign in to switch accounts.', e);
+    });
+    wrap.appendChild(r);
+  });
+  const other = document.createElement('button');
+  other.className = 'btn';
+  other.textContent = 'Use a different email';
+  other.addEventListener('click', async () => {
+    closeModal();
+    await signOut();
+    openAccount('Signed out. Sign in to switch accounts.', '');
+  });
+  wrap.appendChild(other);
+  m.insertBefore(wrap, $('#modalBtns'));
+});
 $('#sndToggle').addEventListener('click', function () {
   this.classList.toggle('on');
   try { localStorage.setItem('oly_snd', this.classList.contains('on') ? 'on' : 'off'); } catch (e) {}
@@ -2168,13 +2815,78 @@ $('#rumbleToggle').addEventListener('click', function () {
   this.classList.toggle('on');
   try { localStorage.setItem('oly_rumble', this.classList.contains('on') ? 'on' : 'off'); } catch (e) {}
 });
+$('#invisToggle').addEventListener('click', function () {
+  this.classList.toggle('on');
+  const invis = this.classList.contains('on');
+  try { localStorage.setItem('oly_invisible', invis ? '1' : '0'); } catch (e) {}
+  if (invis) leaveOnline(); else joinOnline();
+});
 (function initToggles() {
   try {
     if (localStorage.getItem('oly_snd') === 'off') $('#sndToggle').classList.remove('on');
     if (localStorage.getItem('oly_rumble') === 'off') $('#rumbleToggle').classList.remove('on');
+    if (localStorage.getItem('oly_invisible') === '1') $('#invisToggle').classList.add('on');
   } catch (e) {}
 })();
-ScreenRender.settings = function () { paintSettingsAccount(); };
+function paintNotifLog() {
+  const log = $('#notifLog');
+  log.innerHTML = '';
+  if (!toastLog.length) { log.innerHTML = '<div class="emptyNote">Nothing yet.</div>'; return; }
+  toastLog.forEach(n => {
+    const d = document.createElement('div');
+    d.className = 'notifItem';
+    const t = new Date(n.at);
+    let h = t.getHours(), ap = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12;
+    d.innerHTML = escapeHtml(n.msg) + '<div class="nt">' + h + ':' + String(t.getMinutes()).padStart(2, '0') + ' ' + ap + '</div>';
+    log.appendChild(d);
+  });
+}
+$('#clearNotifBtn').addEventListener('click', () => { toastLog.length = 0; paintNotifLog(); });
+ScreenRender.settings = function () { paintSettingsAccount(); paintNotifLog(); };
+
+/* ---------- Download queue ---------- */
+function getDlQueue() { try { return JSON.parse(localStorage.getItem('oly_dlqueue') || '[]'); } catch (e) { return []; } }
+function saveDlQueue(q) { try { localStorage.setItem('oly_dlqueue', JSON.stringify(q)); } catch (e) {} }
+function queueDownload(name) {
+  if (!name) return;
+  const q = getDlQueue();
+  if (q.some(x => x.name === name && x.status !== 'done')) { toast('Already in your downloads.'); return; }
+  q.push({ name: name, status: navigator.onLine === false ? 'paused' : 'queued', at: Date.now() });
+  saveDlQueue(q);
+  toast('Added to downloads: ' + name);
+  if ($('#screen-library').classList.contains('open')) ScreenRender.library();
+}
+function processDlQueue() {
+  const q = getDlQueue();
+  let changed = false;
+  const up = navigator.onLine !== false;
+  q.forEach(item => {
+    if (!up && (item.status === 'queued' || item.status === 'downloading')) { item.status = 'paused'; changed = true; }
+    else if (up && item.status === 'paused') { item.status = 'queued'; changed = true; }
+  });
+  if (changed) {
+    saveDlQueue(q);
+    if ($('#screen-library').classList.contains('open')) ScreenRender.library();
+  }
+}
+window.addEventListener('online', () => { processDlQueue(); toast('Back online — downloads resumed.'); });
+window.addEventListener('offline', () => { processDlQueue(); toast('No Wi-Fi — downloads paused.'); });
+function paintDownloads(grid) {
+  const q = getDlQueue().filter(x => x.status !== 'done');
+  if (!q.length) return;
+  const sec = document.createElement('div');
+  sec.className = 'secTitle';
+  sec.textContent = 'DOWNLOADS';
+  grid.appendChild(sec);
+  q.forEach(item => {
+    const d = document.createElement('div');
+    d.className = 'card setRow';
+    const label = item.status === 'paused' ? 'Paused — no Wi-Fi' : 'Queued';
+    d.innerHTML = '<div><div class="t">' + escapeHtml(item.name) + '</div><div class="s">' + label + '</div></div>';
+    grid.appendChild(d);
+  });
+}
+window.Olympus.queueDownload = queueDownload;
 
 /* ---------- Voice parties (WebRTC over Supabase Realtime) ---------- */
 let party = null; // {id, channel, peers:{}, localStream, shareStream, members:[], joinedAt, privacy, makingOffer:{}}
@@ -2183,29 +2895,80 @@ let lobbyChannel = null;
 let openParties = {}; // hostId -> {partyId, gamertag, at}
 const RTC_CONF = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
 
+let onlineChannel = null, onlineMeta = {}; // id -> {game, away}
+function currentGameName() { return playingGame ? playingGame.name : null; }
+function isAway() { return !sleeping && (Date.now() - lastActive) >= 600000; }
+function myPresence() {
+  const me = currentAccount();
+  return { id: me && me.id, game: currentGameName(), away: isAway() };
+}
+function updateOnlinePresence() {
+  if (!onlineChannel) return;
+  try { onlineChannel.track(myPresence()); } catch (e) {}
+}
+function isInvisible() { try { return localStorage.getItem('oly_invisible') === '1'; } catch (e) { return false; } }
+function joinOnline() {
+  leaveOnline();
+  const me = currentAccount();
+  if (!me || !online() || isInvisible()) return;
+  onlineChannel = supa.channel('online', { config: { presence: { key: me.id } } });
+  const sync = () => {
+    onlineMeta = {};
+    try {
+      const st = onlineChannel.presenceState();
+      Object.keys(st).forEach(k => { const m = st[k][0]; if (m && m.id) onlineMeta[m.id] = { game: m.game || null, away: !!m.away }; });
+    } catch (e) {}
+    if ($('#screen-friends').classList.contains('open')) ScreenRender.friends();
+    if (ScreenRender.playerData && $('#screen-player').classList.contains('open')) ScreenRender.player(ScreenRender.playerData);
+  };
+  onlineChannel.on('presence', { event: 'sync' }, sync);
+  onlineChannel.on('presence', { event: 'join' }, sync);
+  onlineChannel.on('presence', { event: 'leave' }, sync);
+  onlineChannel.subscribe(async st => {
+    if (st === 'SUBSCRIBED') { try { await onlineChannel.track(myPresence()); } catch (e) {} }
+  });
+}
+function leaveOnline() {
+  if (onlineChannel) { try { supa.removeChannel(onlineChannel); } catch (e) {} onlineChannel = null; }
+  onlineMeta = {};
+}
 function subscribeUserChannel() {
   if (!online()) return;
   const me = currentAccount();
   if (!me || userChannel) return;
   userChannel = supa.channel('user:' + me.id, { config: { broadcast: { self: false } } });
   userChannel.on('broadcast', { event: 'party-invite' }, payload => {
-    const p = payload.payload || {};
-    modal('Party invite', (p.fromTag || 'Someone') + ' invited you to a voice party.', [
-      { label: 'Decline' },
-      { label: 'Join', primary: true, onClick: () => joinParty(p.partyId) }
-    ]);
+    showInviteCard(payload.payload || {});
   });
   userChannel.on('broadcast', { event: 'friend-refresh' }, () => loadFriendData());
   userChannel.on('broadcast', { event: 'chat-refresh' }, () => loadChats());
   userChannel.subscribe();
 }
+let pendingInvite = null;
+function showInviteCard(p) {
+  pendingInvite = p;
+  const wasKicked = isPartyBanned(p.partyId);
+  $('#inviteText').textContent = (p.fromTag || 'Someone') + ' invited you to a voice party.' + (wasKicked ? ' You were kicked from this one, but they invited you back.' : '');
+  $('#inviteCard').classList.remove('hidden');
+  try { ding(false); } catch (e) {}
+}
+$('#inviteJoin').addEventListener('click', () => {
+  const p = pendingInvite; pendingInvite = null;
+  $('#inviteCard').classList.add('hidden');
+  if (p && p.partyId) joinParty(p.partyId, true);
+});
+$('#inviteDecline').addEventListener('click', () => {
+  pendingInvite = null;
+  $('#inviteCard').classList.add('hidden');
+});
 function subscribeLobby() {
   if (!online() || lobbyChannel) return;
   lobbyChannel = supa.channel('party-lobby', { config: { broadcast: { self: false } } });
   lobbyChannel.on('broadcast', { event: 'ad' }, payload => {
     const p = payload.payload || {};
+    if (isPartyBanned(p.partyId)) return;
     if (p.hostId && p.hostId !== (currentAccount() || {}).id) {
-      openParties[p.hostId] = { partyId: p.partyId, gamertag: p.gamertag, at: Date.now() };
+      openParties[p.hostId] = { partyId: p.partyId, gamertag: p.gamertag, members: p.members, at: Date.now() };
       if ($('#screen-friends').classList.contains('open')) ScreenRender.friends();
     }
   });
@@ -2223,37 +2986,88 @@ async function ensureAudio() {
   party.localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
   return party.localStream;
 }
+function sndOn() { try { return localStorage.getItem('oly_snd') !== 'off'; } catch (e) { return true; } }
+let dingCtx = null;
+function ding(deep) {
+  if (!sndOn()) return;
+  try {
+    dingCtx = dingCtx || new (window.AudioContext || window.webkitAudioContext)();
+    if (dingCtx.resume) dingCtx.resume().catch(() => {});
+    const o = dingCtx.createOscillator(), g = dingCtx.createGain();
+    o.type = 'sine'; o.frequency.value = deep ? 330 : 660;
+    const t0 = dingCtx.currentTime;
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(0.22, t0 + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.35);
+    o.connect(g); g.connect(dingCtx.destination);
+    o.start(t0); o.stop(t0 + 0.4);
+  } catch (e) {}
+}
+function getKickBans() { try { return JSON.parse(localStorage.getItem('oly_kickban') || '[]'); } catch (e) { return []; } }
+function isPartyBanned(id) { return !!id && getKickBans().indexOf(id) !== -1; }
+function banParty(id) {
+  if (!id || isPartyBanned(id)) return;
+  try { const b = getKickBans(); b.push(id); localStorage.setItem('oly_kickban', JSON.stringify(b)); } catch (e) {}
+}
+function fmtPartyTime(ms) {
+  const s = Math.floor(ms / 1000), m = Math.floor(s / 60), h = Math.floor(m / 60);
+  const p2 = n => String(n).padStart(2, '0');
+  return h ? h + ':' + p2(m % 60) + ':' + p2(s % 60) : p2(m) + ':' + p2(s % 60);
+}
 async function createParty(privacy) {
   if (!needOnline()) return;
   const me = currentAccount();
   if (!me) return;
   if (party) { openScreen('party'); return; }
   const id = (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()));
-  party = { id: id, peers: {}, members: [], joinedAt: Date.now(), privacy: privacy || 'invite', makingOffer: {}, polite: {} };
+  party = { id: id, peers: {}, members: [], mutedPeers: {}, connectedPeers: {}, volumes: {}, startedAt: Date.now(), joinedAt: Date.now(), privacy: privacy || 'invite', makingOffer: {}, polite: {} };
   party.channel = supa.channel('party:' + id, { config: { broadcast: { self: true }, presence: { key: me.id } } });
   wirePartyChannel();
   try { await ensureAudio(); } catch (e) { toast('Mic blocked — party will be listen-only.'); }
   party.channel.subscribe(async status => {
     if (status === 'SUBSCRIBED') {
-      await party.channel.track({ id: me.id, gamertag: me.gamertag, pic: me.pic, joinedAt: party.joinedAt, host: true, sharing: false });
+      await party.channel.track(presencePayload({ host: true }));
+      startSpeakingMonitor();
+      if (party.timerInt) clearInterval(party.timerInt);
+      party.timerInt = setInterval(() => {
+        const el = document.getElementById('partyTimer');
+        if (el && party && party.startedAt) el.textContent = fmtPartyTime(Date.now() - party.startedAt);
+      }, 1000);
+      party.ptt = false; party.pttTalking = false; party._pttKey = false; party._pttPad = false;
+      try { party.ptt = localStorage.getItem('oly_ptt') === '1'; } catch (e) {}
+      $('#pttBtn').textContent = party.ptt ? '🎙 PTT: On' : '🎙 PTT: Off';
+      applyMicState();
       showPartyBar();
       openScreen('party');
       if (party.privacy === 'open') advertiseParty();
     }
   });
 }
-async function joinParty(partyId) {
+async function joinParty(partyId, viaInvite) {
   if (!needOnline()) return;
+  if (!viaInvite && isPartyBanned(partyId)) { toast('You were kicked from this party.'); return; }
+  if (party) await leaveParty();
   const me = currentAccount();
   if (!me || !partyId) return;
   if (party) { toast('You\'re already in a party.'); return; }
-  party = { id: partyId, peers: {}, members: [], joinedAt: Date.now(), privacy: 'invite', makingOffer: {}, polite: {} };
+  party = { id: partyId, peers: {}, members: [], mutedPeers: {}, connectedPeers: {}, volumes: {}, startedAt: null, joinedAt: Date.now(), privacy: 'invite', makingOffer: {}, polite: {} };
   party.channel = supa.channel('party:' + partyId, { config: { broadcast: { self: true }, presence: { key: me.id } } });
   wirePartyChannel();
   try { await ensureAudio(); } catch (e) { toast('Mic blocked — party will be listen-only.'); }
   party.channel.subscribe(async status => {
     if (status === 'SUBSCRIBED') {
-      await party.channel.track({ id: me.id, gamertag: me.gamertag, pic: me.pic, joinedAt: party.joinedAt, host: false, sharing: false });
+      await party.channel.track(presencePayload({ host: false }));
+      startSpeakingMonitor();
+      if (party.timerInt) clearInterval(party.timerInt);
+      party.timerInt = setInterval(() => {
+        const el = document.getElementById('partyTimer');
+        if (el && party && party.startedAt) el.textContent = fmtPartyTime(Date.now() - party.startedAt);
+      }, 1000);
+      setTimeout(() => { if (party && party.members.length <= 1) { toast('That party ended.'); leaveParty(); } }, 2500);
+      party.ptt = false; party.pttTalking = false; party._pttKey = false; party._pttPad = false;
+      try { party.ptt = localStorage.getItem('oly_ptt') === '1'; } catch (e) {}
+      $('#pttBtn').textContent = party.ptt ? '🎙 PTT: On' : '🎙 PTT: Off';
+      applyMicState();
       // enforce the 5-person max once presence has synced
       setTimeout(() => {
         if (party && partyMembers().length > 5) { toast('Party is full (5 max).'); leaveParty(); }
@@ -2271,6 +3085,19 @@ function wirePartyChannel() {
   ch.on('presence', { event: 'join' }, () => { syncMembers(); syncMesh(); });
   ch.on('presence', { event: 'leave' }, () => { syncMembers(); prunePeers(); });
   ch.on('broadcast', { event: 'rtc' }, payload => handleSignal(payload.payload || {}));
+  ch.on('broadcast', { event: 'party_kick' }, payload => {
+    const p = payload.payload || {};
+    const me = currentAccount();
+    if (p.target && me && p.target === me.id) { banParty(party.id); toast('You were kicked from the party.'); leaveParty(); }
+  });
+  ch.on('broadcast', { event: 'party_host' }, payload => {
+    const p = payload.payload || {};
+    if (p.hostId && party) {
+      party.hostId = p.hostId;
+      updatePresence(); paintParty();
+      if (isPartyHost() && party.privacy === 'open' && !party.adTimer) advertiseParty();
+    }
+  });
 }
 function partyMembers() {
   if (!party) return [];
@@ -2286,13 +3113,25 @@ function partyMembers() {
 function syncMembers() {
   if (!party) return;
   const me = currentAccount();
+  const prevIds = party._ids || [];
   party.members = partyMembers();
-  // host = earliest joiner present
-  const host = party.members[0];
-  const iAmHost = host && me && host.id === me.id;
-  if (iAmHost) {
-    const mine = party.members.find(m => m.id === me.id);
-    if (mine && !mine.host) party.channel.track({ id: me.id, gamertag: me.gamertag, pic: me.pic, joinedAt: party.joinedAt, host: true, sharing: !!party.shareStream });
+  const ids = party.members.map(m => m.id);
+  if (party._primed && me) {
+    ids.forEach(id => { if (prevIds.indexOf(id) === -1 && id !== me.id) ding(false); });
+    prevIds.forEach(id => { if (ids.indexOf(id) === -1) ding(true); });
+  }
+  party._ids = ids; party._primed = true;
+  // host: a manual transfer sticks; otherwise earliest joiner present
+  const seenHost = party.members.find(m => m.host);
+  if (seenHost) party.hostId = seenHost.id;
+  else if (party.hostId && !party.members.some(m => m.id === party.hostId)) party.hostId = null;
+  if (!party.startedAt) {
+    const hs = party.members.find(m => m.host && m.startedAt);
+    if (hs) party.startedAt = hs.startedAt;
+  }
+  if (isPartyHost()) {
+    const mine = me && party.members.find(m => m.id === me.id);
+    if (mine && !mine.host) updatePresence();
   }
   paintParty();
   paintPartyBar();
@@ -2311,6 +3150,12 @@ function getPC(peerId, initiator) {
     const stream = e.streams[0];
     if (e.track.kind === 'audio') attachRemoteAudio(peerId, stream);
     else attachShareVideo(peerId, stream);
+  };
+  pc.onconnectionstatechange = () => {
+    if (!party) return;
+    if (pc.connectionState === 'connected') party.connectedPeers[peerId] = true;
+    else delete party.connectedPeers[peerId];
+    if ($('#screen-party').classList.contains('open')) paintParty();
   };
   pc.onnegotiationneeded = async () => {
     try {
@@ -2388,6 +3233,8 @@ function attachRemoteAudio(peerId, stream) {
     document.body.appendChild(a);
   }
   a.srcObject = stream;
+  a.muted = !!(party && (party.deafened || party.mutedPeers[peerId] || isBlocked(peerId)));
+  try { a.volume = (party && party.volumes[peerId] != null) ? party.volumes[peerId] : 1; } catch (e) {}
 }
 function attachShareVideo(peerId, stream) {
   let v = document.getElementById('sv_' + peerId);
@@ -2420,7 +3267,7 @@ async function toggleShare() {
       const pc = party.peers[pid];
       pc.getSenders().forEach(s => { if (s.track && s.track.kind === 'video') { try { pc.removeTrack(s); } catch (e) {} } });
     });
-    await party.channel.track({ id: me.id, gamertag: me.gamertag, pic: me.pic, joinedAt: party.joinedAt, host: isPartyHost(), sharing: false });
+    updatePresence();
     paintShareBtn();
     toast('Stopped sharing.');
     return;
@@ -2433,7 +3280,7 @@ async function toggleShare() {
       const pc = party.peers[pid];
       stream.getTracks().forEach(t => pc.addTrack(t, stream));
     });
-    await party.channel.track({ id: me.id, gamertag: me.gamertag, pic: me.pic, joinedAt: party.joinedAt, host: isPartyHost(), sharing: true });
+    updatePresence();
     paintShareBtn();
     toast('Sharing your screen with the party.');
   } catch (e) {
@@ -2443,6 +3290,8 @@ async function toggleShare() {
 function isPartyHost() {
   if (!party || !party.members.length) return false;
   const me = currentAccount();
+  if (!me) return false;
+  if (party.hostId) return party.hostId === me.id;
   return party.members[0].id === me.id;
 }
 function notifyUser(userId, event, payload) {
@@ -2455,6 +3304,40 @@ function notifyUser(userId, event, payload) {
     }
   });
 }
+function presencePayload(over) {
+  const me = currentAccount() || {};
+  return Object.assign({ id: me.id, gamertag: me.gamertag, pic: me.pic, joinedAt: party ? party.joinedAt : Date.now(),
+    host: isPartyHost(), sharing: !!(party && party.shareStream),
+    muted: !!(party && party.muted), deafened: !!(party && party.deafened), ptt: !!(party && party.ptt), startedAt: (party && party.startedAt) || Date.now(), speaking: !!(party && party.speaking && !party.muted) }, over || {});
+}
+function updatePresence() { if (party) { try { party.channel.track(presencePayload()); } catch (e) {} } }
+let speakTimer = null, speakCtx = null;
+function startSpeakingMonitor() {
+  stopSpeakingMonitor();
+  if (!party || !party.localStream) return;
+  try {
+    speakCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (speakCtx.resume) speakCtx.resume().catch(() => {});
+    const src = speakCtx.createMediaStreamSource(party.localStream);
+    const an = speakCtx.createAnalyser(); an.fftSize = 512;
+    src.connect(an);
+    const buf = new Float32Array(an.fftSize);
+    let last = false;
+    speakTimer = setInterval(() => {
+      if (!party) { stopSpeakingMonitor(); return; }
+      an.getFloatTimeDomainData(buf);
+      let sum = 0;
+      for (let i = 0; i < buf.length; i++) sum += buf[i] * buf[i];
+      const rms = Math.sqrt(sum / buf.length);
+      const now = !party.muted && rms > 0.025;
+      if (now !== last) { last = now; party.speaking = now; updatePresence(); paintSpeaking(); }
+    }, 250);
+  } catch (e) {}
+}
+function stopSpeakingMonitor() {
+  if (speakTimer) { clearInterval(speakTimer); speakTimer = null; }
+  if (speakCtx) { try { speakCtx.close(); } catch (e) {} speakCtx = null; }
+}
 function inviteToParty(friendId) {
   if (!party) return;
   const me = currentAccount();
@@ -2466,7 +3349,7 @@ function advertiseParty() {
   const me = currentAccount();
   const send = () => {
     if (!party || party.privacy !== 'open' || !isPartyHost()) return;
-    lobbyChannel.send({ type: 'broadcast', event: 'ad', payload: { partyId: party.id, hostId: me.id, gamertag: me.gamertag } });
+    lobbyChannel.send({ type: 'broadcast', event: 'ad', payload: { partyId: party.id, hostId: me.id, gamertag: me.gamertag, members: party.members.length } });
   };
   send();
   party.adTimer = setInterval(send, 20000);
@@ -2476,7 +3359,23 @@ function hidePartyBar() { $('#partyBar').classList.remove('open'); }
 function paintPartyBar() {
   const mem = $('#partyBarMem');
   mem.innerHTML = '';
-  (party ? party.members : []).slice(0, 5).forEach(m => { mem.innerHTML += picHtml(m.pic, m.gamertag); });
+  const me = currentAccount();
+  (party ? party.members : []).slice(0, 5).forEach(m => {
+    const speaking = (me && m.id === me.id) ? (party.speaking && !party.muted) : !!m.speaking;
+    mem.innerHTML += picHtml(m.pic, m.gamertag, 'pAv' + (speaking ? ' speaking' : ''));
+  });
+}
+function paintSpeaking() {
+  if (!party) return;
+  const me = currentAccount();
+  const rows = document.querySelectorAll('#partyMembers .rowCard');
+  party.members.forEach((m, i) => {
+    const row = rows[i]; if (!row) return;
+    const av = row.querySelector('.pAv'); if (!av) return;
+    const speaking = (me && m.id === me.id) ? (party.speaking && !party.muted) : !!m.speaking;
+    av.classList.toggle('speaking', speaking);
+  });
+  paintPartyBar();
 }
 $('#partyBarOpen').addEventListener('click', () => openScreen('party'));
 $('#partyBarShare').addEventListener('click', toggleShare);
@@ -2488,15 +3387,64 @@ function paintShareBtn() {
 function paintParty() {
   if (!party) return;
   const me = currentAccount();
-  $('#partySub').textContent = party.members.length + ' / 5 IN PARTY';
+  $('#partySub').innerHTML = party.members.length + ' / 5 IN PARTY' +
+    (party.startedAt ? ' · <span id="partyTimer">' + fmtPartyTime(Date.now() - party.startedAt) + '</span>' : '');
   const list = $('#partyMembers');
   list.innerHTML = '';
+  const amHost = isPartyHost();
   party.members.forEach(m => {
+    const isMe = me && m.id === me.id;
+    const blocked = !isMe && isBlocked(m.id);
+    const muted = !isMe && (blocked || !!party.mutedPeers[m.id]);
+    const speaking = isMe ? (party.speaking && !party.muted) : !!m.speaking;
+    const connected = isMe || !!party.connectedPeers[m.id];
     const row = document.createElement('div');
     row.className = 'rowCard';
     row.innerHTML = picHtml(m.pic, m.gamertag) +
-      '<div class="rowMain"><div class="t">' + escapeHtml(m.gamertag) + (m.id === me.id ? ' (you)' : '') + '</div><div class="s">' +
-      (m.host ? '👑 Host' : 'Member') + (m.sharing ? ' · 🖥 Sharing' : '') + '</div></div>';
+      '<div class="rowMain"><div class="t">' + escapeHtml(m.gamertag) + (isMe ? ' (you)' : '') + '</div><div class="s">' +
+      (m.host ? '👑 Host' : 'Member') + (m.sharing ? ' · 🖥 Sharing' : '') + (!connected ? ' · Connecting…' : '') +
+      (isMe && party.muted ? ' · 🔇 Muted' : '') + (isMe && party.deafened ? ' · 🔇 Deafened' : '') + (isMe && party.ptt ? ' · 🎙 PTT (hold T / LB)' : '') + (!isMe && m.ptt ? ' · 🎙 PTT' : '') + (muted ? (blocked ? ' · 🚫 Blocked' : ' · 🔇 Muted') : '') + '</div></div>';
+    if (speaking) { const av = row.querySelector('.pAv'); if (av) av.classList.add('speaking'); }
+    if (!isMe) {
+      const btns = document.createElement('div');
+      btns.className = 'btnRow';
+      if (amHost) {
+        const hb = document.createElement('button');
+        hb.className = 'btn'; hb.textContent = 'Make host';
+        hb.addEventListener('click', () => transferHost(m.id));
+        btns.appendChild(hb);
+        const kb = document.createElement('button');
+        kb.className = 'btn danger'; kb.textContent = 'Kick';
+        kb.addEventListener('click', () => kickFromParty(m.id));
+        btns.appendChild(kb);
+      }
+      const mb = document.createElement('button');
+      mb.className = 'btn'; mb.textContent = muted ? '🔇 Unmute' : '🔈 Mute';
+      mb.addEventListener('click', () => {
+        if (isBlocked(m.id)) { toast('Blocked users stay muted. Unblock to unmute.'); return; }
+        if (party.mutedPeers[m.id]) delete party.mutedPeers[m.id]; else party.mutedPeers[m.id] = true;
+        applyAudioMutes();
+        paintParty();
+      });
+      btns.appendChild(mb);
+      const volWrap = document.createElement('div');
+      volWrap.style.cssText = 'display:flex;align-items:center;gap:6px';
+      const volIco = document.createElement('span');
+      volIco.textContent = '🔊'; volIco.style.fontSize = '14px';
+      const vol = document.createElement('input');
+      vol.type = 'range'; vol.min = '0'; vol.max = '100';
+      vol.value = String(Math.round(((party.volumes[m.id] != null) ? party.volumes[m.id] : 1) * 100));
+      vol.title = 'Volume for ' + m.gamertag;
+      vol.style.cssText = 'width:90px;accent-color:var(--accent)';
+      vol.addEventListener('input', () => {
+        party.volumes[m.id] = vol.value / 100;
+        const a = document.getElementById('ra_' + m.id);
+        if (a) { try { a.volume = party.volumes[m.id]; } catch (e) {} }
+      });
+      volWrap.appendChild(volIco); volWrap.appendChild(vol);
+      btns.appendChild(volWrap);
+      row.appendChild(btns);
+    }
     list.appendChild(row);
   });
   $$('#screen-party .segTab').forEach(t => t.classList.toggle('active', t.dataset.priv === party.privacy));
@@ -2511,9 +3459,91 @@ $$('#screen-party .segTab').forEach(t => t.addEventListener('click', async () =>
   toast(party.privacy === 'open' ? 'Party is joinable.' : 'Party is invite-only.');
 }));
 $('#shareBtn').addEventListener('click', toggleShare);
+$('#muteBtn').addEventListener('click', () => {
+  if (!party || !party.localStream) return;
+  party.muted = !party.muted;
+  if (party.muted) party.speaking = false;
+  party._pttKey = false; party._pttPad = false; party.pttTalking = false;
+  $('#muteBtn').textContent = party.muted ? '🔇 Unmute' : '🎙 Mute';
+  applyMicState();
+});
+function applyAudioMutes() {
+  if (!party) return;
+  party.members.forEach(m => {
+    const a = document.getElementById('ra_' + m.id);
+    if (a) a.muted = !!(party.deafened || party.mutedPeers[m.id] || isBlocked(m.id));
+  });
+}
+$('#deafenBtn').addEventListener('click', () => {
+  if (!party) return;
+  party.deafened = !party.deafened;
+  $('#deafenBtn').textContent = party.deafened ? '🔈 Undeafen' : '🔇 Deafen';
+  applyAudioMutes(); updatePresence(); paintParty();
+});
+function applyMicState() {
+  if (!party || !party.localStream) return;
+  const live = !party.muted && (!party.ptt || party.pttTalking);
+  try { party.localStream.getAudioTracks().forEach(t => { t.enabled = live; }); } catch (e) {}
+  if (!live) party.speaking = false;
+  updatePresence(); paintParty();
+}
+$('#pttBtn').addEventListener('click', () => {
+  if (!party) return;
+  party.ptt = !party.ptt;
+  party.pttTalking = false;
+  try { localStorage.setItem('oly_ptt', party.ptt ? '1' : '0'); } catch (e) {}
+  $('#pttBtn').textContent = party.ptt ? '🎙 PTT: On' : '🎙 PTT: Off';
+  toast(party.ptt ? 'Push-to-talk on. Hold T or LB to talk.' : 'Open mic on.');
+  applyMicState();
+});
+document.addEventListener('keydown', e => {
+  if (e.repeat || e.code !== 'KeyT') return;
+  const ae = document.activeElement;
+  if (ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA')) return;
+  if (!party || !party.ptt || party.muted || party._pttKey) return;
+  party._pttKey = true;
+  party.pttTalking = true;
+  applyMicState();
+});
+document.addEventListener('keyup', e => {
+  if (e.code !== 'KeyT') return;
+  if (!party || !party.ptt) return;
+  party._pttKey = false;
+  party.pttTalking = !!party._pttPad;
+  applyMicState();
+});
+function transferHost(memberId) {
+  if (!party || !isPartyHost()) { toast('Only the host can transfer.'); return; }
+  const m = party.members.find(x => x.id === memberId);
+  modal('Make ' + (m ? m.gamertag : 'member') + ' the host?', 'You will become a regular member.', [
+    { label: 'Cancel' },
+    { label: 'Transfer', primary: true, onClick: () => {
+      party.hostId = memberId;
+      try { party.channel.send({ type: 'broadcast', event: 'party_host', payload: { hostId: memberId } }); } catch (e) {}
+      updatePresence(); paintParty();
+      toast('Host transferred.');
+    } }
+  ]);
+}
+function kickFromParty(memberId) {
+  if (!party || !isPartyHost()) { toast('Only the host can kick.'); return; }
+  const m = party.members.find(x => x.id === memberId);
+  modal('Kick ' + (m ? m.gamertag : 'member') + '?', 'They will be removed from the party immediately.', [
+    { label: 'Cancel' },
+    { label: 'Kick', primary: true, onClick: () => {
+      try { party.channel.send({ type: 'broadcast', event: 'party_kick', payload: { target: memberId } }); } catch (e) {}
+      toast('Kicked from the party.');
+    } }
+  ]);
+}
 $('#leavePartyBtn').addEventListener('click', leaveParty);
 async function leaveParty() {
   if (!party) return;
+  stopSpeakingMonitor();
+  if (party.timerInt) clearInterval(party.timerInt);
+  $('#muteBtn').textContent = '🎙 Mute';
+  $('#deafenBtn').textContent = '🔇 Deafen';
+  $('#pttBtn').textContent = '🎙 PTT: Off';
   try {
     if (party.adTimer) clearInterval(party.adTimer);
     Object.keys(party.peers).forEach(pid => { try { party.peers[pid].close(); } catch (e) {} });
@@ -2534,23 +3564,15 @@ ScreenRender.party = function () {
   paintParty();
 };
 
-/* ---------- Boot ---------- */
-let skipped = false;
-function goHome() {
-  if (skipped) return; skipped = true;
-  $('#boot').classList.add('done');
-  $('#home').classList.add('show');
-  $('#skipTip').style.display = 'none';
-  setTimeout(() => setFocus(0), 1200);
-  setTimeout(async () => {
-    try {
-      const { data: { session } } = await supa.auth.getSession();
-      if (!session) openAccount('Welcome to Olympus — create your account to get started.');
-    } catch (e) {}
-  }, 1600);
-}
-setTimeout(goHome, 3400);
-addEventListener('click', e => { if (!skipped) goHome(); });
+/* ---------- Boot: straight to the home menu ---------- */
+$('#home').classList.add('show');
+setTimeout(() => setFocus(0), 300);
+setTimeout(async () => {
+  try {
+    const { data: { session } } = await supa.auth.getSession();
+    if (!session) openAccount('Welcome to Olympus — create your account to get started.');
+  } catch (e) {}
+}, 600);
 
 initTheme();
 showPadStatus();
