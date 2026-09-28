@@ -289,10 +289,86 @@
   #menuTab:hover #menuTabBtn { box-shadow: 0 0 14px rgba(47,107,255,.6); }
   body.menu-open #menuTab { transform: translateY(-50%) translateX(-110%); opacity: 0; pointer-events: none; }
 
+  /* ---------- Accounts ---------- */
+  #accountScreen {
+    position: fixed; inset: 0; z-index: 45;
+    background: rgba(2, 5, 14, .82);
+    backdrop-filter: blur(14px);
+    display: none; align-items: center; justify-content: center;
+  }
+  #accountScreen.open { display: flex; }
+  .acctCard {
+    width: min(430px, 92vw);
+    background: rgba(8, 14, 30, .96);
+    border: 1px solid rgba(90, 130, 255, .3);
+    border-radius: 22px;
+    padding: 34px 34px 28px;
+    box-shadow: 0 24px 80px rgba(0,0,0,.6), 0 0 60px rgba(47,107,255,.12);
+    display: flex; flex-direction: column; gap: 14px;
+    animation: acctIn .45s cubic-bezier(.2,.8,.2,1);
+  }
+  @keyframes acctIn { from { opacity: 0; transform: translateY(22px) scale(.98); } }
+  #acctLogo {
+    font-size: 22px; font-weight: 800; letter-spacing: .35em; text-indent: .35em; text-align: center;
+    background: linear-gradient(180deg, #9fc5ff, #2f6bff);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .acctCard h2 { text-align: center; font-size: 20px; font-weight: 700; letter-spacing: .04em; }
+  #acctNotice { text-align: center; font-size: 13px; color: #8fb0ff; line-height: 1.5; }
+  #acctNotice:empty { display: none; }
+  .acctTabs { display: flex; background: rgba(20,32,66,.6); border-radius: 12px; padding: 4px; gap: 4px; }
+  .acctTab { flex: 1; text-align: center; padding: 10px; border-radius: 9px; font-size: 14px; color: #8fa8dd; cursor: pointer; letter-spacing: .04em; }
+  .acctTab.active { background: rgba(47,107,255,.25); color: #fff; box-shadow: inset 0 0 0 1px rgba(127,176,255,.4); }
+  .acctCard input[type=text], .acctCard input[type=email], .acctCard input[type=password] {
+    width: 100%; padding: 13px 15px; border-radius: 12px;
+    background: rgba(16,26,54,.7); border: 1px solid rgba(90,130,255,.28);
+    color: #fff; font-size: 15px; font-family: inherit; outline: none;
+  }
+  .acctCard input:focus { border-color: #7fb0ff; box-shadow: 0 0 0 3px rgba(47,107,255,.25); }
+  .acctCard input::placeholder { color: #4d6db3; }
+  .nameRow { display: flex; gap: 10px; }
+  .tagRow { display: flex; gap: 10px; }
+  .tagRow input { flex: 1; }
+  #acctDice {
+    width: 48px; flex: 0 0 auto; border-radius: 12px; font-size: 20px; cursor: pointer;
+    background: rgba(47,107,255,.16); border: 1px solid rgba(127,176,255,.45); color: #cfe0ff;
+  }
+  #acctDice:hover { background: rgba(47,107,255,.3); }
+  #acctDice:active { transform: scale(.93); }
+  #acctAvatarWrap { display: flex; align-items: center; gap: 16px; }
+  #acctAvatarPreview {
+    width: 64px; height: 64px; border-radius: 50%; flex: 0 0 auto;
+    background: linear-gradient(135deg, #2f6bff, #0a1f66);
+    border: 1px solid rgba(127,176,255,.45);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 22px; color: #cfe0ff; overflow: hidden;
+  }
+  #acctAvatarPreview img { width: 100%; height: 100%; object-fit: cover; }
+  #acctUploadBtn {
+    padding: 10px 16px; border-radius: 999px; font-size: 13px; letter-spacing: .06em; cursor: pointer;
+    background: rgba(47,107,255,.14); border: 1px solid rgba(127,176,255,.4); color: #b9cdf7; font-family: inherit;
+  }
+  #acctUploadBtn:hover { background: rgba(47,107,255,.28); }
+  .acctBtn {
+    padding: 14px; border-radius: 13px; font-size: 16px; font-weight: 700; letter-spacing: .05em; cursor: pointer;
+    background: linear-gradient(135deg, #2f6bff, #1a3fa0); border: 1px solid rgba(127,176,255,.5); color: #fff; font-family: inherit;
+    box-shadow: 0 8px 28px rgba(47,107,255,.35);
+  }
+  .acctBtn:hover { filter: brightness(1.12); }
+  .acctBtn:active { transform: scale(.98); }
+  .acctBtn:disabled { opacity: .55; cursor: default; }
+  .acctError { font-size: 13px; color: #ff8f9f; text-align: center; }
+  .acctError:empty { display: none; }
+  #acctSkip { text-align: center; font-size: 13px; color: #5f7fc4; cursor: pointer; letter-spacing: .06em; padding: 4px; }
+  #acctSkip:hover { color: #9fc5ff; }
+  #gamerTag { font-size: 14px; color: #b9cdf7; letter-spacing: .08em; font-weight: 600; }
+  #avatarBtn img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+
   @media (max-width: 760px) {
     #hintbar { flex-wrap: wrap; gap: 16px; }
   }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -308,7 +384,8 @@
 <div id="home">
   <div id="topbar">
     <div id="topLeft">
-      <div id="avatarBtn" class="rise" style="--d:.15s" title="Switch profile">P1</div>
+      <div id="avatarBtn" class="rise" style="--d:.15s" title="Switch profile">?</div>
+      <div id="gamerTag" class="rise" style="--d:.18s">No account</div>
       <div id="profileMenu">
         <h3>WHO'S PLAYING?</h3>
       </div>
@@ -337,16 +414,57 @@
 
 </div>
 
+<div id="accountScreen">
+  <div class="acctCard">
+    <div id="acctLogo">OLYMPUS</div>
+    <h2>Your Olympus account</h2>
+    <p id="acctNotice"></p>
+    <div class="acctTabs">
+      <div class="acctTab active" id="tabCreate">Create account</div>
+      <div class="acctTab" id="tabSignin">Sign in</div>
+    </div>
+    <div id="paneCreate" style="display:flex;flex-direction:column;gap:14px">
+      <div id="acctAvatarWrap">
+        <div id="acctAvatarPreview">?</div>
+        <button id="acctUploadBtn" type="button">Upload pic</button>
+        <input type="file" id="acctFile" accept="image/*" hidden>
+      </div>
+      <div class="nameRow">
+        <input type="text" id="acctFirst" placeholder="First name" maxlength="30">
+        <input type="text" id="acctLast" placeholder="Last name" maxlength="30">
+      </div>
+      <input type="email" id="acctEmail" placeholder="Email" maxlength="80">
+      <div class="nameRow">
+        <input type="password" id="acctPw" placeholder="Password" maxlength="64">
+        <input type="password" id="acctPw2" placeholder="Confirm password" maxlength="64">
+      </div>
+      <div class="tagRow">
+        <input type="text" id="acctTag" placeholder="Gamertag" maxlength="16">
+        <button id="acctDice" type="button" title="Random gamertag">🎲</button>
+      </div>
+      <div class="acctError" id="createError"></div>
+      <button class="acctBtn" id="acctCreateBtn" type="button">Create account</button>
+    </div>
+    <div id="paneSignin" style="display:none;flex-direction:column;gap:14px">
+      <input type="email" id="signinEmail" placeholder="Email" maxlength="80">
+      <input type="password" id="signinPw" placeholder="Password" maxlength="64">
+      <div class="acctError" id="signinError"></div>
+      <button class="acctBtn" id="acctSigninBtn" type="button">Sign in</button>
+    </div>
+    <div id="acctSkip">Skip for now</div>
+  </div>
+</div>
+
 <div id="menuTab" title="Open menu"><span id="menuTabBtn">Y</span><small>MENU</small></div>
 <div id="menuOverlay"></div>
 <nav id="sideMenu">
   <h2>OLYMPUS</h2>
   <div class="menuBtn" style="--d:.05s"><span class="mi">🎮</span>Game Library</div>
-  <div class="menuBtn" style="--d:.1s"><span class="mi">🛒</span>Shop</div>
+  <div class="menuBtn" id="menuShop" style="--d:.1s"><span class="mi">🛒</span>Shop</div>
   <div class="menuBtn" style="--d:.15s"><span class="mi">◉</span>Ondra AI</div>
-  <div class="menuBtn" style="--d:.2s"><span class="mi">👥</span>Friends</div>
-  <div class="menuBtn" style="--d:.25s"><span class="mi">💬</span>Messages</div>
-  <div class="menuBtn" style="--d:.3s"><span class="mi">👤</span>Profile</div>
+  <div class="menuBtn" id="menuFriends" style="--d:.2s"><span class="mi">👥</span>Friends</div>
+  <div class="menuBtn" id="menuMessages" style="--d:.25s"><span class="mi">💬</span>Messages</div>
+  <div class="menuBtn" id="menuProfile" style="--d:.3s"><span class="mi">👤</span>Profile</div>
   <div class="menuBtn" style="--d:.35s"><span class="mi">⚙</span>Settings</div>
 </nav>
 
@@ -455,34 +573,263 @@
     }
   }
 
-  /* Profile switcher — top-left pic opens "who's playing?" */
+  /* ---------- Olympus accounts (cloud) ----------
+     Accounts live in Supabase: Auth handles email + password securely
+     server-side, profiles hold the gamertag, and game_saves holds cloud
+     saves. Games read window.Olympus.account.gamertag when they have no
+     separate account system, and use cloudSave/cloudLoad for saves. */
+  window.Olympus = window.Olympus || {};
+  const SUPABASE_URL = 'https://zzsvqnnrfngfxtucszgr.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp6c3Zxbm5yZm5nZnh0dWNzemdyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2MDAzNTksImV4cCI6MjEwNjE3NjM1OX0.R-MCzou_q_ObnwXKCQRsRYy0Bwnand-1ktiatLfQ0aU';
+  const supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  let account = null; // { id, email, firstName, lastName, gamertag, pic }
+  function currentAccount() { return account; }
+  async function refreshAccount() {
+    try {
+      const { data: { session } } = await supa.auth.getSession();
+      if (!session) { account = null; }
+      else {
+        const { data: prof } = await supa.from('profiles').select('*').eq('id', session.user.id).maybeSingle();
+        account = prof
+          ? { id: session.user.id, email: session.user.email, firstName: prof.first_name, lastName: prof.last_name, gamertag: prof.gamertag, pic: prof.pic || null }
+          : null;
+      }
+    } catch (e) { account = null; }
+    paintAccountBadge();
+    buildProfileItems();
+  }
+  /* Games read this for the player's identity when they have no login of their own */
+  Object.defineProperty(window.Olympus, 'account', {
+    get() {
+      const a = currentAccount();
+      return a ? { gamertag: a.gamertag, firstName: a.firstName, lastName: a.lastName, email: a.email, pic: a.pic } : null;
+    }
+  });
+  /* Cloud saves — one row per player per game per slot */
+  window.Olympus.cloudSave = async function (game, slot, data) {
+    const a = currentAccount();
+    if (!a) throw new Error('Not signed in');
+    const { error } = await supa.from('game_saves').upsert(
+      { user_id: a.id, game: game, slot: slot || 'auto', data: data, updated_at: new Date().toISOString() },
+      { onConflict: 'user_id,game,slot' }
+    );
+    if (error) throw error;
+  };
+  window.Olympus.cloudLoad = async function (game, slot) {
+    const a = currentAccount();
+    if (!a) return null;
+    const { data, error } = await supa.from('game_saves').select('data').eq('user_id', a.id).eq('game', game).eq('slot', slot || 'auto').maybeSingle();
+    if (error || !data) return null;
+    return data.data;
+  };
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+  function initials(tag) {
+    const t = (tag || '').replace(/[^A-Za-z0-9]/g, '');
+    return (t.slice(0, 2) || '?').toUpperCase();
+  }
+
+  /* Random gamertag generator */
+  const TAG_A = ['Shadow','Iron','Nova','Blaze','Frost','Thunder','Ghost','Solar','Crimson','Echo','Vortex','Onyx','Pixel','Storm','Lunar','Apex','Drift','Ember','Flux','Zero'];
+  const TAG_B = ['Fox','Wolf','Hawk','Bear','Viper','Falcon','Raven','Tiger','Cobra','Dragon','Puma','Shark','Wraith','Bolt','Rider','Hunter','Saber','Comet','Reaper','Titan'];
+  function randomTag() {
+    return TAG_A[Math.floor(Math.random() * TAG_A.length)] +
+           TAG_B[Math.floor(Math.random() * TAG_B.length)] +
+           (100 + Math.floor(Math.random() * 900));
+  }
+
+  /* Account screen */
+  const accountScreen = document.getElementById('accountScreen');
+  const acctFirst = document.getElementById('acctFirst');
+  const acctLast = document.getElementById('acctLast');
+  const acctEmail = document.getElementById('acctEmail');
+  const acctTag = document.getElementById('acctTag');
+  const acctPw = document.getElementById('acctPw');
+  const acctPw2 = document.getElementById('acctPw2');
+  const acctFile = document.getElementById('acctFile');
+  const tabCreate = document.getElementById('tabCreate');
+  const tabSignin = document.getElementById('tabSignin');
+  const paneCreate = document.getElementById('paneCreate');
+  const paneSignin = document.getElementById('paneSignin');
+  let accountOpen = false, draftPic = null;
+
+  function setTab(which) {
+    const c = which === 'create';
+    tabCreate.classList.toggle('active', c);
+    tabSignin.classList.toggle('active', !c);
+    paneCreate.style.display = c ? 'flex' : 'none';
+    paneSignin.style.display = c ? 'none' : 'flex';
+  }
+  tabCreate.addEventListener('click', () => setTab('create'));
+  tabSignin.addEventListener('click', () => setTab('signin'));
+
+  function paintAcctAvatar() {
+    const prev = document.getElementById('acctAvatarPreview');
+    if (draftPic) prev.innerHTML = '<img src="' + draftPic + '" alt="">';
+    else prev.textContent = initials(acctTag.value.trim());
+  }
+  acctTag.addEventListener('input', paintAcctAvatar);
+  document.getElementById('acctDice').addEventListener('click', () => {
+    acctTag.value = randomTag();
+    paintAcctAvatar();
+  });
+  document.getElementById('acctUploadBtn').addEventListener('click', () => acctFile.click());
+  acctFile.addEventListener('change', () => {
+    const f = acctFile.files[0];
+    if (!f) return;
+    const img = new Image();
+    img.onload = () => {
+      const s = 256, c = document.createElement('canvas');
+      c.width = c.height = s;
+      const m = Math.min(img.width, img.height);
+      c.getContext('2d').drawImage(img, (img.width - m) / 2, (img.height - m) / 2, m, m, 0, 0, s, s);
+      draftPic = c.toDataURL('image/png');
+      URL.revokeObjectURL(img.src);
+      paintAcctAvatar();
+    };
+    img.src = URL.createObjectURL(f);
+  });
+
+  function openAccount(notice) {
+    accountOpen = true;
+    document.getElementById('acctNotice').textContent = notice || '';
+    document.getElementById('createError').textContent = '';
+    document.getElementById('signinError').textContent = '';
+    setTab('create');
+    if (profileMenuOpen) setProfileMenu(false);
+    if (menuOpen) setMenu(false);
+    accountScreen.classList.add('open');
+  }
+  function closeAccount() {
+    accountOpen = false;
+    accountScreen.classList.remove('open');
+    draftPic = null;
+    acctFile.value = '';
+    paintAcctAvatar();
+  }
+  document.getElementById('acctSkip').addEventListener('click', closeAccount);
+
+  /* Gate: Shop + communication features need an account */
+  function requireAccount(feature) {
+    if (currentAccount()) return true;
+    openAccount('You need an Olympus account to use ' + feature + '.');
+    return false;
+  }
+
+  document.getElementById('acctCreateBtn').addEventListener('click', async () => {
+    const first = acctFirst.value.trim(), last = acctLast.value.trim();
+    const email = acctEmail.value.trim().toLowerCase();
+    const tag = acctTag.value.trim();
+    const pw = acctPw.value, pw2 = acctPw2.value;
+    const err = document.getElementById('createError');
+    const btn = document.getElementById('acctCreateBtn');
+    if (!first || !last) err.textContent = 'Enter your first and last name.';
+    else if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) err.textContent = 'Enter a valid email address.';
+    else if (tag.length < 3 || tag.length > 16) err.textContent = 'Gamertag must be 3–16 characters.';
+    else if (pw.length < 4) err.textContent = 'Password must be at least 4 characters.';
+    else if (pw !== pw2) err.textContent = 'Passwords don\'t match.';
+    else {
+      err.textContent = '';
+      btn.disabled = true; btn.textContent = 'Creating...';
+      try {
+        const { data, error } = await supa.auth.signUp({ email: email, password: pw });
+        if (error) throw error;
+        const user = data.user;
+        if (!user) throw new Error('Check your email to confirm, then sign in.');
+        const { error: pErr } = await supa.from('profiles').insert({
+          id: user.id, first_name: first, last_name: last, gamertag: tag, pic: draftPic
+        });
+        if (pErr) {
+          if (pErr.code === '23505') err.textContent = 'That gamertag is taken — try another.';
+          else err.textContent = pErr.message;
+        } else {
+          await refreshAccount();
+          closeAccount();
+        }
+      } catch (e) {
+        err.textContent = /already registered/i.test(e.message || '')
+          ? 'That email already has an account — sign in instead.'
+          : (e.message || 'Couldn\'t create the account.');
+      }
+      btn.disabled = false; btn.textContent = 'Create account';
+    }
+  });
+  document.getElementById('acctSigninBtn').addEventListener('click', async () => {
+    const email = document.getElementById('signinEmail').value.trim().toLowerCase();
+    const pw = document.getElementById('signinPw').value;
+    const err = document.getElementById('signinError');
+    const btn = document.getElementById('acctSigninBtn');
+    err.textContent = '';
+    btn.disabled = true; btn.textContent = 'Signing in...';
+    try {
+      const { error } = await supa.auth.signInWithPassword({ email: email, password: pw });
+      if (error) throw error;
+      await refreshAccount();
+      if (!currentAccount()) throw new Error('Signed in, but no Olympus profile was found for this login.');
+      closeAccount();
+    } catch (e) {
+      err.textContent = /invalid login credentials/i.test(e.message || '')
+        ? 'Wrong email or password.'
+        : (e.message || 'Couldn\'t sign in.');
+    }
+    btn.disabled = false; btn.textContent = 'Sign in';
+  });
+
+  /* Top-left badge: pic (or gamertag initials) + gamertag */
   const avatarBtn = document.getElementById('avatarBtn');
+  const gamerTagEl = document.getElementById('gamerTag');
+  function paintAccountBadge() {
+    const a = currentAccount();
+    if (a) {
+      avatarBtn.innerHTML = a.pic ? '<img src="' + a.pic + '" alt="">' : escapeHtml(initials(a.gamertag));
+      gamerTagEl.textContent = a.gamertag;
+    } else {
+      avatarBtn.textContent = '?';
+      gamerTagEl.textContent = 'No account';
+    }
+  }
+
+  /* Who's playing? — current account, switch, sign out */
   const profileMenu = document.getElementById('profileMenu');
   const profileItems = [];
-  const profiles = [
-    { name: 'Player One', init: 'P1' },
-    { name: 'Player Two', init: 'P2' },
-  ];
-  const NUM_WORDS = ['One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight'];
-  let currentProfile = 0, profileMenuOpen = false, profileFocus = 0;
-
+  let profileMenuOpen = false, profileFocus = 0;
   function buildProfileItems() {
     profileMenu.querySelectorAll('.profileItem').forEach(el => el.remove());
     profileItems.length = 0;
-    profiles.forEach((p, i) => {
+    const a = currentAccount();
+    if (a) {
       const d = document.createElement('div');
       d.className = 'profileItem';
-      d.innerHTML = '<div class="pAv">' + p.init + '</div><span>' + p.name + '</span><span class="check">✓</span>';
-      d.addEventListener('click', e => { e.stopPropagation(); chooseProfile(i); });
-      d.addEventListener('mouseenter', () => { profileFocus = i; paintProfiles(); });
+      const av = a.pic
+        ? '<img src="' + a.pic + '" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover">'
+        : escapeHtml(initials(a.gamertag));
+      d.innerHTML = '<div class="pAv">' + av + '</div><span>' + escapeHtml(a.gamertag) + '</span><span class="check">✓</span>';
+      d.addEventListener('click', e => { e.stopPropagation(); setProfileMenu(false); });
+      d.addEventListener('mouseenter', () => { profileFocus = 0; paintProfiles(); });
       profileMenu.appendChild(d); profileItems.push(d);
-    });
+    }
     const add = document.createElement('div');
     add.className = 'profileItem add';
-    add.innerHTML = '<div class="pAv">+</div><span>Add profile</span>';
-    add.addEventListener('click', e => { e.stopPropagation(); chooseProfile(profiles.length); });
-    add.addEventListener('mouseenter', () => { profileFocus = profiles.length; paintProfiles(); });
+    add.innerHTML = '<div class="pAv">+</div><span>' + (a ? 'Switch account' : 'Add account') + '</span>';
+    add.addEventListener('click', e => { e.stopPropagation(); setProfileMenu(false); openAccount(''); });
+    add.addEventListener('mouseenter', () => { profileFocus = profileItems.length; paintProfiles(); });
     profileMenu.appendChild(add); profileItems.push(add);
+    if (a) {
+      const so = document.createElement('div');
+      so.className = 'profileItem';
+      so.innerHTML = '<div class="pAv">↩</div><span>Sign out</span>';
+      so.addEventListener('click', async e => {
+        e.stopPropagation();
+        try { await supa.auth.signOut(); } catch (e2) {}
+        account = null;
+        paintAccountBadge(); buildProfileItems(); setProfileMenu(false);
+      });
+      so.addEventListener('mouseenter', () => { profileFocus = profileItems.length; paintProfiles(); });
+      profileMenu.appendChild(so); profileItems.push(so);
+    }
   }
   function setProfileMenu(open) {
     profileMenuOpen = open;
@@ -490,29 +837,19 @@
     profileMenu.classList.toggle('open', open);
     if (open) {
       if (menuOpen) setMenu(false);
-      profileFocus = currentProfile; paintProfiles();
+      profileFocus = 0;
+      paintProfiles();
     }
   }
   function paintProfiles() {
+    const a = currentAccount();
     profileItems.forEach((el, k) => {
       el.classList.toggle('focused', k === profileFocus);
       const chk = el.querySelector('.check');
-      if (chk) chk.style.visibility = (k === currentProfile) ? 'visible' : 'hidden';
+      if (chk) chk.style.visibility = (a && k === 0) ? 'visible' : 'hidden';
     });
   }
-  function chooseProfile(i) {
-    if (i < profiles.length) {
-      currentProfile = i;
-    } else {
-      const n = profiles.length + 1;
-      profiles.push({ name: 'Player ' + (NUM_WORDS[n - 1] || n), init: 'P' + n });
-      buildProfileItems();
-      currentProfile = profiles.length - 1;
-    }
-    avatarBtn.textContent = profiles[currentProfile].init;
-    setProfileMenu(false);
-  }
-  buildProfileItems();
+  refreshAccount();
   avatarBtn.addEventListener('click', e => { e.stopPropagation(); setProfileMenu(!profileMenuOpen); });
   document.addEventListener('click', e => {
     if (profileMenuOpen && !profileMenu.contains(e.target) && e.target !== avatarBtn) setProfileMenu(false);
@@ -567,7 +904,22 @@
     b.addEventListener('mouseenter', () => { menuFocus = i; paintMenu(); });
   });
 
+  /* Shop + communication features require an account */
+  document.getElementById('menuShop').addEventListener('click', () => { requireAccount('the Shop'); });
+  document.getElementById('menuFriends').addEventListener('click', () => { requireAccount('Friends'); });
+  document.getElementById('menuMessages').addEventListener('click', () => { requireAccount('Messages'); });
+  document.getElementById('menuProfile').addEventListener('click', () => { openAccount(''); });
+
   addEventListener('keydown', e => {
+    const ae = document.activeElement;
+    if (ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA')) {
+      if (e.key === 'Escape') ae.blur();
+      return;
+    }
+    if (accountOpen) {
+      if (e.key === 'Escape') closeAccount();
+      return;
+    }
     if (e.key === 'y' || e.key === 'Y') {
       if (profileMenuOpen) setProfileMenu(false);
       setMenu(!menuOpen);
@@ -577,7 +929,7 @@
       const n = profileItems.length;
       if (e.key === 'ArrowDown') { profileFocus = Math.min(n - 1, profileFocus + 1); paintProfiles(); }
       else if (e.key === 'ArrowUp') { profileFocus = Math.max(0, profileFocus - 1); paintProfiles(); }
-      else if (e.key === 'Enter') chooseProfile(profileFocus);
+      else if (e.key === 'Enter' && profileItems[profileFocus]) profileItems[profileFocus].click();
       else if (e.key === 'Escape' || e.key === 'b' || e.key === 'B') setProfileMenu(false);
       return;
     }
@@ -633,7 +985,7 @@
           padState.pdir = vdir;
         }
       } else { padState.pdir = 0; padState.pnext = 0; }
-      if (aEdge) chooseProfile(profileFocus);
+      if (aEdge && profileItems[profileFocus]) profileItems[profileFocus].click();
       if (bEdge) setProfileMenu(false);
       if (yEdge) { setProfileMenu(false); setMenu(true); }
     } else {
@@ -689,6 +1041,12 @@
     document.getElementById('home').classList.add('show');
     document.getElementById('skipTip').style.display = 'none';
     setTimeout(() => setFocus(0), 1200);
+    setTimeout(async () => {
+      try {
+        const { data: { session } } = await supa.auth.getSession();
+        if (!session) openAccount('Welcome to Olympus — create your account to get started.');
+      } catch (e) {}
+    }, 1600);
   }
   setTimeout(goHome, 3400);
   addEventListener('click', e => { if (!skipped) goHome(); });
