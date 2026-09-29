@@ -65,7 +65,7 @@
   #avatarBtn:hover { transform: scale(1.06); }
   #avatarBtn svg { width: 30px; height: 30px; }
   #avatarBtn img { width: 100%; height: 100%; object-fit: cover; }
-  #avatarBtn.focused, #padBtn.focused {
+  #avatarBtn.focused, #padBtn.focused, #topIcons .iconBtn.focused {
     box-shadow: 0 0 0 3px rgba(var(--accent-rgb),.35), 0 0 28px var(--accent-glow);
     transform: scale(1.06);
   }
@@ -132,7 +132,8 @@
     position: relative;
     overflow: hidden;
   }
-  .tile .tileLabel{position:absolute;left:0;right:0;bottom:0;padding:30px 12px 10px;font-size:13px;font-weight:600;letter-spacing:.02em;background:linear-gradient(transparent,rgba(0,0,0,.8));white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none;text-align:left}
+  .tileWrap{display:flex;flex-direction:column;align-items:center}
+  .tileName{margin-top:12px;font-size:14px;font-weight:600;letter-spacing:.02em;color:#dfe7ff;text-align:center;max-width:176px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .tile.focused {
     transform: scale(1.07);
     border: 2px solid #7fb0ff;
@@ -325,7 +326,7 @@
   #menuExit.navFocus { box-shadow: 0 0 0 3px rgba(255,84,112,.6), 0 0 28px rgba(255,84,112,.45) !important; }
 
   /* Modern icon buttons */
-  .iconBtn:hover { border-color: rgba(var(--accent-rgb),.6); box-shadow: 0 0 16px rgba(var(--accent-rgb),.35); transform: translateY(-1px); }
+  .iconBtn:hover { border-color: rgba(var(--accent-rgb),.6); box-shadow: 0 0 0 3px rgba(var(--accent-rgb),.35), 0 0 28px var(--accent-glow); transform: translateY(-1px); }
   .iconBtn:active { transform: scale(.94); }
   .backBtn svg { width: 22px; height: 22px; }
 
@@ -452,6 +453,11 @@
     background: rgba(53,208,127,.1); border: 1px solid rgba(53,208,127,.35);
     padding: 5px 12px; border-radius: 999px;
   }
+  .ownedTag {
+    font-size: 12px; font-weight: 800; letter-spacing: .14em; color: #9fc5ff;
+    background: rgba(47,107,255,.16); border: 1px solid rgba(47,107,255,.55);
+    padding: 5px 12px; border-radius: 999px;
+  }
   .wishBtn {
     position: absolute; top: 10px; right: 10px; z-index: 2;
     width: 38px; height: 38px; border-radius: 50%;
@@ -492,10 +498,9 @@
   #dlModal .big { font-size:54px; font-weight:800; margin:12px 0 10px; font-variant-numeric:tabular-nums; }
   #dlModal .bar { height:10px; border-radius:6px; background:#16213a; overflow:hidden; margin-bottom:20px; }
   #dlModal .bar i { display:block; height:100%; width:0; background:#22d3ee; border-radius:6px; transition:width .25s; }
-  #gameFrame { position:fixed; inset:0; z-index:300; display:none; background:#000; }
+  #gameFrame { position:fixed; inset:0; z-index:300; display:none; background:#000; overflow:hidden; }
   #gameFrame.open { display:block; }
-  #gameFrame iframe { width:100%; height:100%; border:0; }
-  #gameFrame .gclose { position:absolute; top:14px; right:14px; z-index:2; width:44px; height:44px; border-radius:50%; border:1px solid rgba(255,255,255,.3); background:rgba(5,8,20,.6); color:#fff; font-size:20px; cursor:pointer; }
+  #gameFrame iframe { width:100%; height:100%; border:0; display:block; }
 
   /* Library */
   #libGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
@@ -686,9 +691,9 @@
 .bubble .msgDel{position:absolute;top:2px;right:8px;background:none;border:none;color:var(--dim);font-size:12px;cursor:pointer;opacity:0;padding:4px}
 .bubble:hover .msgDel{opacity:.9}
 .bubble.deleted{opacity:.55;font-style:italic}
-.libTile{flex-direction:column;gap:6px}
-.libTile .t{font-size:15px;color:var(--dim);letter-spacing:.08em}
-.libTile .s{font-size:12px;opacity:.75}
+.libWrap{display:flex;flex-direction:column;align-items:center}
+.libName{margin-top:10px;font-size:15px;font-weight:700;letter-spacing:.03em;color:#dfe7ff;text-align:center;max-width:230px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.libWrap .s{font-size:12px;color:var(--dim);margin-top:2px;opacity:.75}
 #sleepOverlay{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;flex-direction:column;gap:18px;background:rgba(4,8,20,.96)}
 #sleepOverlay.on{display:flex}
   /* Achievement banner */
@@ -951,7 +956,7 @@
     </div>
     <div class="secTitle">ABOUT</div>
     <div class="card setRow">
-      <div><div class="t">Olympus</div><div class="s" id="verSub">Version 0.3.4 · PC app</div></div>
+      <div><div class="t">Olympus</div><div class="s" id="verSub">PC app</div></div>
       <div class="spacer"></div>
       <button class="btn" id="updateBtn">Check for updates</button>
     </div>
@@ -1044,7 +1049,7 @@
   <div class="bar"><i id="dlmBar"></i></div>
   <button class="btn primary" id="dlmOk" style="width:100%">OK</button>
 </div></div>
-<div id="gameFrame"><button class="gclose" id="gameFrameClose" aria-label="Close game">&#10005;</button><iframe id="gameFrameView" title="Game" sandbox="allow-scripts allow-same-origin"></iframe></div>
+<div id="gameFrame"><iframe id="gameFrameView" title="Game" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe></div>
 
 <div id="remapWrap"><div id="remapBox">
   <h3>Remap controller</h3>
@@ -1119,7 +1124,16 @@ function initials(tag) {
 function picHtml(pic, tag, cls) {
   return '<div class="' + (cls || 'pAv') + '">' + (pic ? '<img src="' + pic + '" alt="">' : escapeHtml(initials(tag))) + '</div>';
 }
-const OLY_VERSION = '0.3.4';
+let OLY_VERSION = '0.3.5';
+// In the packaged PC app, use the real installed version (drives the updater UI).
+(async () => {
+  try {
+    if (window.OlympusPC && window.OlympusPC.isPCApp && window.OlympusPC.appVersion) {
+      const v = await window.OlympusPC.appVersion();
+      if (typeof v === 'string' && /^\d+\.\d+\.\d+/.test(v)) OLY_VERSION = v;
+    }
+  } catch (e) {}
+})();
 /* Welcome email: sent once when a new Olympus account is created.
    Uses EmailJS (free tier, sends from your Gmail — no domain needed).
    Fill these in (or set localStorage 'oly_welcome_email' to a JSON object
@@ -1227,6 +1241,7 @@ function hexToHsl(hex) {
   }
   return { h: Math.round(h), s: Math.round(s * 100), l: Math.round(l * 100) };
 }
+let accentH = 222; // cached accent hue: reading it from CSS each frame forced a style recalc
 function applyTheme(hex) {
   const n = parseInt(hex.slice(1), 16);
   const r = n >> 16 & 255, g = n >> 8 & 255, b = n & 255;
@@ -1235,6 +1250,7 @@ function applyTheme(hex) {
   root.setProperty('--accent', hex);
   root.setProperty('--accent-rgb', r + ', ' + g + ', ' + b);
   root.setProperty('--accent-h', h);
+  accentH = h;
   root.setProperty('--surf-h', h);
   try { localStorage.setItem('oly_theme', hex); } catch (e) {}
   const wheel = $('#themeWheel');
@@ -1278,9 +1294,13 @@ function build() {
   }
 }
 function draw(t) {
+  // The wallpaper sits behind opaque screens and the game frame: skip the
+  // ~6k sine/line segments when nothing can see it.
+  if (!document.hidden && !document.body.classList.contains('screen-open') &&
+      !document.getElementById('gameFrame').classList.contains('open')) {
   ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H);
   ctx.lineWidth = 2;
-  const h = getComputedStyle(document.documentElement).getPropertyValue('--accent-h').trim() || 222;
+  const h = accentH;
   for (const L of lines) {
     ctx.beginPath();
     for (let y = -10; y <= H + 10; y += 8) {
@@ -1289,6 +1309,7 @@ function draw(t) {
     }
     ctx.strokeStyle = 'hsla(' + h + ', 95%, 52%, ' + L.alpha + ')';
     ctx.stroke();
+  }
   }
   requestAnimationFrame(draw);
 }
@@ -1302,7 +1323,7 @@ let supa = null;
 try {
   if (window.supabase && window.supabase.createClient) supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 } catch (e) { supa = null; }
-loadStoreGames(); // prefetch the store catalog; safe when offline
+loadStoreGames().then(syncHomeGames); // prefetch the store catalog; safe when offline
 /* Offline-safe: the console still boots and runs locally if the cloud
    library can't load (no network). Cloud features just report offline. */
 function online() { return !!supa; }
@@ -1664,10 +1685,18 @@ function buildTiles() {
   tiles.length = 0;
   rowOrder.forEach((gi, pos) => {
     const g = games[gi];
+    const w = document.createElement('div');
+    w.className = 'tileWrap';
     const d = document.createElement('div');
     d.className = 'tile';
     d.dataset.i = pos;
     if (g.icon) { d.title = g.name; d.style.background = artBG(g.icon[0], g.icon[1]); }
+    if (g.iconUrl) {
+      const im = document.createElement('img');
+      im.src = g.iconUrl; im.alt = '';
+      im.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none';
+      d.appendChild(im);
+    }
     if (g.ach && g.ach.total > 0) {
       const pct = Math.round(100 * (g.ach.done || 0) / g.ach.total);
       const badge = document.createElement('div');
@@ -1675,13 +1704,14 @@ function buildTiles() {
       badge.innerHTML = ic('trophy') + ' ' + pct + '%';
       d.appendChild(badge);
     }
-    const label = document.createElement('div');
-    label.className = 'tileLabel';
-    label.textContent = g.name;
-    d.appendChild(label);
-    d.addEventListener('click', () => { setFocus(pos); launchGame(gi); });
+    const nm = document.createElement('div');
+    nm.className = 'tileName';
+    nm.textContent = g.name || '';
+    w.appendChild(d);
+    w.appendChild(nm);
+    w.addEventListener('click', () => { setFocus(pos); launchGame(gi); });
     d.addEventListener('mouseenter', () => setFocus(pos, false));
-    row.appendChild(d); tiles.push(d);
+    row.appendChild(w); tiles.push(d);
   });
   if (!tiles.length) {
     row.innerHTML = '<div class="emptyNote" style="padding:40px 20px">No games installed yet.<br>Games you get will appear here.</div>';
@@ -1756,7 +1786,7 @@ function paintHero(i) {
 }
 function launchGame(i) {
   const g = games[i];
-  if (!g.name) { toast('No game installed in this slot yet.'); return; }
+  if (!g || !g.name) { toast('No game installed in this slot yet.'); return; }
   flushPlaySession();
   playingGame = { name: g.name, start: Date.now() };
   try {
@@ -1767,7 +1797,30 @@ function launchGame(i) {
   syncRecentGames();
   sortRowRecent();
   updateOnlinePresence();
+  const sg = g.slug ? storeGames.filter(x => x.slug === g.slug)[0] : null;
+  if (sg && sg.file_url) { launchStoreGame(sg); return; }
+  if (g.fileUrl) { launchStoreGame({ slug: g.slug || '', name: g.name, version: '1.0.0', file_url: g.fileUrl }); return; }
   toast('Launching ' + g.name + '…');
+}
+/* Fill the home `games` slots from owned catalog games so installed games
+   show up on the home row. Recently-played order via sortRowRecent. */
+function syncHomeGames() {
+  const ownedSlugs = getOwnedSlugs();
+  const curName = games[rowOrder[focus]] ? games[rowOrder[focus]].name : '';
+  for (let i = 0; i < games.length; i++) games[i] = { name: '', desc: '', icon: null };
+  let n = 0;
+  ownedSlugs.forEach(slug => {
+    if (n >= games.length) return;
+    const g = storeGames.filter(x => x.slug === slug)[0];
+    if (!g) return;
+    games[n++] = { name: g.name, desc: g.description || '', icon: null, iconUrl: g.icon_url || '', slug: g.slug, fileUrl: g.file_url || '', size: g.size || '' };
+  });
+  sortRowRecent();
+  if (curName) {
+    for (let i = 0; i < games.length; i++) {
+      if (games[i].name === curName) { setFocus(Math.max(0, rowOrder.indexOf(i))); break; }
+    }
+  }
 }
 
 /* Menu tab face button */
@@ -1859,6 +1912,22 @@ function connectedPads() {
   const pads = navigator.getGamepads ? navigator.getGamepads() : [];
   return Array.from(pads).filter(p => p && p.connected);
 }
+/* Resolve a live Gamepad for a (possibly stale) slot/index + id. Power-cycling
+   a controller creates a brand-new Gamepad object and may move it to a
+   different slot, so never hold a pad object across a disconnect: re-resolve by
+   id first, then slot, then first available. */
+function livePad(preferIdx, preferId) {
+  const pads = navigator.getGamepads ? navigator.getGamepads() : [];
+  if (preferIdx != null && !isNaN(preferIdx)) {
+    const g = pads[preferIdx];
+    if (g && g.connected && (!preferId || g.id === preferId)) return g;
+  }
+  if (preferId) {
+    for (const g of pads) { if (g && g.connected && g.id === preferId) return g; }
+  }
+  for (const g of pads) { if (g && g.connected) return g; }
+  return null;
+}
 function rumblePad(gp, strong, weak, duration) {
   try {
     const act = gp.vibrationActuator;
@@ -1903,7 +1972,10 @@ ScreenRender.controllers = function () {
       '<div class="slot">PLAYER ' + (i + 1) + '</div>' +
       '<div class="btnRow"><button class="btn" data-rumble>Rumble</button><button class="btn" data-test>Test controls</button><button class="btn" data-remap>Remap</button></div>' +
       '<div class="padTest" style="display:none"></div>';
-    card.querySelector('[data-rumble]').addEventListener('click', () => rumblePad(gp, 1, 1, 600));
+    card.querySelector('[data-rumble]').addEventListener('click', () => {
+      const live = livePad(gp.index, gp.id); // re-resolve: the render-time object dies on power cycle
+      if (live) rumblePad(live, 1, 1, 600);
+    });
     card.querySelector('[data-remap]').addEventListener('click', () => openRemap(gp.id));
     const testBtn = card.querySelector('[data-test]');
     const testZone = card.querySelector('.padTest');
@@ -1912,6 +1984,7 @@ ScreenRender.controllers = function () {
       testZone.style.display = on ? 'none' : 'flex';
       testBtn.textContent = on ? 'Test controls' : 'Stop test';
       testZone.dataset.padIndex = gp.index;
+      testZone.dataset.padId = gp.id;
       if (!on) {
         testZone.innerHTML = '';
         BTN_NAMES.forEach((n, bi) => {
@@ -1927,23 +2000,26 @@ ScreenRender.controllers = function () {
 function pollPadTests() {
   $$('#padGrid .padTest').forEach(zone => {
     if (zone.style.display === 'none') return;
-    const pads = navigator.getGamepads ? navigator.getGamepads() : [];
-    const gp = pads[Number(zone.dataset.padIndex)];
+    const gp = livePad(Number(zone.dataset.padIndex), zone.dataset.padId);
     if (!gp) return;
+    zone.dataset.padIndex = gp.index; // rebind to the (possibly new) slot after a power cycle
     zone.querySelectorAll('.k').forEach(k => {
       const b = gp.buttons[Number(k.dataset.b)];
       k.classList.toggle('hit', !!(b && b.pressed));
     });
   });
 }
+let padDisconnectSeen = false; // set on disconnect, cleared on the next connect
 addEventListener('gamepadconnected', e => {
-  startPadLoop();
+  startPadLoop(); // revive the input loop if it ever died; no-op while alive
   showPadStatus(); paintMenuTab();
   if (rumbleOnConnect() && e.gamepad) rumblePad(e.gamepad, 0.7, 0.7, 350);
+  if (padDisconnectSeen) { padDisconnectSeen = false; toast('Controller reconnected'); }
   if ($('#screen-controllers').classList.contains('open')) ScreenRender.controllers();
 });
 addEventListener('gamepaddisconnected', () => {
   showPadStatus(); paintMenuTab();
+  if (connectedPads().length === 0) { padDisconnectSeen = true; toast('Controller disconnected'); }
   if ($('#screen-controllers').classList.contains('open')) ScreenRender.controllers();
 });
 
@@ -2005,7 +2081,7 @@ addEventListener('keydown', e => {
   else if (e.key === 'ArrowDown') { if (zone === 'top') setFocus(focus); }
   else if (e.key === 'Enter') {
     if (zone === 'top' && topCtrls[topFocus]) topCtrls[topFocus].click();
-    else if (zone === 'tiles') launchGame(focus);
+    else if (zone === 'tiles') launchGame(rowOrder[focus]);
   }
   else if (e.key === 'Escape') tryExit();
 });
@@ -2132,12 +2208,36 @@ function cleanRemap(m){
 }
 function getRemap(padId){ try{ const m = JSON.parse(localStorage.getItem('oly_remap_'+padId)||'{}'); return cleanRemap((m && typeof m==='object') ? m : {}); }catch(e){ return {}; } }
 function saveRemap(padId, m){ try{ localStorage.setItem('oly_remap_'+padId, JSON.stringify(m)); }catch(e){} }
-let _rmId = null, _rmMap = {};
+let _rmId = null, _rmMap = {}, _rmResolved = null;
+/* Full logical->physical map with no shared buttons: explicit mappings win
+   first, then implicit defaults fill in, and any action whose default is taken
+   gets the lowest free physical button. (An action reverting to its implicit
+   default can otherwise collide with another action's explicit mapping.) */
+function resolveRemap(m) {
+  const res = {}, used = new Set();
+  for (let l = 0; l < BTN_NAMES.length; l++) {
+    let p = m[l];
+    if (p == null || isNaN(+p) || +p < 0 || +p > 16) continue;
+    p = +p;
+    if (used.has(p)) continue;
+    res[l] = p; used.add(p);
+  }
+  for (let l = 0; l < BTN_NAMES.length; l++) {
+    if (res[l] != null) continue;
+    let p = l;
+    if (used.has(p)) {
+      p = -1;
+      for (let c = 0; c <= 16; c++) if (!used.has(c)) { p = c; break; }
+      if (p === -1) p = l;
+    }
+    res[l] = p; used.add(p);
+  }
+  return res;
+}
 function physIdx(gp, logical){
   if (!gp) return -1;
-  if (gp.id !== _rmId) { _rmId = gp.id; _rmMap = getRemap(gp.id); }
-  const p = _rmMap[logical];
-  return (p == null || isNaN(+p)) ? logical : (+p);
+  if (gp.id !== _rmId) { _rmId = gp.id; _rmMap = getRemap(gp.id); _rmResolved = resolveRemap(_rmMap); }
+  return _rmResolved[logical];
 }
 let remapCapture = null, remapPadId = null;
 function openRemap(padId){
@@ -2154,10 +2254,13 @@ function physName(logical){
 function paintRemapRows(){
   const box = $('#remapRows');
   box.innerHTML = '';
+  // Rows always use the canonical action names (A/B/X/Y = standard indices
+  // 0-3), independent of the detected controller kind: the kind guess can be
+  // wrong for third-party pads, which made X and Y look swapped.
   BTN_NAMES.forEach((name, logical) => {
     const r = document.createElement('div');
     r.className = 'remapRow';
-    r.innerHTML = '<span class="rk">' + escapeHtml(logicalName(logical)) + '</span><span class="rv">' + escapeHtml(physName(logical)) + '</span>';
+    r.innerHTML = '<span class="rk">' + escapeHtml(name) + '</span><span class="rv">' + escapeHtml(physName(logical)) + '</span>';
     r.addEventListener('click', () => {
       box.querySelectorAll('.remapRow').forEach(x => x.classList.remove('capturing'));
       r.classList.add('capturing');
@@ -2246,7 +2349,8 @@ function pollPad() {
     for (const k in padState) padState[k] = (typeof padState[k] === 'number') ? 0 : false;
     requestAnimationFrame(pollPad); return;
   }
-  pollPadTests();
+  // Test zones only exist on the Controllers screen: don't query the DOM for them 60x/sec otherwise.
+  if (document.getElementById('screen-controllers').classList.contains('open')) pollPadTests();
   const now = performance.now();
   const pressed = l => { const p = physIdx(gp, l); const b = gp.buttons[p]; return !!(b && b.pressed); };
   const axX = gp.axes[0] || 0;
@@ -2258,6 +2362,33 @@ function pollPad() {
   const homeEdge = homeB && !padState.homeHeld;
   padState.yHeld = yB; padState.bHeld = bB; padState.aHeld = aB;
   padState.homeHeld = homeB;
+
+  // While a game runs, the console captures controller input: the only
+  // console-level control is the game menu (Home button, or hold Start).
+  // Everything else belongs to the game itself.
+  if ($('#gameFrame').classList.contains('open')) {
+    if (!$('#modalWrap').classList.contains('open')) gameMenuOpen = false;
+    if (gameMenuOpen) {
+      let ndx = 0, ndy = 0;
+      if (axX > 0.5 || pressed(15)) ndx = 1; else if (axX < -0.5 || pressed(14)) ndx = -1;
+      if (axY > 0.5 || pressed(13)) ndy = 1; else if (axY < -0.5 || pressed(12)) ndy = -1;
+      if ((ndx || ndy) && (padState.gdx !== ndx || padState.gdy !== ndy || now >= padState.gnext)) {
+        const first = (padState.gdx !== ndx || padState.gdy !== ndy);
+        moveNav(ndx, ndy);
+        padState.gdx = ndx; padState.gdy = ndy; padState.gnext = now + (first ? 350 : 180);
+      } else if (!ndx && !ndy) { padState.gdx = 0; padState.gdy = 0; padState.gnext = 0; }
+      if (aEdge && navEl && document.contains(navEl)) navEl.click();
+      if (bEdge) { gameMenuOpen = false; closeModal(); }
+    } else if (homeEdge) {
+      openGameMenu();
+    } else {
+      if (startB) {
+        if (!padState.startT) padState.startT = now;
+        else if (now - padState.startT > 900) { openGameMenu(); padState.startT = now; }
+      } else padState.startT = 0;
+    }
+    requestAnimationFrame(pollPad); return;
+  }
 
   // Account screen: the controller used to be fully dead here, trapping
   // controller users on the form. D-pad moves through the form, A activates, B backs out.
@@ -2377,8 +2508,25 @@ function pollPad() {
     } else { padState.pdir = 0; padState.pnext = 0; }
     if (aEdge && profileItems[profileFocus]) profileItems[profileFocus].click();
     if (yEdge) { setProfileMenu(false); setMenu(true); }
+  } else if (menuOpen) {
+    // The open drawer owns controller focus — never leak stick/D-pad to the
+    // screen behind it (the drawer can be opened over a screen).
+    if (yEdge) setMenu(false);
+    if (bEdge) setMenu(false);
+    let vdir = 0;
+    if (axY > 0.5 || pressed(13)) vdir = 1;
+    else if (axY < -0.5 || pressed(12)) vdir = -1;
+    if (vdir !== 0) {
+      if (padState.vdir !== vdir || now >= padState.vnext) {
+        menuFocus = Math.max(0, Math.min(menuBtns.length - 1, menuFocus + vdir));
+        paintMenu();
+        padState.vnext = now + (padState.vdir === vdir ? 170 : 300);
+        padState.vdir = vdir;
+      }
+    } else { padState.vdir = 0; padState.vnext = 0; }
+    if (aEdge && menuBtns[menuFocus]) activateMenuBtn(menuBtns[menuFocus]);
   } else if (screenStack.length) {
-    if (yEdge) setMenu(!menuOpen);
+    if (yEdge) setMenu(true);
     // Spatial navigation inside screens.
     let ndx = 0, ndy = 0;
     if (axX > 0.5 || pressed(15)) ndx = 1; else if (axX < -0.5 || pressed(14)) ndx = -1;
@@ -2390,21 +2538,8 @@ function pollPad() {
     } else if (!ndx && !ndy) { padState.ndx = 0; padState.ndy = 0; padState.nnext = 0; }
     if (aEdge && navEl && document.contains(navEl)) navEl.click();
   } else {
-    if (yEdge) setMenu(!menuOpen);
-    if (menuOpen) {
-      let vdir = 0;
-      if (axY > 0.5 || pressed(13)) vdir = 1;
-      else if (axY < -0.5 || pressed(12)) vdir = -1;
-      if (vdir !== 0) {
-        if (padState.vdir !== vdir || now >= padState.vnext) {
-          menuFocus = Math.max(0, Math.min(menuBtns.length - 1, menuFocus + vdir));
-          paintMenu();
-          padState.vnext = now + (padState.vdir === vdir ? 170 : 300);
-          padState.vdir = vdir;
-        }
-      } else { padState.vdir = 0; padState.vnext = 0; }
-      if (aEdge && menuBtns[menuFocus]) activateMenuBtn(menuBtns[menuFocus]);
-    } else {
+    if (yEdge) setMenu(true);
+    {
       let dir = 0;
       if (axX > 0.5 || pressed(15)) dir = 1;
       else if (axX < -0.5 || pressed(14)) dir = -1;
@@ -2423,7 +2558,7 @@ function pollPad() {
       }
       padState.vv = vv;
       if (aEdge && zone === 'top' && topCtrls[topFocus]) topCtrls[topFocus].click();
-      else if (aEdge && zone === 'tiles') launchGame(focus);
+      else if (aEdge && zone === 'tiles') launchGame(rowOrder[focus]);
     }
   }
   requestAnimationFrame(pollPad);
@@ -2473,8 +2608,82 @@ function clock() {
 }
 clock(); setInterval(clock, 15000);
 
+/* ---------- Update checker (native self-updater in the PC app) ---------- */
+// One session-wide listener for updater events from main.
+let _olyUpdateWired = false, _olyUpdateSilent = false;
+let _olyProgWrap = null, _olyProgDismissed = false;
+function _wireNativeUpdater() {
+  if (_olyUpdateWired) return;
+  _olyUpdateWired = true;
+  window.OlympusPC.onUpdateEvent(ev => {
+    if (!ev || !ev.type) return;
+    if (ev.type === 'update-available') {
+      _olyProgDismissed = false; _olyProgWrap = null;
+      modal('Update available', 'A new Olympus update is ready. No reinstall needed — it updates itself.',
+        [{ label: 'Later' }, { label: 'Download', primary: true, onClick: () => _startUpdateDownload() }]);
+    } else if (ev.type === 'update-not-available') {
+      if (!_olyUpdateSilent) toast('You\'re on the latest version.');
+    } else if (ev.type === 'download-progress') {
+      _showUpdateProgress(ev.percent || 0);
+    } else if (ev.type === 'update-downloaded') {
+      _olyProgWrap = null;
+      modal('Update downloaded', 'A new Olympus update is downloaded. Restart now to install it.',
+        [{ label: 'Later' }, { label: 'Restart now', primary: true, onClick: () => {
+          try { window.OlympusPC.updateInstall(); } catch (e) {}
+        } }]);
+    } else if (ev.type === 'error') {
+      if (!_olyUpdateSilent) toast('Couldn\'t check for updates.');
+    }
+  });
+}
+function _startUpdateDownload() {
+  _olyProgDismissed = false; _olyProgWrap = null;
+  _showUpdateProgress(0);
+  try {
+    window.OlympusPC.updateDownload().then(r => {
+      if (r && !r.ok && !_olyUpdateSilent) toast('Couldn\'t download the update.');
+    });
+  } catch (e) { toast('Couldn\'t download the update.'); }
+}
+function _showUpdateProgress(percent) {
+  if (_olyProgDismissed) return;
+  percent = Math.max(0, Math.min(100, percent | 0));
+  if (!_olyProgWrap || !document.body.contains(_olyProgWrap)) {
+    modal('Downloading update', 'Downloading\u2026 ' + percent + '%',
+      [{ label: 'Hide', onClick: () => { _olyProgDismissed = true; _olyProgWrap = null; } }]);
+    const m = $('#modal');
+    _olyProgWrap = document.createElement('div');
+    _olyProgWrap.classList.add('modalCustom');
+    _olyProgWrap.style.cssText = 'margin:6px 0 18px;height:12px;border-radius:6px;background:rgba(255,255,255,.12);overflow:hidden';
+    const bar = document.createElement('div');
+    bar.id = 'olyUpdBar';
+    bar.style.cssText = 'height:100%;width:' + percent + '%;border-radius:6px;background:#35c4ff;transition:width .2s';
+    _olyProgWrap.appendChild(bar);
+    m.appendChild(_olyProgWrap);
+  } else {
+    $('#modalTitle').textContent = 'Downloading update';
+    $('#modalText').textContent = 'Downloading\u2026 ' + percent + '%';
+    const bar = $('#olyUpdBar');
+    if (bar) bar.style.width = percent + '%';
+  }
+}
 /* ---------- Update checker ---------- */
 async function checkForUpdates(silent) {
+  _olyUpdateSilent = !!silent;
+  const PC = window.OlympusPC;
+  // Packaged PC app: use the native self-updater (no reinstall needed).
+  if (PC && PC.isPCApp && PC.updateCheck && PC.onUpdateEvent) {
+    _wireNativeUpdater();
+    try {
+      const r = await PC.updateCheck();
+      // In dev (unpackaged) or on failure the main process reports ok:false.
+      if (r && !r.ok && !silent) toast('Couldn\'t check for updates.');
+      // Otherwise the result arrives via onUpdateEvent (update-available / update-not-available).
+    } catch (e) { if (!silent) toast('Couldn\'t check for updates.'); }
+    try { localStorage.setItem('oly_update_check', String(Date.now())); } catch (e) {}
+    return;
+  }
+  // Web fallback: GitHub API check (unchanged).
   try {
     const r = await fetch('https://api.github.com/repos/Hoopslimbo/olympus/releases/latest');
     if (!r.ok) { if (!silent) toast('Couldn\'t check for updates.'); return; }
@@ -2486,7 +2695,7 @@ async function checkForUpdates(silent) {
       return false;
     };
     if (latest && verNewer(latest, OLY_VERSION)) {
-      modal('Update available', 'Olympus v' + latest + ' is out. You\'re on v' + OLY_VERSION + '. Download the new installer to update.',
+      modal('Update available', 'A new Olympus update is out. Download the new installer to update.',
         [{ label: 'Later' }, { label: 'Open download page', primary: true, onClick: () => {
           const url = 'https://github.com/Hoopslimbo/olympus/releases';
           try { if (window.OlympusPC && window.OlympusPC.openExternal) window.OlympusPC.openExternal(url); else window.open(url, '_blank'); } catch (e) { window.open(url, '_blank'); }
@@ -3262,7 +3471,7 @@ ScreenRender.shop = async function () {
       s.innerHTML = '<div class="hart wp" style="background-image:url(' + x.wallpaper_url + ')"></div>' +
         '<div class="hbody"><div class="kick">FEATURED \u00B7 OLYMPUS STORE</div><h2>' + escapeHtml(x.name) + '</h2><p>' +
         escapeHtml((x.description || '').slice(0, 140)) + '</p>' +
-        '<div class="hfoot"><span class="priceTag">' + priceLabel(x.price) + '</span></div></div>';
+        '<div class="hfoot">' + ownedTagHtml(x) + '</div></div>';
       s.addEventListener('click', () => openScreen('game', x));
     } else {
       s.innerHTML = '<div class="hart" style="background:' + x.g + '">' + ic(x.icon) + '</div>' +
@@ -3287,7 +3496,7 @@ ScreenRender.shop = async function () {
   };
   const restart = () => {
     if (storeHeroTimer) clearInterval(storeHeroTimer);
-    storeHeroTimer = setInterval(() => show(storeHeroIdx + 1), 7000);
+    storeHeroTimer = setInterval(() => show(storeHeroIdx + 1), 5000);
   };
   const prev = document.createElement('button');
   prev.className = 'heroArrow prev'; prev.innerHTML = '&#8249;'; prev.setAttribute('aria-label', 'Previous featured');
@@ -3318,7 +3527,7 @@ ScreenRender.shop = async function () {
       art +
       '<div class="tinfo"><div class="t">' + escapeHtml(g.name) + '</div><div class="s">' +
       escapeHtml((g.description || '').slice(0, 90)) + '</div>' +
-      '<div class="tfoot"><span class="priceTag">' + priceLabel(g.price) + '</span></div></div>';
+      '<div class="tfoot">' + ownedTagHtml(g) + '</div></div>';
     d.addEventListener('click', () => openScreen('game', g));
     d.querySelector('.wishBtn').addEventListener('click', ev => {
       ev.stopPropagation();
@@ -3362,7 +3571,7 @@ ScreenRender.game = function (g) {
   $('#gameHero').innerHTML = (g.wallpaper_url ? '<img src="' + g.wallpaper_url + '" alt="">' : '') +
     '<div class="shade"></div>' +
     '<div class="gname">' + escapeHtml(g.name) + '</div>' +
-    '<div class="gprice"><span class="priceTag">' + priceLabel(g.price) + '</span></div>';
+    '<div class="gprice">' + ownedTagHtml(g) + '</div>';
   $('#gameMeta2').textContent = 'VERSION ' + escapeHtml(g.version || '1.0.0');
   $('#gameDesc2').textContent = g.description || 'No description yet.';
   const btns = $('#gameBtns');
@@ -3421,9 +3630,10 @@ ScreenRender.library = async function () {
     grid.appendChild(sum);
   }
   owned.forEach(x => {
+    const w = document.createElement('div');
+    w.className = 'libWrap';
     const d = document.createElement('div');
     d.className = 'libTile';
-    d.innerHTML = '<div class="t">' + escapeHtml(x.g.name) + '</div>' + (x.g.size ? '<div class="s">' + escapeHtml(x.g.size) + '</div>' : '');
     if (x.g.icon) d.style.background = artBG(x.g.icon[0], x.g.icon[1]);
     if (x.g.ach && x.g.ach.total > 0) {
       const pct = Math.round(100 * (x.g.ach.done || 0) / x.g.ach.total);
@@ -3432,24 +3642,41 @@ ScreenRender.library = async function () {
       badge.innerHTML = ic('trophy') + ' ' + pct + '%';
       d.appendChild(badge);
     }
-    d.addEventListener('click', () => { closeAllScreens(); setFocus(Math.max(0, rowOrder.indexOf(x.i))); launchGame(x.i); });
-    grid.appendChild(d);
+    const t = document.createElement('div');
+    t.className = 'libName';
+    t.textContent = x.g.name;
+    w.appendChild(d);
+    w.appendChild(t);
+    if (x.g.size) {
+      const s = document.createElement('div');
+      s.className = 's';
+      s.textContent = x.g.size;
+      w.appendChild(s);
+    }
+    w.addEventListener('click', () => { closeAllScreens(); setFocus(Math.max(0, rowOrder.indexOf(x.i))); launchGame(x.i); });
+    grid.appendChild(w);
   });
   storeOwned.forEach(g => {
+    const w = document.createElement('div');
+    w.className = 'libWrap';
     const d = document.createElement('div');
     d.className = 'libTile';
     d.style.position = 'relative';
     d.style.overflow = 'hidden';
-    d.innerHTML = (g.icon_url ? '<img src="' + g.icon_url + '" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">' : '') +
-      '<div style="position:absolute;left:8px;right:8px;bottom:10px;z-index:1;color:#fff;text-shadow:0 2px 8px #000;text-align:center;font-size:14px;font-weight:700;letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escapeHtml(g.name) + '</div>';
+    d.innerHTML = g.icon_url ? '<img src="' + g.icon_url + '" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">' : '';
     if (needsUpdate(g)) {
       const u = document.createElement('div');
       u.textContent = 'UPDATE';
       u.style.cssText = 'position:absolute;top:8px;right:8px;z-index:2;background:#f59e0b;color:#000;font-size:11px;font-weight:800;padding:3px 8px;border-radius:20px;letter-spacing:.06em';
       d.appendChild(u);
     }
-    d.addEventListener('click', () => launchStoreGame(g));
-    grid.appendChild(d);
+    const t = document.createElement('div');
+    t.className = 'libName';
+    t.textContent = g.name;
+    w.appendChild(d);
+    w.appendChild(t);
+    w.addEventListener('click', () => launchStoreGame(g));
+    grid.appendChild(w);
   });
 };
 
@@ -3539,6 +3766,7 @@ async function loadStoreGames() {
   } catch (e) {}
 }
 function priceLabel(p) { return Number(p) > 0 ? '$' + Number(p).toFixed(2) : 'FREE'; }
+function ownedTagHtml(g) { return (g && g.slug && isOwned(g)) ? '<span class="ownedTag">OWNED</span>' : '<span class="priceTag">' + priceLabel(g ? g.price : 0) + '</span>'; }
 function getOwnedSlugs() { try { return JSON.parse(localStorage.getItem('oly_owned_slugs') || '[]'); } catch (e) { return []; } }
 function saveOwnedSlugs(a) { try { localStorage.setItem('oly_owned_slugs', JSON.stringify(a)); } catch (e) {} }
 function isOwned(game) { return getOwnedSlugs().indexOf(game.slug) >= 0; }
@@ -3618,6 +3846,8 @@ async function pumpDownload(item) {
     item.progress = 100; item.status = 'done';
     markOwned(g.slug);
     setInstalledVersion(g.slug, catalogVersion(g));
+    cacheGameBlob(g.slug, item.chunks);
+    syncHomeGames();
     toast(g.name + ' installed.');
     if (item.onDone) { const cb = item.onDone; item.onDone = null; cb(); }
   } catch (e) {
@@ -3626,6 +3856,7 @@ async function pumpDownload(item) {
   }
   paintDlProgress(item);
   if ($('#screen-library').classList.contains('open')) ScreenRender.library();
+  if ($('#screen-shop').classList.contains('open')) ScreenRender.shop();
 }
 function pauseDownload(slug) {
   const item = dlItems[slug];
@@ -3697,22 +3928,109 @@ function closeDlModal() { $('#dlModalWrap').classList.remove('open'); dlModalSlu
 $('#dlmOk').addEventListener('click', closeDlModal);
 $('#dlModalWrap').addEventListener('click', e => { if (e.target.id === 'dlModalWrap') closeDlModal(); });
 
-function launchStoreGame(game) {
+/* ---------- Playable game files (blob cache) ----------
+   Supabase storage serves game.html as text/plain with a sandbox CSP header,
+   so the raw file_url can't run in the game frame (black screen + scrollbars).
+   Games are served from blob: URLs built from the downloaded bytes instead —
+   no hostile headers — and the bytes persist in IndexedDB for offline play. */
+const gameBlobUrls = {}; // slug -> blob: object URL (this session)
+function olyGameDb() {
+  return new Promise((res, rej) => {
+    try {
+      const rq = indexedDB.open('olympus', 1);
+      rq.onupgradeneeded = () => { rq.result.createObjectStore('game-files'); };
+      rq.onsuccess = () => res(rq.result);
+      rq.onerror = () => rej(rq.error);
+    } catch (e) { rej(e); }
+  });
+}
+function idbGetFile(slug) {
+  return olyGameDb().then(db => new Promise((res, rej) => {
+    try {
+      const tx = db.transaction('game-files', 'readonly');
+      const rq = tx.objectStore('game-files').get(slug);
+      rq.onsuccess = () => res(rq.result || null);
+      rq.onerror = () => rej(rq.error);
+    } catch (e) { rej(e); }
+  }));
+}
+function idbPutFile(slug, blob) {
+  return olyGameDb().then(db => new Promise((res, rej) => {
+    try {
+      const tx = db.transaction('game-files', 'readwrite');
+      tx.objectStore('game-files').put(blob, slug);
+      tx.oncomplete = () => res(true);
+      tx.onerror = () => rej(tx.error);
+    } catch (e) { rej(e); }
+  }));
+}
+function cacheGameBlob(slug, chunks) {
+  if (!slug || !chunks || !chunks.length) return null;
+  try {
+    const blob = new Blob(chunks, { type: 'text/html' });
+    idbPutFile(slug, blob).catch(() => {});
+    if (gameBlobUrls[slug]) { try { URL.revokeObjectURL(gameBlobUrls[slug]); } catch (e) {} }
+    gameBlobUrls[slug] = URL.createObjectURL(blob);
+    return gameBlobUrls[slug];
+  } catch (e) { return null; }
+}
+async function playableGameUrl(game) {
+  if (!game || !game.slug || !game.file_url) return null;
+  if (gameBlobUrls[game.slug]) return gameBlobUrls[game.slug];
+  try {
+    const blob = await idbGetFile(game.slug);
+    if (blob) {
+      gameBlobUrls[game.slug] = URL.createObjectURL(new Blob([blob], { type: 'text/html' }));
+      return gameBlobUrls[game.slug];
+    }
+  } catch (e) {}
+  try {
+    const r = await fetch(game.file_url);
+    if (!r.ok) return null;
+    const typed = new Blob([await r.blob()], { type: 'text/html' });
+    idbPutFile(game.slug, typed).catch(() => {});
+    gameBlobUrls[game.slug] = URL.createObjectURL(typed);
+    return gameBlobUrls[game.slug];
+  } catch (e) { return null; }
+}
+/* Warm the blob cache from IndexedDB on boot so owned games launch offline. */
+(function warmGameCache() {
+  try {
+    getOwnedSlugs().forEach(slug => {
+      idbGetFile(slug).then(blob => {
+        if (blob && !gameBlobUrls[slug]) gameBlobUrls[slug] = URL.createObjectURL(new Blob([blob], { type: 'text/html' }));
+      }).catch(() => {});
+    });
+  } catch (e) {}
+})();
+async function launchStoreGame(game) {
+  if (!game || !game.file_url) { toast('No playable file for this game yet.'); return; }
   if (needsUpdate(game)) { openUpdateModal(game); return; }
-  const url = game.file_url;
-  if (!url) { toast('No playable file for this game yet.'); return; }
-  if (/\.html?($|\?)/i.test(url)) {
+  toast('Launching ' + game.name + '…');
+  const url = await playableGameUrl(game);
+  if (!url) { toast('Couldn\'t load ' + game.name + '. Check your connection.'); return; }
+  if (/\.html?($|\?)/i.test(game.file_url)) {
     $('#gameFrameView').src = url;
     $('#gameFrame').classList.add('open');
   } else {
-    window.open(url, '_blank');
+    try { window.open(url, '_blank'); } catch (e) {}
   }
 }
 function closeGameFrame() {
   $('#gameFrame').classList.remove('open');
   $('#gameFrameView').src = 'about:blank';
 }
-$('#gameFrameClose').addEventListener('click', closeGameFrame);
+/* In-game menu: the controller Home button opens it. The guide button is
+   masked by most browsers/drivers, so holding Start (~0.9s) works too. */
+let gameMenuOpen = false;
+function openGameMenu() {
+  if (gameMenuOpen || !$('#gameFrame').classList.contains('open')) return;
+  gameMenuOpen = true;
+  modal('Game menu', 'Take a break, or head back to Olympus?', [
+    { label: 'Stay', onClick: () => { gameMenuOpen = false; } },
+    { label: 'Leave game', primary: true, onClick: () => { gameMenuOpen = false; closeGameFrame(); } }
+  ]);
+}
 
 function paintStoreDownloads(grid) {
   const active = Object.keys(dlItems).map(k => dlItems[k]).filter(x => x.status !== 'done');
