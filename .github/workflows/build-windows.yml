@@ -4,12 +4,12 @@ on:
   push:
     tags: ['v*']
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: windows-latest
-    permissions:
-      contents: write
-
     defaults:
       run:
         working-directory: pc-app
@@ -20,10 +20,10 @@ jobs:
           node-version: 22
       - run: npm install
       - run: npx electron-builder --win --publish never
+      # latest.yml + blockmaps are the self-updater's feed: installed apps
+      # check these to download + install updates without reinstalling.
       - name: Attach installer to release
         uses: softprops/action-gh-release@v2
-        # latest.yml + blockmaps are the self-updater's feed: installed apps
-        # check these to download + install updates without reinstalling.
         with:
           files: |
             pc-app/dist/*.exe
