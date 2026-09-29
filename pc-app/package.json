@@ -20,6 +20,11 @@
       "target": [
         "nsis"
       ]
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "Hoopslimbo",
+      "repo": "olympus"
     }
   },
   "description": "Olympus game console for PC",
@@ -34,5 +39,8 @@
     "dist": "electron-builder --win",
     "start": "electron ."
   },
-  "version": "0.3.4"
+  "version": "0.3.5",
+  "dependencies": {
+    "electron-updater": "^6.8.9"
+  }
 }
