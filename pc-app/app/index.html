@@ -103,6 +103,7 @@
       linear-gradient(135deg, hsl(var(--h1, 222), 55%, 14%), hsl(var(--h2, 280), 65%, 7%));
   }
   #heroBG.on { opacity: 1; }
+  #heroBG.wp { background: none; }
   #heroBG::after {
     content: ''; position: absolute; inset: 0;
     background: linear-gradient(0deg, rgba(0,0,0,.82) 0%, rgba(0,0,0,.25) 42%, rgba(0,0,0,.45) 100%);
@@ -483,7 +484,7 @@
   .gbtnRow .btn { min-width:180px; }
   .heroSlide .hart.wp { background-size:cover !important; background-position:center !important; }
   .heroSlide .hart.wp svg { display:none; }
-  .storeTile .tart img { width:100%; height:100%; object-fit:cover; position:absolute; inset:0; }
+  .storeTile .tart img { width:100%; height:100%; object-fit:contain; position:absolute; inset:0; }
   .dlTile { position:relative; overflow:hidden; }
   .dlTile > img { width:100%; height:100%; object-fit:cover; position:absolute; inset:0; opacity:.4; }
   .dlRingWrap { position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; width:100%; height:100%; }
@@ -792,6 +793,7 @@
 <div id="menuOverlay"></div>
 <nav id="sideMenu">
   <h2>OLYMPUS</h2>
+  <div class="menuBtn" data-go="home" style="--d:.02s"><span class="mi"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10.5V20h13v-9.5"/></svg></span>Home</div>
   <div class="menuBtn" data-go="library" style="--d:.05s"><span class="mi"><span data-ic="grid"></span></span>Game Library</div>
   <div class="menuBtn" data-go="shop" style="--d:.1s"><span class="mi"><span data-ic="cart"></span></span>Shop</div>
   <div class="menuBtn" data-go="gallery" style="--d:.17s"><span class="mi"><span data-ic="image"></span></span>Gallery</div>
@@ -1124,7 +1126,7 @@ function initials(tag) {
 function picHtml(pic, tag, cls) {
   return '<div class="' + (cls || 'pAv') + '">' + (pic ? '<img src="' + pic + '" alt="">' : escapeHtml(initials(tag))) + '</div>';
 }
-let OLY_VERSION = '0.3.5';
+let OLY_VERSION = '0.3.6';
 // In the packaged PC app, use the real installed version (drives the updater UI).
 (async () => {
   try {
@@ -1694,7 +1696,7 @@ function buildTiles() {
     if (g.iconUrl) {
       const im = document.createElement('img');
       im.src = g.iconUrl; im.alt = '';
-      im.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none';
+      im.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none';
       d.appendChild(im);
     }
     if (g.ach && g.ach.total > 0) {
@@ -1703,6 +1705,15 @@ function buildTiles() {
       badge.className = 'achBadge';
       badge.innerHTML = ic('trophy') + ' ' + pct + '%';
       d.appendChild(badge);
+    }
+    if (g.slug) {
+      const sg = storeGames.filter(x => x.slug === g.slug)[0];
+      if (sg && needsUpdate(sg)) {
+        const u = document.createElement('div');
+        u.textContent = 'UPDATE';
+        u.style.cssText = 'position:absolute;top:8px;right:8px;z-index:2;background:#f59e0b;color:#000;font-size:11px;font-weight:800;padding:3px 8px;border-radius:20px;letter-spacing:.06em';
+        d.appendChild(u);
+      }
     }
     const nm = document.createElement('div');
     nm.className = 'tileName';
@@ -1770,19 +1781,34 @@ topCtrls.forEach((c, i) => { if (c) c.addEventListener('mouseenter', () => setTo
 const heroBG = $('#heroBG'), gameMeta = $('#gameMeta'), gameTitle = $('#gameTitle'), gameDesc = $('#gameDesc');
 function paintHero(i) {
   const g = games[i];
-  if (!g) { heroBG.classList.remove('on'); gameMeta.classList.remove('show'); return; }
-  if (g.hero) {
+  const cur = heroBG.querySelector('img');
+  if (!g || (!g.wallpaper && !g.hero)) {
+    heroBG.classList.remove('on'); heroBG.classList.remove('wp');
+    gameMeta.classList.remove('show');
+    if (cur) cur.remove();
+    return;
+  }
+  if (g.wallpaper) {
+    if (!cur || cur.getAttribute('src') !== g.wallpaper) {
+      if (cur) cur.remove();
+      const ni = document.createElement('img');
+      ni.alt = '';
+      ni.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;';
+      ni.src = g.wallpaper;
+      heroBG.insertBefore(ni, heroBG.firstChild);
+    }
+    heroBG.classList.add('wp');
+  } else {
+    if (cur) cur.remove();
+    heroBG.classList.remove('wp');
     heroBG.style.setProperty('--h1', g.hero[0]);
     heroBG.style.setProperty('--h2', g.hero[1]);
-    heroBG.classList.add('on');
-    gameTitle.textContent = g.name;
-    const hrs = getHours()[g.name] || 0;
-    gameDesc.textContent = g.desc + (hrs > 0 ? ' · ' + fmtPlaytime(hrs) + ' played' : '');
-    gameMeta.classList.add('show');
-  } else {
-    heroBG.classList.remove('on');
-    gameMeta.classList.remove('show');
   }
+  heroBG.classList.add('on');
+  gameTitle.textContent = g.name;
+  const hrs = getHours()[g.name] || 0;
+  gameDesc.textContent = g.desc + (hrs > 0 ? ' · ' + fmtPlaytime(hrs) + ' played' : '');
+  gameMeta.classList.add('show');
 }
 function launchGame(i) {
   const g = games[i];
@@ -1813,7 +1839,7 @@ function syncHomeGames() {
     if (n >= games.length) return;
     const g = storeGames.filter(x => x.slug === slug)[0];
     if (!g) return;
-    games[n++] = { name: g.name, desc: g.description || '', icon: null, iconUrl: g.icon_url || '', slug: g.slug, fileUrl: g.file_url || '', size: g.size || '' };
+    games[n++] = { name: g.name, desc: g.description || '', icon: null, iconUrl: g.icon_url || '', slug: g.slug, fileUrl: g.file_url || '', size: g.size || '', wallpaper: g.wallpaper_url || '' };
   });
   sortRowRecent();
   if (curName) {
@@ -1885,6 +1911,7 @@ function activateMenuBtn(b) {
   if (b.id === 'menuExit') { tryExit(); return; }
   if (b.id === 'menuSwitchAcct') { setMenu(false); openAccount(''); return; }
   const go = b.dataset.go;
+  if (go === 'home') { setMenu(false); closeAllScreens(); loadStoreGames().then(syncHomeGames); return; }
   if (go === 'friends' || go === 'profile') { if (!requireAccount(go === 'friends' ? 'Friends' : 'your Profile')) return; }
   if (go) openScreen(go);
 }
@@ -2206,8 +2233,19 @@ function cleanRemap(m){
   });
   return out;
 }
-function getRemap(padId){ try{ const m = JSON.parse(localStorage.getItem('oly_remap_'+padId)||'{}'); return cleanRemap((m && typeof m==='object') ? m : {}); }catch(e){ return {}; } }
-function saveRemap(padId, m){ try{ localStorage.setItem('oly_remap_'+padId, JSON.stringify(m)); }catch(e){} }
+function getRemap(padId){
+  // Per-pad remap first; fall back to the last-saved global remap so a
+  // controller whose id string changes (re-pair, USB vs Bluetooth) keeps
+  // working instead of silently reverting to defaults.
+  try{
+    const m = JSON.parse(localStorage.getItem('oly_remap_'+padId)||'{}');
+    const c = cleanRemap((m && typeof m==='object') ? m : {});
+    if (Object.keys(c).length) return c;
+    const g = JSON.parse(localStorage.getItem('oly_remap_global')||'{}');
+    return cleanRemap((g && typeof g==='object') ? g : {});
+  }catch(e){ return {}; }
+}
+function saveRemap(padId, m){ try{ localStorage.setItem('oly_remap_'+padId, JSON.stringify(m)); localStorage.setItem('oly_remap_global', JSON.stringify(m)); }catch(e){} }
 let _rmId = null, _rmMap = {}, _rmResolved = null;
 /* Full logical->physical map with no shared buttons: explicit mappings win
    first, then implicit defaults fill in, and any action whose default is taken
@@ -2272,7 +2310,7 @@ function paintRemapRows(){
 }
 $('#remapDone').addEventListener('click', () => { closeRemap(); try { paintMenuTab(); } catch (e) {} });
 $('#remapReset').addEventListener('click', () => {
-  try { localStorage.removeItem('oly_remap_' + remapPadId); } catch(e){}
+  try { localStorage.removeItem('oly_remap_' + remapPadId); localStorage.removeItem('oly_remap_global'); } catch(e){}
   _rmId = null; remapCapture = null; paintRemapRows();
   try { paintMenuTab(); } catch (e) {}
 });
@@ -3022,7 +3060,7 @@ ScreenRender.player = async function (data) {
       ? prn.map(n => '<div class="rowCard"><div class="rowMain"><div class="t">' + escapeHtml(n) + '</div></div></div>').join('')
       : '<div class="emptyNote">Nothing played yet.</div>';
     $('#playerStats').innerHTML =
-      statCard('0', 'GAMES') + statCard('0', 'HOURS') + statCard('0', 'ACHIEVEMENTS');
+      statCard('0', 'GAMES') + statCard('0', 'TIME PLAYED') + statCard('0', 'ACHIEVEMENTS');
     const acts = $('#playerActions');
     acts.innerHTML = '';
     const mkBtn = (label, primary, fn) => {
@@ -3356,7 +3394,7 @@ ScreenRender.profile = function () {
   const owned = games.filter(g => g.name).length;
   const totalSecs = Object.values(getHours()).reduce((x, y) => x + y, 0);
   $('#statGrid').innerHTML =
-    statCard(owned, 'GAMES') + statCard(totalSecs ? fmtPlaytime(totalSecs) : '0', 'HOURS') +
+    statCard(owned, 'GAMES') + statCard(totalSecs ? fmtPlaytime(totalSecs) : '0', 'TIME PLAYED') +
     statCard('0', 'ACHIEVEMENTS') + statCard(friendCache.friends.length, 'FRIENDS', 'friends');
   const _sf = $('#statGrid [data-statgo]');
   if (_sf) _sf.addEventListener('click', () => openScreen(_sf.dataset.statgo));
@@ -3614,56 +3652,40 @@ ScreenRender.library = async function () {
   grid.innerHTML = '';
   await loadStoreGames();
   paintStoreDownloads(grid);
-  const owned = games.map((g, i) => ({ g: g, i: i })).filter(x => x.g.name);
   const ownedSlugs = getOwnedSlugs();
+  const homeBySlug = {};
+  games.forEach(g => { if (g && g.name && g.slug) homeBySlug[g.slug] = g; });
+  /* One tile per owned catalog game — the old code rendered the home `games`
+     array and the catalog list separately, duplicating every tile. */
   const storeOwned = storeGames.filter(g => ownedSlugs.indexOf(g.slug) >= 0);
-  if (!owned.length && !storeOwned.length) {
+  if (!storeOwned.length) {
     grid.insertAdjacentHTML('beforeend', '<div class="emptyNote">Your library is empty.<br>Games you get will appear here.</div>');
     return;
   }
-  const knownSizes = owned.filter(x => x.g.size);
+  const knownSizes = storeOwned.map(g => homeBySlug[g.slug]).filter(h => h && h.size);
   if (knownSizes.length) {
     const sum = document.createElement('div');
     sum.className = 'emptyNote';
     sum.style.marginBottom = '14px';
-    sum.textContent = owned.length + (owned.length === 1 ? ' game' : ' games') + ' · ' + knownSizes.map(x => x.g.size).join(' + ');
+    sum.textContent = storeOwned.length + (storeOwned.length === 1 ? ' game' : ' games') + ' · ' + knownSizes.map(h => h.size).join(' + ');
     grid.appendChild(sum);
   }
-  owned.forEach(x => {
-    const w = document.createElement('div');
-    w.className = 'libWrap';
-    const d = document.createElement('div');
-    d.className = 'libTile';
-    if (x.g.icon) d.style.background = artBG(x.g.icon[0], x.g.icon[1]);
-    if (x.g.ach && x.g.ach.total > 0) {
-      const pct = Math.round(100 * (x.g.ach.done || 0) / x.g.ach.total);
-      const badge = document.createElement('div');
-      badge.className = 'achBadge';
-      badge.innerHTML = ic('trophy') + ' ' + pct + '%';
-      d.appendChild(badge);
-    }
-    const t = document.createElement('div');
-    t.className = 'libName';
-    t.textContent = x.g.name;
-    w.appendChild(d);
-    w.appendChild(t);
-    if (x.g.size) {
-      const s = document.createElement('div');
-      s.className = 's';
-      s.textContent = x.g.size;
-      w.appendChild(s);
-    }
-    w.addEventListener('click', () => { closeAllScreens(); setFocus(Math.max(0, rowOrder.indexOf(x.i))); launchGame(x.i); });
-    grid.appendChild(w);
-  });
   storeOwned.forEach(g => {
+    const h = homeBySlug[g.slug] || {};
     const w = document.createElement('div');
     w.className = 'libWrap';
     const d = document.createElement('div');
     d.className = 'libTile';
     d.style.position = 'relative';
     d.style.overflow = 'hidden';
-    d.innerHTML = g.icon_url ? '<img src="' + g.icon_url + '" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">' : '';
+    d.innerHTML = g.icon_url ? '<img src="' + g.icon_url + '" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain">' : '';
+    if (h.ach && h.ach.total > 0) {
+      const pct = Math.round(100 * (h.ach.done || 0) / h.ach.total);
+      const badge = document.createElement('div');
+      badge.className = 'achBadge';
+      badge.innerHTML = ic('trophy') + ' ' + pct + '%';
+      d.appendChild(badge);
+    }
     if (needsUpdate(g)) {
       const u = document.createElement('div');
       u.textContent = 'UPDATE';
@@ -3675,6 +3697,12 @@ ScreenRender.library = async function () {
     t.textContent = g.name;
     w.appendChild(d);
     w.appendChild(t);
+    if (h.size) {
+      const s = document.createElement('div');
+      s.className = 's';
+      s.textContent = h.size;
+      w.appendChild(s);
+    }
     w.addEventListener('click', () => launchStoreGame(g));
     grid.appendChild(w);
   });
