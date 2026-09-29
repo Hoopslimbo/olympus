@@ -2,6 +2,37 @@ const { app, BrowserWindow, ipcMain, session, desktopCapturer, shell } = require
 const path = require('path');
 const fs = require('fs');
 
+// Self-updater (electron-updater). In dev (not packaged) there is no update
+// feed, so every updater call below is guarded by app.isPackaged and can
+// never throw into the app.
+const { autoUpdater } = require('electron-updater');
+autoUpdater.autoDownload = false;
+
+let mainWin = null;
+// Forward updater events to the renderer. Never throws, even with no window.
+function sendUpdate(data) {
+  try {
+    if (mainWin && !mainWin.isDestroyed() && mainWin.webContents && !mainWin.webContents.isDestroyed()) {
+      mainWin.webContents.send('oly-update', data);
+    }
+  } catch (e) {}
+}
+autoUpdater.on('update-available', info => {
+  sendUpdate({ type: 'update-available', version: (info && info.version) || '' });
+});
+autoUpdater.on('update-not-available', () => {
+  sendUpdate({ type: 'update-not-available' });
+});
+autoUpdater.on('download-progress', p => {
+  sendUpdate({ type: 'download-progress', percent: Math.round((p && p.percent) || 0) });
+});
+autoUpdater.on('update-downloaded', info => {
+  sendUpdate({ type: 'update-downloaded', version: (info && info.version) || '' });
+});
+autoUpdater.on('error', err => {
+  sendUpdate({ type: 'error', message: String((err && err.message) || err || 'update error').slice(0, 200) });
+});
+
 function createWindow() {
   const win = new BrowserWindow({
     width: 1920,
@@ -17,6 +48,8 @@ function createWindow() {
     }
   });
   win.loadFile(path.join(__dirname, 'app', 'index.html'));
+  mainWin = win;
+  win.on('closed', () => { if (mainWin === win) mainWin = null; });
   // Automated-test hook: only active when OLY_TEST_FILE is set (never in production).
   if (process.env.OLY_TEST_FILE) {
     win.webContents.on('did-finish-load', async () => {
@@ -95,6 +128,28 @@ ipcMain.handle('oly-delete-capture', async (e, name) => {
   if (!/\.(png|webm)$/i.test(safe)) throw new Error('bad capture name');
   fs.unlinkSync(path.join(capturesDir(), safe));
   return true;
+});
+
+// Self-update IPC. All are safe no-ops (returning {ok:false}) when running
+// unpackaged in dev — the updater has no feed there.
+ipcMain.handle('oly-app-version', () => app.getVersion());
+ipcMain.handle('oly-update-check', async () => {
+  if (!app.isPackaged) return { ok: false, reason: 'dev' };
+  try {
+    const res = await autoUpdater.checkForUpdates();
+    const v = res && res.updateInfo && res.updateInfo.version;
+    return { ok: true, version: v || '' };
+  } catch (e) { return { ok: false, reason: String((e && e.message) || e).slice(0, 200) }; }
+});
+ipcMain.handle('oly-update-download', async () => {
+  if (!app.isPackaged) return { ok: false, reason: 'dev' };
+  try { await autoUpdater.downloadUpdate(); return { ok: true }; }
+  catch (e) { return { ok: false, reason: String((e && e.message) || e).slice(0, 200) }; }
+});
+ipcMain.handle('oly-update-install', async () => {
+  if (!app.isPackaged) return { ok: false, reason: 'dev' };
+  try { autoUpdater.quitAndInstall(); return { ok: true }; }
+  catch (e) { return { ok: false, reason: String((e && e.message) || e).slice(0, 200) }; }
 });
 
 // Open an https URL in the user's real browser.
