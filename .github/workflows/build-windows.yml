@@ -7,6 +7,9 @@ on:
 jobs:
   build:
     runs-on: windows-latest
+    permissions:
+      contents: write
+
     defaults:
       run:
         working-directory: pc-app
@@ -19,9 +22,9 @@ jobs:
       - run: npx electron-builder --win --publish never
       - name: Attach installer to release
         uses: softprops/action-gh-release@v2
+        # latest.yml + blockmaps are the self-updater's feed: installed apps
+        # check these to download + install updates without reinstalling.
         with:
-          # latest.yml + blockmaps are the self-updater's feed: installed apps
-          # check these to download + install updates without reinstalling.
           files: |
             pc-app/dist/*.exe
             pc-app/dist/latest.yml
