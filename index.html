@@ -1135,7 +1135,7 @@ function initials(tag) {
 function picHtml(pic, tag, cls) {
   return '<div class="' + (cls || 'pAv') + '">' + (pic ? '<img src="' + escapeHtml(pic) + '" alt="">' : escapeHtml(initials(tag))) + '</div>';
 }
-let OLY_VERSION = '0.3.7';
+let OLY_VERSION = '0.3.8';
 // In the packaged PC app, use the real installed version (drives the updater UI).
 (async () => {
   try {
@@ -4034,10 +4034,14 @@ function openUpdateModal(game) {
   ]);
 }
 function updateGame(game) {
+  const ex = dlItems[game.slug];
+  if (ex && (ex.status === 'downloading' || ex.status === 'queued' || ex.status === 'paused' || ex.status === 'pausing')) {
+    toast('Already updating ' + game.name + ' \u2014 see Library.');
+    return;
+  }
   delete dlItems[game.slug];
   const item = { game: game, status: navigator.onLine === false ? 'paused' : 'downloading',
-    progress: 0, received: 0, total: 0, ctrl: null, chunks: [],
-    onDone: () => launchStoreGame(game) };
+    progress: 0, received: 0, total: 0, ctrl: null, chunks: [], isUpdate: true };
   dlItems[game.slug] = item;
   toast('Updating ' + game.name + ' \u2014 see Library.');
   if (item.status === 'downloading') pumpDownload(item);
@@ -4088,8 +4092,7 @@ async function pumpDownload(item) {
     setInstalledVersion(g.slug, catalogVersion(g));
     cacheGameBlob(g.slug, item.chunks);
     syncHomeGames();
-    toast(g.name + ' installed.');
-    if (item.onDone) { const cb = item.onDone; item.onDone = null; cb(); }
+    toast(g.name + (item.isUpdate ? ' updated.' : ' installed.'));
   } catch (e) {
     if (e && e.name === 'AbortError') { item.status = 'paused'; }
     else { item.status = 'error'; toast('Download failed: ' + g.name); }

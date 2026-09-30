@@ -40,7 +40,7 @@
     "dist": "electron-builder --win",
     "start": "electron ."
   },
-  "version": "0.3.7",
+  "version": "0.3.8",
   "dependencies": {
     "electron-updater": "^6.8.9"
   }
